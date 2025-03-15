@@ -17,20 +17,20 @@ class RouterImpl : Router {
 
     private fun executeCommand(command: String) {
 
+        var executed = false
         val reader = telnetClient.inputStream.bufferedReader()
         val writer = telnetClient.outputStream.bufferedWriter()
 
-        var executed = false
         while (!executed) {
 
             val line = reader.readNonBlocking()
 
-            if (line.isEmpty()) {
+            if (line == null) {
                 Thread.sleep(100)
                 continue
             }
 
-            println("Recebido: $line")
+            println("Received: $line")
 
             if (line.trim() == "Login:") writer.writeAndFlush("$username\r\n")
             else if (line.trim() == "Password:") writer.writeAndFlush("$password\r\n")
@@ -39,6 +39,27 @@ class RouterImpl : Router {
                 executed = true
             }
 
+        }
+
+        val response = StringBuilder()
+
+        while (reader.ready()) {
+
+            val line = reader.readNonBlocking()
+
+            if (line == null || regex.matches(line.trim()) || line.trim().contains(command)) {
+                Thread.sleep(100)
+                continue
+            }
+
+            response.append("$line\n")
+        }
+
+        writer.writeAndFlush("\r\n") //for the next command
+
+        if (response.isNotEmpty()) {
+            response.deleteCharAt(response.length - 1)
+            println("Response: (\n$response\n)")
         }
 
     }
@@ -71,7 +92,7 @@ class RouterImpl : Router {
         executeCommand("/ip address remove numbers=${number.joinToString(",")}")
     }
 
-    private fun BufferedReader.readNonBlocking(): String {
+    private fun BufferedReader.readNonBlocking(): String? {
 
         val buffer = StringBuilder()
 
@@ -82,12 +103,13 @@ class RouterImpl : Router {
             if (char == -1) break
 
             val theChar = char.toChar()
-            buffer.append(theChar)
 
-            if (theChar == '\r' || theChar == '\n') break
+            if (theChar == '\n' || theChar == '\r') break
+
+            buffer.append(theChar)
         }
 
-        return buffer.toString()
+        return if (buffer.isNotEmpty()) buffer.toString() else null
     }
 
     private fun BufferedWriter.writeAndFlush(data: String) {
