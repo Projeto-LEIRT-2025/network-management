@@ -12,4 +12,8 @@ interface Router {
 
     fun disableInterface(interfaceName: String)
 
+    fun setIpAddress(interfaceName: String, ipAddress: String)
+
+    fun removeIpAddress(vararg number: Int)
+
 }

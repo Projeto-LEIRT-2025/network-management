@@ -9,6 +9,7 @@ class RouterImpl : Router {
     private val telnetClient = TelnetClient()
     private val username = "admin"
     private val password = "pepe"
+    private val regex = Regex("\\[$username@[\\w-]+] >")
 
     init {
         telnetClient.connect("localhost", 2323)
@@ -20,7 +21,7 @@ class RouterImpl : Router {
         val writer = telnetClient.outputStream.bufferedWriter()
 
         var executed = false
-        while (true) {
+        while (!executed) {
 
             val line = reader.readNonBlocking()
 
@@ -31,17 +32,11 @@ class RouterImpl : Router {
 
             println("Recebido: $line")
 
-            when (line.trim()) {
-                "Login:" -> writer.writeAndFlush("$username\r\n")
-                "Password:" -> writer.writeAndFlush("$password\r\n")
-                "[admin@MikroTik] >" -> {
-
-                    if (executed) break
-
-                    writer.writeAndFlush("$command\r\n")
-                    executed = true
-                }
-
+            if (line.trim() == "Login:") writer.writeAndFlush("$username\r\n")
+            else if (line.trim() == "Password:") writer.writeAndFlush("$password\r\n")
+            else if (regex.matches(line.trim())) {
+                writer.writeAndFlush("$command\r\n")
+                executed = true
             }
 
         }
@@ -52,6 +47,14 @@ class RouterImpl : Router {
         executeCommand("/interface print")
     }
 
+    override fun addStaticRoute(interfaceName: String, ipAddress: String) {
+        executeCommand("/ip route add dst-address=$ipAddress gateway=$interfaceName")
+    }
+
+    override fun removeStaticRoute(vararg number: Int) {
+        executeCommand("/ip route remove numbers=${number.joinToString(",")}")
+    }
+
     override fun enableInterface(interfaceName: String) {
         executeCommand("/interface enable $interfaceName")
     }
@@ -60,12 +63,12 @@ class RouterImpl : Router {
         executeCommand("/interface disable $interfaceName")
     }
 
-    override fun addStaticRoute(interfaceName: String, ipAddress: String) {
-        executeCommand("/ip route add dst-address=$ipAddress gateway=$interfaceName")
+    override fun setIpAddress(interfaceName: String, ipAddress: String) {
+        executeCommand("/ip address add address=$ipAddress interface=$interfaceName")
     }
 
-    override fun removeStaticRoute(vararg number: Int) {
-        executeCommand("/ip route remove numbers=${number.joinToString(",")}")
+    override fun removeIpAddress(vararg number: Int) {
+        executeCommand("/ip address remove numbers=${number.joinToString(",")}")
     }
 
     private fun BufferedReader.readNonBlocking(): String {
