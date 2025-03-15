@@ -4,8 +4,12 @@ interface Router {
 
     fun showInterfaces()
 
-    fun addRoute(interfaceName: String, ipAddress: String)
+    fun addStaticRoute(interfaceName: String, ipAddress: String)
 
-    fun removeRoute(vararg number: Int)
+    fun removeStaticRoute(vararg number: Int)
+
+    fun enableInterface(interfaceName: String)
+
+    fun disableInterface(interfaceName: String)
 
 }

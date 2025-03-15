@@ -36,27 +36,36 @@ class RouterImpl : Router {
                 "Password:" -> writer.writeAndFlush("$password\r\n")
                 "[admin@MikroTik] >" -> {
 
-                    if (!executed) {
-                        writer.writeAndFlush("$command\r\n")
-                        executed = true
-                    }else break
+                    if (executed) break
 
+                    writer.writeAndFlush("$command\r\n")
+                    executed = true
                 }
+
             }
+
         }
 
     }
 
     override fun showInterfaces() {
-        executeCommand("interface print")
+        executeCommand("/interface print")
     }
 
-    override fun addRoute(interfaceName: String, ipAddress: String) {
-        executeCommand("ip route add dst-address=$ipAddress gateway=$interfaceName")
+    override fun enableInterface(interfaceName: String) {
+        executeCommand("/interface enable $interfaceName")
     }
 
-    override fun removeRoute(vararg number: Int) {
-        executeCommand("ip route remove numbers=${number.joinToString(",")}")
+    override fun disableInterface(interfaceName: String) {
+        executeCommand("/interface disable $interfaceName")
+    }
+
+    override fun addStaticRoute(interfaceName: String, ipAddress: String) {
+        executeCommand("/ip route add dst-address=$ipAddress gateway=$interfaceName")
+    }
+
+    override fun removeStaticRoute(vararg number: Int) {
+        executeCommand("/ip route remove numbers=${number.joinToString(",")}")
     }
 
     private fun BufferedReader.readNonBlocking(): String {

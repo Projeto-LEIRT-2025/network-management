@@ -9,5 +9,5 @@ fun main() {
     router.addRoute("ether1", "192.192.192.193")
     router.addRoute("ether1", "192.192.192.194")*/
 
-    router.removeRoute(0, 1)
+    router.disableInterface("lo")
 }
