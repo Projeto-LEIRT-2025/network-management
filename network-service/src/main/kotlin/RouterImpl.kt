@@ -15,7 +15,7 @@ class RouterImpl : Router {
         telnetClient.connect("localhost", 2323)
     }
 
-    private fun executeCommand(command: String) {
+    private fun <T> executeCommand(command: String, mapper: (String) -> Response<T>): Response<T> {
 
         var executed = false
         val reader = telnetClient.inputStream.bufferedReader()
@@ -57,40 +57,35 @@ class RouterImpl : Router {
 
         writer.writeAndFlush("\r\n") //for the next command
 
-        if (response.isNotEmpty()) {
+        if (response.isNotEmpty())
             response.deleteCharAt(response.length - 1)
-            println("Response: (\n$response\n)")
-        }
 
+        return mapper(response.toString())
     }
 
-    override fun showInterfaces() {
-        executeCommand("/interface print")
-    }
+    private fun executeCommand(command: String) =
+        executeCommand(command) { Response(raw = it, data = Unit) }
 
-    override fun addStaticRoute(interfaceName: String, ipAddress: String) {
+    override fun showInterfaces() =
+        executeCommand("/interface print") { Response(raw = it, data = parseNetworkInterfaces(it)) }
+
+    override fun addStaticRoute(interfaceName: String, ipAddress: String) =
         executeCommand("/ip route add dst-address=$ipAddress gateway=$interfaceName")
-    }
 
-    override fun removeStaticRoute(vararg number: Int) {
+    override fun removeStaticRoute(vararg number: Int) =
         executeCommand("/ip route remove numbers=${number.joinToString(",")}")
-    }
 
-    override fun enableInterface(interfaceName: String) {
+    override fun enableInterface(interfaceName: String) =
         executeCommand("/interface enable $interfaceName")
-    }
 
-    override fun disableInterface(interfaceName: String) {
+    override fun disableInterface(interfaceName: String) =
         executeCommand("/interface disable $interfaceName")
-    }
 
-    override fun setIpAddress(interfaceName: String, ipAddress: String) {
+    override fun setIpAddress(interfaceName: String, ipAddress: String) =
         executeCommand("/ip address add address=$ipAddress interface=$interfaceName")
-    }
 
-    override fun removeIpAddress(vararg number: Int) {
+    override fun removeIpAddress(vararg number: Int) =
         executeCommand("/ip address remove numbers=${number.joinToString(",")}")
-    }
 
     private fun BufferedReader.readNonBlocking(): String? {
 

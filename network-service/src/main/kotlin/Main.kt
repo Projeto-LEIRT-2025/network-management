@@ -9,5 +9,7 @@ fun main() {
     router.addStaticRoute("ether1", "192.192.192.194")*/
 
     router.setIpAddress("ether2", "23.23.23.23")
-    router.showInterfaces()
+    val response = router.showInterfaces()
+
+    println(response.data)
 }

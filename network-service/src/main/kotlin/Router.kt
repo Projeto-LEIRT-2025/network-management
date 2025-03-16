@@ -2,18 +2,18 @@ package com.github.projeto
 
 interface Router {
 
-    fun showInterfaces()
+    fun showInterfaces(): Response<List<NetworkInterface>>
 
-    fun addStaticRoute(interfaceName: String, ipAddress: String)
+    fun addStaticRoute(interfaceName: String, ipAddress: String): Response<Unit>
 
-    fun removeStaticRoute(vararg number: Int)
+    fun removeStaticRoute(vararg number: Int): Response<Unit>
 
-    fun enableInterface(interfaceName: String)
+    fun enableInterface(interfaceName: String): Response<Unit>
 
-    fun disableInterface(interfaceName: String)
+    fun disableInterface(interfaceName: String): Response<Unit>
 
-    fun setIpAddress(interfaceName: String, ipAddress: String)
+    fun setIpAddress(interfaceName: String, ipAddress: String): Response<Unit>
 
-    fun removeIpAddress(vararg number: Int)
+    fun removeIpAddress(vararg number: Int): Response<Unit>
 
 }
