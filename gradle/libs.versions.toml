@@ -1,5 +1,7 @@
 [versions]
 commons-net = "3.11.1"
+snmp4j = "3.9.0"
 
 [libraries]
 commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
+snmp4j = { module = "org.snmp4j:snmp4j", version.ref = "snmp4j" }
