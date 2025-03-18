@@ -2,14 +2,16 @@ package com.github.projeto
 
 fun main() {
 
-    val router = RouterImpl()
+    val routerConfiguration = RouterConfigurationImpl()
+    val routerMonitoring = RouterMonitoringImpl()
 
-    /*router.addStaticRoute("ether1", "192.192.192.192")
-    router.addStaticRoute("ether1", "192.192.192.193")
-    router.addStaticRoute("ether1", "192.192.192.194")*/
+    /*routerConfiguration.addStaticRoute("ether1", "192.192.192.192")
+    routerConfiguration.addStaticRoute("ether1", "192.192.192.193")
+    routerConfiguration.addStaticRoute("ether1", "192.192.192.194")*/
 
-    router.setIpAddress("ether2", "23.23.23.23")
-    val response = router.showInterfaces()
+    //routerConfiguration.setIpAddress("ether2", "23.23.23.23")
+    //val response = routerConfiguration.showInterfaces()
 
-    println(response.data)
+
+    println(routerMonitoring.getMemoryUsed())
 }

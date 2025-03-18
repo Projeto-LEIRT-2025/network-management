@@ -1,6 +1,6 @@
 package com.github.projeto
 
-interface Router {
+interface RouterConfiguration {
 
     fun showInterfaces(): Response<List<NetworkInterface>>
 

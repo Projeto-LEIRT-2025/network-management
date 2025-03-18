@@ -11,6 +11,7 @@ repositories {
 
 dependencies {
     implementation(libs.commons.net)
+    implementation(libs.snmp4j)
     testImplementation(kotlin("test"))
 }
 

@@ -4,7 +4,7 @@ import org.apache.commons.net.telnet.TelnetClient
 import java.io.BufferedReader
 import java.io.BufferedWriter
 
-class RouterImpl : Router {
+class RouterConfigurationImpl : RouterConfiguration {
 
     private val telnetClient = TelnetClient()
     private val username = "admin"
