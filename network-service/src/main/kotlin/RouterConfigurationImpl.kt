@@ -87,6 +87,15 @@ class RouterConfigurationImpl : RouterConfiguration {
     override fun removeIpAddress(vararg number: Int) =
         executeCommand("/ip address remove numbers=${number.joinToString(",")}")
 
+    override fun enableSNMP() =
+        executeCommand("/snmp set enabled=yes")
+
+    override fun disableSNMP() =
+        executeCommand("/snmp set enabled=no")
+
+    override fun changeSNMPVersion(version: Int) =
+        executeCommand("/snmp set trap-version=$version")
+
     private fun BufferedReader.readNonBlocking(): String? {
 
         val buffer = StringBuilder()

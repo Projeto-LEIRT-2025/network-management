@@ -16,4 +16,10 @@ interface RouterConfiguration {
 
     fun removeIpAddress(vararg number: Int): Response<Unit>
 
+    fun enableSNMP(): Response<Unit>
+
+    fun disableSNMP(): Response<Unit>
+
+    fun changeSNMPVersion(version: Int): Response<Unit>
+
 }
