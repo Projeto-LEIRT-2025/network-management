@@ -4,4 +4,6 @@ interface RouterMonitoring {
 
     fun getMemoryUsed(): Int
 
+    fun getUptime(): String
+
 }
