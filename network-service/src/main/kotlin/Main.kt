@@ -12,11 +12,8 @@ fun main() {
     //routerConfiguration.setIpAddress("ether2", "23.23.23.23")
     //val response = routerConfiguration.showInterfaces()
 
-    routerConfiguration.enableSNMP()
-    routerConfiguration.changeSNMPVersion(2)
-    routerConfiguration.setSourceAddressSNMP("0.0.0.0")
+    //routerConfiguration.enableSNMP()
+    //routerConfiguration.changeSNMPVersion(2)
 
-
-    println(routerMonitoring.getMemoryUsed())
-
+    println(routerMonitoring.getTotalMemory())
 }

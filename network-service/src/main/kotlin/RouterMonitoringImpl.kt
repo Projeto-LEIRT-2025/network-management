@@ -7,6 +7,7 @@ import org.snmp4j.mp.SnmpConstants
 import org.snmp4j.smi.*
 import org.snmp4j.transport.DefaultUdpTransportMapping
 
+private const val TOTAL_MEMORY_OID = ".1.3.6.1.2.1.25.2.3.1.5.65536"
 private const val MEMORY_USED_OID = ".1.3.6.1.2.1.25.2.3.1.6.65536"
 private const val UPTIME_OID = ".1.3.6.1.2.1.1.3.0"
 
@@ -30,6 +31,21 @@ class RouterMonitoringImpl : RouterMonitoring {
         this.snmp.listen()
     }
 
+    override fun getTotalMemory(): Int {
+
+        val oid = OID(TOTAL_MEMORY_OID)
+        val pdu = PDU()
+
+        pdu.add(VariableBinding(oid))
+        pdu.type = PDU.GET
+
+        val responseEvent = snmp.get(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val totalMemory = pduResponse.getVariable(oid).toInt() //kibibyte
+
+        return totalMemory / 1024 //1 kibibyte is 1024 bytes -> MiB (mebibyte)
+    }
+
     override fun getMemoryUsed(): Int {
 
         val oid = OID(MEMORY_USED_OID)
@@ -40,9 +56,9 @@ class RouterMonitoringImpl : RouterMonitoring {
 
         val responseEvent = snmp.get(pdu, this.target)
         val pduResponse = responseEvent.response
-        val memoryUsed = pduResponse.getVariable(oid).toInt()
+        val memoryUsed = pduResponse.getVariable(oid).toInt() //kibibyte
 
-        return memoryUsed / 1024
+        return memoryUsed / 1024 //1 kibibyte is 1024 bytes -> MiB (mebibyte)
     }
 
     override fun getUptime(): String {
