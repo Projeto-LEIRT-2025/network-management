@@ -7,9 +7,11 @@ import org.snmp4j.mp.SnmpConstants
 import org.snmp4j.smi.*
 import org.snmp4j.transport.DefaultUdpTransportMapping
 
+
 private const val TOTAL_MEMORY_OID = ".1.3.6.1.2.1.25.2.3.1.5.65536"
 private const val MEMORY_USED_OID = ".1.3.6.1.2.1.25.2.3.1.6.65536"
 private const val UPTIME_OID = ".1.3.6.1.2.1.1.3.0"
+private const val CPU_LOAD_OID = ".1.3.6.1.2.1.25.3.3.1.2"
 
 class RouterMonitoringImpl : RouterMonitoring {
 
@@ -18,7 +20,7 @@ class RouterMonitoringImpl : RouterMonitoring {
 
     init {
 
-        val targetAddress = GenericAddress.parse("udp:172.18.0.2/161")
+        val targetAddress = GenericAddress.parse("udp:172.19.0.2/161")
 
         this.target = CommunityTarget<Address>()
         this.target.address = targetAddress
@@ -34,10 +36,11 @@ class RouterMonitoringImpl : RouterMonitoring {
     override fun getTotalMemory(): Int {
 
         val oid = OID(TOTAL_MEMORY_OID)
-        val pdu = PDU()
 
-        pdu.add(VariableBinding(oid))
-        pdu.type = PDU.GET
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
 
         val responseEvent = snmp.get(pdu, this.target)
         val pduResponse = responseEvent.response
@@ -49,10 +52,11 @@ class RouterMonitoringImpl : RouterMonitoring {
     override fun getMemoryUsed(): Int {
 
         val oid = OID(MEMORY_USED_OID)
-        val pdu = PDU()
 
-        pdu.add(VariableBinding(oid))
-        pdu.type = PDU.GET
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
 
         val responseEvent = snmp.get(pdu, this.target)
         val pduResponse = responseEvent.response
@@ -64,16 +68,37 @@ class RouterMonitoringImpl : RouterMonitoring {
     override fun getUptime(): String {
 
         val oid = OID(UPTIME_OID)
-        val pdu = PDU()
 
-        pdu.add(VariableBinding(oid))
-        pdu.type = PDU.GET
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
 
         val responseEvent = snmp.get(pdu, this.target)
         val pduResponse = responseEvent.response
-        val upTime = pduResponse.getVariable(oid).toString()
+        val uptime = pduResponse.getVariable(oid).toString()
 
-        return upTime
+        return uptime
+    }
+
+    override fun getCpuLoad(): Double {
+
+        val oid = OID(CPU_LOAD_OID)
+
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GETBULK
+            maxRepetitions = 32
+            nonRepeaters = 0
+        }
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val response = responseEvent.response
+
+        return response.variableBindings
+            .filter { it.oid.startsWith(oid) }
+            .map { it.variable.toInt() }
+            .average()
     }
 
 }

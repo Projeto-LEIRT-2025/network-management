@@ -8,4 +8,6 @@ interface RouterMonitoring {
 
     fun getUptime(): String
 
+    fun getCpuLoad(): Double
+
 }

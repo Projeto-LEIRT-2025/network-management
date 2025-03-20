@@ -15,5 +15,5 @@ fun main() {
     //routerConfiguration.enableSNMP()
     //routerConfiguration.changeSNMPVersion(2)
 
-    println(routerMonitoring.getTotalMemory())
+    println(routerMonitoring.getCpuLoad())
 }
