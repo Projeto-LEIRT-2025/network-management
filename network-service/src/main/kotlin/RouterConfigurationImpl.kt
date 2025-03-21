@@ -96,6 +96,12 @@ class RouterConfigurationImpl : RouterConfiguration {
     override fun changeSNMPVersion(version: Int) =
         executeCommand("/snmp set trap-version=$version")
 
+    override fun createAddressPool(name: String, address: String) =
+        executeCommand("/ip pool name=$name ranges=$address")
+
+    override fun createDHCPServer(name: String, pool: String, interfaceName: String) =
+        executeCommand("/ip dhcp-server add address-pool=$pool disabled=no interface=$interfaceName name=$name")
+
     private fun BufferedReader.readNonBlocking(): String? {
 
         val buffer = StringBuilder()
