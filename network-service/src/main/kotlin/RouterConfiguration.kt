@@ -4,9 +4,7 @@ import org.snmp4j.smi.IpAddress
 
 interface RouterConfiguration {
 
-    fun addStaticRoute(interfaceName: String, ipAddress: String): Response<Unit>
-
-    fun removeStaticRoute(vararg number: Int): Response<Unit>
+    //INTERFACES
 
     fun enableInterface(interfaceName: String): Response<Unit>
 
@@ -16,14 +14,32 @@ interface RouterConfiguration {
 
     fun removeIpAddress(vararg number: Int): Response<Unit>
 
+    //DHCP
+
+    fun createAddressPool(name: String, address: String): Response<Unit>
+
+    fun createDHCPServer(name: String, pool: String, interfaceName: String): Response<Unit>
+
+    fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String)
+
+    fun enableDHCPRelay(name: String)
+
+    fun disableDHCPRelay(name: String)
+
+    fun removeDHCPRelay(name: String)
+
+    //ROUTES
+
+    fun addStaticRoute(interfaceName: String, ipAddress: String): Response<Unit>
+
+    fun removeStaticRoute(vararg number: Int): Response<Unit>
+
+    //SNMP
+
     fun enableSNMP(): Response<Unit>
 
     fun disableSNMP(): Response<Unit>
 
     fun changeSNMPVersion(version: Int): Response<Unit>
-
-    fun createAddressPool(name: String, address: String): Response<Unit>
-
-    fun createDHCPServer(name: String, pool: String, interfaceName: String): Response<Unit>
 
 }

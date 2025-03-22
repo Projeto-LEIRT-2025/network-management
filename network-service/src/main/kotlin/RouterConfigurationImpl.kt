@@ -42,17 +42,17 @@ class RouterConfigurationImpl : RouterConfiguration {
         }
 
         val response = StringBuilder()
-        var line = reader.readNonBlocking()
 
-        while (line != null) {
+        while (reader.ready()) {
 
-            if (regex.matches(line.trim()) || line.trim().contains(command)) {
+            val line = reader.readNonBlocking()
+
+            if (line == null || regex.matches(line.trim()) || line.trim().contains(command)) {
                 Thread.sleep(100)
                 continue
             }
 
             response.append("$line\n")
-            line = reader.readNonBlocking()
         }
 
         writer.writeAndFlush("\r\n") //for the next command
@@ -98,6 +98,22 @@ class RouterConfigurationImpl : RouterConfiguration {
 
     override fun createDHCPServer(name: String, pool: String, interfaceName: String) =
         executeCommand("/ip dhcp-server add address-pool=$pool disabled=no interface=$interfaceName name=$name")
+
+    override fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String) {
+        executeCommand("/ip dhcp-relay add name=$name interface=$interfaceName dhcp-server=$serverAddress")
+    }
+
+    override fun enableDHCPRelay(name: String) {
+        executeCommand("/ip dhcp-relay enable $name")
+    }
+
+    override fun disableDHCPRelay(name: String) {
+        executeCommand("/ip dhcp-relay disable $name")
+    }
+
+    override fun removeDHCPRelay(name: String) {
+        executeCommand("/ip dhcp-relay remove $name")
+    }
 
     private fun BufferedReader.readNonBlocking(): String? {
 

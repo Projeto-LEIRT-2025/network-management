@@ -27,7 +27,7 @@ class RouterMonitoringImpl : RouterMonitoring {
 
     init {
 
-        val targetAddress = GenericAddress.parse("udp:172.19.0.3/161")
+        val targetAddress = GenericAddress.parse("udp:localhost/161")
 
         this.target = CommunityTarget<Address>()
         this.target.address = targetAddress

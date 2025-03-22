@@ -18,8 +18,11 @@ fun main() {
     //println(routerConfiguration.createAddressPool("pepe-pool", "172.0.1.0/24"))
     //println(routerConfiguration.createDHCPServer("pepe-dhcp", "pepe-pool", "ether1"))
 
-    routerMonitoring.getNetworkInterfaces().forEach { networkInterface ->
+    /*routerMonitoring.getNetworkInterfaces().forEach { networkInterface ->
         println("${networkInterface.name} -> Bytes In: ${routerMonitoring.getBytesIn(networkInterface.index)} ; Bytes Out: ${routerMonitoring.getBytesOut(networkInterface.index)}")
     }
+     */
 
+    //routerConfiguration.createDHCPRelay("PEPE", "bridge3", "10.10.10.10")
+    routerConfiguration.enableDHCPRelay("PEPE")
 }
