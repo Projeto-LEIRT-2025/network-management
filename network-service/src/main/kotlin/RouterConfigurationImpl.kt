@@ -42,17 +42,17 @@ class RouterConfigurationImpl : RouterConfiguration {
         }
 
         val response = StringBuilder()
+        var line = reader.readNonBlocking()
 
-        while (reader.ready()) {
+        while (line != null) {
 
-            val line = reader.readNonBlocking()
-
-            if (line == null || regex.matches(line.trim()) || line.trim().contains(command)) {
+            if (regex.matches(line.trim()) || line.trim().contains(command)) {
                 Thread.sleep(100)
                 continue
             }
 
             response.append("$line\n")
+            line = reader.readNonBlocking()
         }
 
         writer.writeAndFlush("\r\n") //for the next command
@@ -97,7 +97,7 @@ class RouterConfigurationImpl : RouterConfiguration {
         executeCommand("/snmp set trap-version=$version")
 
     override fun createAddressPool(name: String, address: String) =
-        executeCommand("/ip pool name=$name ranges=$address")
+        executeCommand("/ip pool add name=$name ranges=$address")
 
     override fun createDHCPServer(name: String, pool: String, interfaceName: String) =
         executeCommand("/ip dhcp-server add address-pool=$pool disabled=no interface=$interfaceName name=$name")

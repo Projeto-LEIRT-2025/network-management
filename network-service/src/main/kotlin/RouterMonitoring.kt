@@ -10,4 +10,6 @@ interface RouterMonitoring {
 
     fun getCpuLoad(): Double
 
+    fun getBytesReceived(interfaceName: String): Long
+
 }

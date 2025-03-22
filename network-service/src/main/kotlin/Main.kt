@@ -12,10 +12,10 @@ fun main() {
     //routerConfiguration.setIpAddress("ether2", "23.23.23.23")
     //val response = routerConfiguration.showInterfaces()
 
-    routerConfiguration.enableSNMP()
-    routerConfiguration.changeSNMPVersion(2)
-    println(routerMonitoring.getCpuLoad())
+    //routerConfiguration.enableSNMP()
+    //routerConfiguration.changeSNMPVersion(2)
 
-    println(routerConfiguration.createAddressPool("pepe-pool", "172.0.1.0/24"))
-    println(routerConfiguration.createDHCPServer("pepe-dhcp", "pepe-pool", "ether1"))
+    println(routerMonitoring.getBytesReceived("ether1"))
+    //println(routerConfiguration.createAddressPool("pepe-pool", "172.0.1.0/24"))
+    //println(routerConfiguration.createDHCPServer("pepe-dhcp", "pepe-pool", "ether1"))
 }
