@@ -66,9 +66,6 @@ class RouterConfigurationImpl : RouterConfiguration {
     private fun executeCommand(command: String) =
         executeCommand(command) { Response(raw = it, data = Unit) }
 
-    override fun showInterfaces() =
-        executeCommand("/interface print") { Response(raw = it, data = parseNetworkInterfaces(it)) }
-
     override fun addStaticRoute(interfaceName: String, ipAddress: String) =
         executeCommand("/ip route add dst-address=$ipAddress gateway=$interfaceName")
 

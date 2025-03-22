@@ -4,8 +4,6 @@ import org.snmp4j.smi.IpAddress
 
 interface RouterConfiguration {
 
-    fun showInterfaces(): Response<List<NetworkInterface>>
-
     fun addStaticRoute(interfaceName: String, ipAddress: String): Response<Unit>
 
     fun removeStaticRoute(vararg number: Int): Response<Unit>

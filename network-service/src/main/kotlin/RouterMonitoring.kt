@@ -10,6 +10,10 @@ interface RouterMonitoring {
 
     fun getCpuLoad(): Double
 
-    fun getBytesReceived(interfaceName: String): Long
+    fun getNetworkInterfaces(): List<NetworkInterface>
+
+    fun getBytesIn(index: Int): Long
+
+    fun getBytesOut(index: Int): Long
 
 }
