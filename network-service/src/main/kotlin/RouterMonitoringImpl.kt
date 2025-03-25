@@ -155,46 +155,37 @@ class RouterMonitoringImpl(
         )
 
         val interfaces = mutableMapOf<Int, NetworkInterface.Builder>()
-        var hasMoreData = true
-        val maxRepetitions = 32
 
-        while (hasMoreData) {
+        val pdu = PDU().apply {
+            oids.forEach { add(VariableBinding(it)) }
+            type = PDU.GETBULK
+            maxRepetitions = 32
+            nonRepeaters = 0
+        }
 
-            val pdu = PDU().apply {
-                oids.forEach { add(VariableBinding(it)) }
-                type = PDU.GETBULK
-                this.maxRepetitions = maxRepetitions
-                nonRepeaters = 0
+        pdu.add(VariableBinding(OID(oidBase)))
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val variableBindings = pduResponse.variableBindings
+
+        for (vb in variableBindings) {
+
+            val index = vb.oid.last()
+            var builder = interfaces[index]
+
+            if (builder == null) {
+                builder = NetworkInterface.Builder().index(index)
+                interfaces[index] = builder
             }
 
-            pdu.add(VariableBinding(OID(oidBase)))
-
-            val responseEvent = snmp.send(pdu, this.target)
-            val pduResponse = responseEvent.response
-            val variableBindings = pduResponse.variableBindings
-
-            for (vb in variableBindings) {
-
-                if (!vb.oid.startsWith(oidBase)) continue
-
-                val index = vb.oid.last()
-                var builder = interfaces[index]
-
-                if (builder == null) {
-                    builder = NetworkInterface.Builder().index(index)
-                    interfaces[index] = builder
-                }
-
-                when {
-                    vb.oid.startsWith(OID(INTERFACE_NAME_OID)) -> builder.name(vb.toValueString())
-                    vb.oid.startsWith(OID(ACTUAL_MTU_OID)) -> builder.actualMtu(vb.variable.toInt())
-                    vb.oid.startsWith(OID(MAC_ADDRESS_OID)) -> builder.macAddress(vb.toValueString())
-                    vb.oid.startsWith(OID(OPERATIONAL_STATUS_OID)) -> builder.operationalStatus(NetworkInterface.OperationalStatus.getFromValue(vb.variable.toInt()))
-                }
-
+            when {
+                vb.oid.startsWith(OID(INTERFACE_NAME_OID)) -> builder.name(vb.toValueString())
+                vb.oid.startsWith(OID(ACTUAL_MTU_OID)) -> builder.actualMtu(vb.variable.toInt())
+                vb.oid.startsWith(OID(MAC_ADDRESS_OID)) -> builder.macAddress(vb.toValueString())
+                vb.oid.startsWith(OID(OPERATIONAL_STATUS_OID)) -> builder.operationalStatus(NetworkInterface.OperationalStatus.getFromValue(vb.variable.toInt()))
             }
 
-            hasMoreData = variableBindings.size == maxRepetitions
         }
 
         return interfaces.values.map { it.build() }
