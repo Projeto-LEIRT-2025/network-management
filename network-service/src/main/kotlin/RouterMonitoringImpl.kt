@@ -7,7 +7,6 @@ import org.snmp4j.mp.SnmpConstants
 import org.snmp4j.smi.*
 import org.snmp4j.transport.DefaultUdpTransportMapping
 
-
 private const val TOTAL_MEMORY_OID = ".1.3.6.1.2.1.25.2.3.1.5.65536"
 private const val MEMORY_USED_OID = ".1.3.6.1.2.1.25.2.3.1.6.65536"
 private const val UPTIME_OID = ".1.3.6.1.2.1.1.3.0"
@@ -20,14 +19,19 @@ private const val OPERATIONAL_STATUS_OID = ".1.3.6.1.2.1.2.2.1.8"
 private const val BYTES_IN_OID = ".1.3.6.1.2.1.31.1.1.1.6"
 private const val BYTES_OUT_OID = ".1.3.6.1.2.1.31.1.1.1.10"
 
-class RouterMonitoringImpl : RouterMonitoring {
+class RouterMonitoringImpl(
+
+    hostname: String,
+    port: Int
+
+) : RouterMonitoring {
 
     private val snmp: Snmp
     private val target: CommunityTarget<Address>
 
     init {
 
-        val targetAddress = GenericAddress.parse("udp:localhost/161")
+        val targetAddress = GenericAddress.parse("udp:$hostname/$port")
 
         this.target = CommunityTarget<Address>()
         this.target.address = targetAddress
@@ -142,37 +146,55 @@ class RouterMonitoringImpl : RouterMonitoring {
 
     override fun getNetworkInterfaces(): List<NetworkInterface> {
 
-        val oid = OID(INTERFACE_BASE_OID)
+        val oidBase = OID(INTERFACE_BASE_OID)
+        val oids = listOf(
+            OID(INTERFACE_NAME_OID),
+            OID(ACTUAL_MTU_OID),
+            OID(MAC_ADDRESS_OID),
+            OID(OPERATIONAL_STATUS_OID)
+        )
 
-        val pdu = PDU().apply {
-            add(VariableBinding(oid))
-            type = PDU.GETBULK
-            maxRepetitions = 48
-            nonRepeaters = 0
-        }
-
-        val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
-        val variableBindings = pduResponse.variableBindings
         val interfaces = mutableMapOf<Int, NetworkInterface.Builder>()
+        var hasMoreData = true
+        val maxRepetitions = 32
 
-        for (vb in variableBindings) {
+        while (hasMoreData) {
 
-            if (!vb.oid.startsWith(OID(INTERFACE_BASE_OID))) continue
-
-            val index = vb.oid.last()
-            var builder = interfaces[index]
-
-            if (builder == null) {
-                builder = NetworkInterface.Builder().index(index)
-                interfaces[index] = builder
+            val pdu = PDU().apply {
+                oids.forEach { add(VariableBinding(it)) }
+                type = PDU.GETBULK
+                this.maxRepetitions = maxRepetitions
+                nonRepeaters = 0
             }
 
-            if (vb.oid.startsWith(OID(INTERFACE_NAME_OID))) builder.name(vb.toValueString())
-            else if (vb.oid.startsWith(OID(ACTUAL_MTU_OID))) builder.actualMtu(vb.variable.toInt())
-            else if (vb.oid.startsWith(OID(MAC_ADDRESS_OID))) builder.macAddress(vb.toValueString())
-            else if (vb.oid.startsWith(OID(OPERATIONAL_STATUS_OID))) builder.operationalStatus(NetworkInterface.OperationalStatus.getFromValue(vb.variable.toInt()))
+            pdu.add(VariableBinding(OID(oidBase)))
 
+            val responseEvent = snmp.send(pdu, this.target)
+            val pduResponse = responseEvent.response
+            val variableBindings = pduResponse.variableBindings
+
+            for (vb in variableBindings) {
+
+                if (!vb.oid.startsWith(oidBase)) continue
+
+                val index = vb.oid.last()
+                var builder = interfaces[index]
+
+                if (builder == null) {
+                    builder = NetworkInterface.Builder().index(index)
+                    interfaces[index] = builder
+                }
+
+                when {
+                    vb.oid.startsWith(OID(INTERFACE_NAME_OID)) -> builder.name(vb.toValueString())
+                    vb.oid.startsWith(OID(ACTUAL_MTU_OID)) -> builder.actualMtu(vb.variable.toInt())
+                    vb.oid.startsWith(OID(MAC_ADDRESS_OID)) -> builder.macAddress(vb.toValueString())
+                    vb.oid.startsWith(OID(OPERATIONAL_STATUS_OID)) -> builder.operationalStatus(NetworkInterface.OperationalStatus.getFromValue(vb.variable.toInt()))
+                }
+
+            }
+
+            hasMoreData = variableBindings.size == maxRepetitions
         }
 
         return interfaces.values.map { it.build() }

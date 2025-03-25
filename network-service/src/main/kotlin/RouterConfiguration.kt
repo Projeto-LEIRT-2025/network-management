@@ -30,7 +30,7 @@ interface RouterConfiguration {
 
     //ROUTES
 
-    fun addStaticRoute(interfaceName: String, ipAddress: String): Response<Unit>
+    fun addStaticRoute(gateway: String, ipAddress: String): Response<Unit>
 
     fun removeStaticRoute(vararg number: Int): Response<Unit>
 

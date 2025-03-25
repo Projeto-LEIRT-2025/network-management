@@ -4,15 +4,20 @@ import org.apache.commons.net.telnet.TelnetClient
 import java.io.BufferedReader
 import java.io.BufferedWriter
 
-class RouterConfigurationImpl : RouterConfiguration {
+class RouterConfigurationImpl(
+
+    hostname: String,
+    port: Int,
+    private val username: String,
+    private val password: String
+
+) : RouterConfiguration {
 
     private val telnetClient = TelnetClient()
-    private val username = "admin"
-    private val password = "pepe"
     private val regex = Regex("\\[$username@[\\w-]+] >")
 
     init {
-        telnetClient.connect("localhost", 2323)
+        telnetClient.connect(hostname, port)
     }
 
     private fun <T> executeCommand(command: String, mapper: (String) -> Response<T>): Response<T> {
@@ -66,8 +71,8 @@ class RouterConfigurationImpl : RouterConfiguration {
     private fun executeCommand(command: String) =
         executeCommand(command) { Response(raw = it, data = Unit) }
 
-    override fun addStaticRoute(interfaceName: String, ipAddress: String) =
-        executeCommand("/ip route add dst-address=$ipAddress gateway=$interfaceName")
+    override fun addStaticRoute(gateway: String, ipAddress: String) =
+        executeCommand("/ip route add dst-address=$ipAddress gateway=$gateway")
 
     override fun removeStaticRoute(vararg number: Int) =
         executeCommand("/ip route remove numbers=${number.joinToString(",")}")
