@@ -163,8 +163,6 @@ class RouterMonitoringImpl(
             nonRepeaters = 0
         }
 
-        pdu.add(VariableBinding(OID(oidBase)))
-
         val responseEvent = snmp.send(pdu, this.target)
         val pduResponse = responseEvent.response
         val variableBindings = pduResponse.variableBindings

@@ -20,6 +20,10 @@ interface RouterConfiguration {
 
     fun createDHCPServer(name: String, pool: String, interfaceName: String): Response<Unit>
 
+    fun createDHCPServerRelay(name: String, pool: String, interfaceName: String, relayAddress: String): Response<Unit>
+
+    fun createDHCPServerNetwork(network: String, gateway: String): Response<Unit>
+
     fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String)
 
     fun enableDHCPRelay(name: String)
