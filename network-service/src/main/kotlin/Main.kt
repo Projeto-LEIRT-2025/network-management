@@ -28,11 +28,11 @@ fun main() {
     //routerConfiguration.enableSNMP()
     //routerConfiguration.changeSNMPVersion(2)
 
-    //routerMonitoring.getNetworkInterfaces().forEach { networkInterface ->
-    //    println("${networkInterface.name} -> Bytes In: ${routerMonitoring.getBytesIn(networkInterface.index)} ; Bytes Out: ${routerMonitoring.getBytesOut(networkInterface.index)}")
-    //}
+    routerMonitoring.getNetworkInterfaces().forEach { networkInterface ->
+        println("${networkInterface.name} -> Bytes In: ${routerMonitoring.getBytesIn(networkInterface.index)} ; Bytes Out: ${routerMonitoring.getBytesOut(networkInterface.index)}")
+    }
 
-    initialSetup()
+    //initialSetup()
 }
 
 private fun initialSetup() {

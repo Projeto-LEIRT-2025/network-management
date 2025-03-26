@@ -22,7 +22,7 @@ private const val BYTES_OUT_OID = ".1.3.6.1.2.1.31.1.1.1.10"
 class RouterMonitoringImpl(
 
     hostname: String,
-    port: Int
+    port: String
 
 ) : RouterMonitoring {
 

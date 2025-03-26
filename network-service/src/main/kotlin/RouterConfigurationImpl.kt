@@ -7,7 +7,7 @@ import java.io.BufferedWriter
 class RouterConfigurationImpl(
 
     hostname: String,
-    port: Int,
+    port: String,
     private val username: String,
     private val password: String
 
@@ -17,7 +17,7 @@ class RouterConfigurationImpl(
     private val regex = Regex("\\[$username@[\\w-]+] >")
 
     init {
-        telnetClient.connect(hostname, port)
+        telnetClient.connect(hostname, port.toInt())
     }
 
     private fun <T> executeCommand(command: String, mapper: (String) -> Response<T>): Response<T> {

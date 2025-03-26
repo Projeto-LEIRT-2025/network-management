@@ -2,20 +2,22 @@ package com.github.projeto
 
 class RouterFactory {
 
-    fun loadRouterConfiguration(className: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration {
+    private inline fun <reified T> createInstance(className: String, vararg params: Any): T {
 
         val theClass = Class.forName(className)
+        val constructor = theClass.getConstructor(*params.map { it.javaClass }.toTypedArray())
+        val instance = constructor.newInstance(*params)
 
-        return theClass.getConstructor(hostname.javaClass, port.javaClass, username.javaClass, password.javaClass)
-            .newInstance(hostname, port, username, password) as RouterConfiguration
+        if (instance !is T)
+            throw IllegalArgumentException("Class $className is not a $instance")
+
+        return instance
     }
 
-    fun loadRouterMonitoring(className: String, hostname: String, port: Int): RouterMonitoring {
+    fun loadRouterConfiguration(className: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration =
+        createInstance(className, hostname, port.toString(), username, password)
 
-        val theClass = Class.forName(className)
-
-        return theClass.getConstructor(hostname.javaClass, port.javaClass)
-            .newInstance(hostname, port) as RouterMonitoring
-    }
+    fun loadRouterMonitoring(className: String, hostname: String, port: Int): RouterMonitoring =
+        createInstance(className, hostname, port.toString())
 
 }
