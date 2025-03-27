@@ -1,15 +1,19 @@
 plugins {
     kotlin("jvm") version "2.1.10"
+    alias(libs.plugins.shadow)
 }
 
 group = "com.github.projeto"
-version = "unspecified"
+version = "1.0"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation(libs.commons.net)
+    implementation(libs.snmp4j)
+    implementation(project(":network-service"))
     testImplementation(kotlin("test"))
 }
 

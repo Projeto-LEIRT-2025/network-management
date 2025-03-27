@@ -1,7 +1,5 @@
 package com.github.projeto
 
-import org.snmp4j.smi.IpAddress
-
 interface RouterConfiguration {
 
     //INTERFACES

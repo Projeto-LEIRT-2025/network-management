@@ -3,9 +3,10 @@ package com.github.projeto
 fun main() {
 
     val factory = RouterFactory()
+    factory.initializeClassLoader("/home/diogo/Área de Trabalho/ISEL/Projeto/network-management/plugin/build/libs/")
 
     val routerConfiguration = factory.loadRouterConfiguration(
-        className = "com.github.projeto.RouterConfigurationImpl",
+        className = "RouterConfigurationImpl",
         hostname = "localhost",
         port = 2323,
         username = "admin",
@@ -13,7 +14,7 @@ fun main() {
     )
 
     val routerMonitoring = factory.loadRouterMonitoring(
-        className = "com.github.projeto.RouterMonitoringImpl",
+        className = "RouterMonitoringImpl",
         hostname = "localhost",
         port = 161,
     )
@@ -25,8 +26,8 @@ fun main() {
     //routerConfiguration.setIpAddress("ether2", "23.23.23.23")
     //val response = routerConfiguration.showInterfaces()
 
-    //routerConfiguration.enableSNMP()
-    //routerConfiguration.changeSNMPVersion(2)
+    routerConfiguration.enableSNMP()
+    routerConfiguration.changeSNMPVersion(2)
 
     routerMonitoring.getNetworkInterfaces().forEach { networkInterface ->
         println("${networkInterface.name} -> Bytes In: ${routerMonitoring.getBytesIn(networkInterface.index)} ; Bytes Out: ${routerMonitoring.getBytesOut(networkInterface.index)}")
@@ -40,14 +41,14 @@ private fun initialSetup() {
     val factory = RouterFactory()
 
     val routerConfiguration1 = factory.loadRouterConfiguration(
-        className = "com.github.projeto.RouterConfigurationImpl",
+        className = "RouterConfigurationImpl",
         hostname = "localhost",
         port = 2323,
         username = "admin",
         password = "pepe"
     )
     val routerConfiguration2 = factory.loadRouterConfiguration(
-        className = "com.github.projeto.RouterConfigurationImpl",
+        className = "RouterConfigurationImpl",
         hostname = "localhost",
         port = 3333,
         username = "admin",

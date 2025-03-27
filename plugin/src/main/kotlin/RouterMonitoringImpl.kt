@@ -1,4 +1,4 @@
-package com.github.projeto
+import com.github.projeto.*
 
 import org.snmp4j.CommunityTarget
 import org.snmp4j.PDU
@@ -181,7 +181,11 @@ class RouterMonitoringImpl(
                 vb.oid.startsWith(OID(INTERFACE_NAME_OID)) -> builder.name(vb.toValueString())
                 vb.oid.startsWith(OID(ACTUAL_MTU_OID)) -> builder.actualMtu(vb.variable.toInt())
                 vb.oid.startsWith(OID(MAC_ADDRESS_OID)) -> builder.macAddress(vb.toValueString())
-                vb.oid.startsWith(OID(OPERATIONAL_STATUS_OID)) -> builder.operationalStatus(NetworkInterface.OperationalStatus.getFromValue(vb.variable.toInt()))
+                vb.oid.startsWith(OID(OPERATIONAL_STATUS_OID)) -> builder.operationalStatus(
+                    NetworkInterface.OperationalStatus.getFromValue(
+                        vb.variable.toInt()
+                    )
+                )
             }
 
         }
