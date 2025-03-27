@@ -1,5 +1,5 @@
-import com.github.projeto.Response
-import com.github.projeto.RouterConfiguration
+import com.github.project.api.router.RouterConfiguration
+import com.github.project.api.router.response.Response
 import org.apache.commons.net.telnet.TelnetClient
 import java.io.BufferedReader
 import java.io.BufferedWriter

@@ -1,5 +1,5 @@
-import com.github.projeto.*
-
+import com.github.project.api.router.RouterMonitoring
+import com.github.project.api.router.response.NetworkInterface
 import org.snmp4j.CommunityTarget
 import org.snmp4j.PDU
 import org.snmp4j.Snmp

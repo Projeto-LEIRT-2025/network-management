@@ -4,3 +4,4 @@ plugins {
 rootProject.name = "network-management"
 include("network-service")
 include("plugin")
+include("api")

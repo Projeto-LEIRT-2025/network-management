@@ -1,4 +1,4 @@
-package com.github.projeto
+package com.github.project.api.router.response
 
 data class NetworkInterface(
 

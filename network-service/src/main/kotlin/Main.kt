@@ -1,30 +1,24 @@
 package com.github.projeto
 
+import com.github.project.api.PluginLoader
+
 fun main() {
 
-    val factory = RouterFactory()
-    factory.initializeClassLoader("/home/diogo/Área de Trabalho/ISEL/Projeto/network-management/plugin/build/libs/")
+    PluginLoader.loadPlugins("/home/diogo/Área de Trabalho/ISEL/Projeto/network-management/plugin/build/libs/")
 
-    val routerConfiguration = factory.loadRouterConfiguration(
-        className = "RouterConfigurationImpl",
+    val routerConfiguration = PluginLoader.getRouterConfiguration(
+        model = "router-os",
         hostname = "localhost",
         port = 2323,
         username = "admin",
         password = "pepe"
     )
 
-    val routerMonitoring = factory.loadRouterMonitoring(
-        className = "RouterMonitoringImpl",
+    val routerMonitoring = PluginLoader.getRouterMonitoring(
+        model = "router-os",
         hostname = "localhost",
         port = 161,
     )
-
-    /*routerConfiguration.addStaticRoute("ether1", "192.192.192.192")
-    routerConfiguration.addStaticRoute("ether1", "192.192.192.193")
-    routerConfiguration.addStaticRoute("ether1", "192.192.192.194")*/
-
-    //routerConfiguration.setIpAddress("ether2", "23.23.23.23")
-    //val response = routerConfiguration.showInterfaces()
 
     routerConfiguration.enableSNMP()
     routerConfiguration.changeSNMPVersion(2)
@@ -38,17 +32,15 @@ fun main() {
 
 private fun initialSetup() {
 
-    val factory = RouterFactory()
-
-    val routerConfiguration1 = factory.loadRouterConfiguration(
-        className = "RouterConfigurationImpl",
+    val routerConfiguration1 = PluginLoader.getRouterConfiguration(
+        model = "router-os",
         hostname = "localhost",
         port = 2323,
         username = "admin",
         password = "pepe"
     )
-    val routerConfiguration2 = factory.loadRouterConfiguration(
-        className = "RouterConfigurationImpl",
+    val routerConfiguration2 = PluginLoader.getRouterConfiguration(
+        model = "router-os",
         hostname = "localhost",
         port = 3333,
         username = "admin",

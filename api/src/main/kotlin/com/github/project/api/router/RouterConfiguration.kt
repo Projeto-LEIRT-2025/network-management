@@ -1,4 +1,6 @@
-package com.github.projeto
+package com.github.project.api.router
+
+import com.github.project.api.router.response.Response
 
 interface RouterConfiguration {
 

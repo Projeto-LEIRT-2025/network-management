@@ -2,15 +2,15 @@ plugins {
     kotlin("jvm") version "2.1.10"
 }
 
-group = "com.github.projeto"
-version = "unspecified"
+group = "com.github.project"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation(project(":api"))
+    implementation(libs.snakeyaml)
     testImplementation(kotlin("test"))
 }
 
