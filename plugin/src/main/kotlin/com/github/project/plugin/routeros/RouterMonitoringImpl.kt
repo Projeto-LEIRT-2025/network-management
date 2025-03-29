@@ -1,3 +1,5 @@
+package com.github.project.plugin.routeros
+
 import com.github.project.api.router.RouterMonitoring
 import com.github.project.api.router.response.NetworkInterface
 import org.snmp4j.CommunityTarget

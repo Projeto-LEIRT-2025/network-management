@@ -1,2 +1,3 @@
+name: "Router OS"
 author: "Diogo"
-entryPoint: "RouterOSPlugin"
+entryPoint: "com.github.project.plugin.routeros.RouterOSPlugin"

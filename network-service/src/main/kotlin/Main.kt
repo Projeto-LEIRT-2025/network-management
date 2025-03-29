@@ -4,7 +4,11 @@ import com.github.project.api.PluginLoader
 
 fun main() {
 
-    PluginLoader.loadPlugins("/home/diogo/Área de Trabalho/ISEL/Projeto/network-management/plugin/build/libs/")
+    PluginLoader.loadPluginsFromDirectory("/home/diogo/Área de Trabalho/ISEL/Projeto/network-management/plugin/build/libs/")
+    PluginLoader.loadPlugins("/home/diogo/Área de Trabalho/router-os.jar")
+
+    PluginLoader.listPlugins()
+        .forEach { println("${it.metadata.name} plugin entry point: ${it.metadata.entryPoint}") }
 
     val routerConfiguration = PluginLoader.getRouterConfiguration(
         model = "router-os",

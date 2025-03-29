@@ -10,6 +10,7 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 class PluginMetadata {
+    lateinit var name: String
     lateinit var author: String
     lateinit var entryPoint: String
 }
@@ -40,14 +41,6 @@ object PluginLoader {
 
     }
 
-    /*
-    fun loadRouterConfiguration(className: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration =
-        createInstance(className, hostname, port.toString(), username, password)
-
-    fun loadRouterMonitoring(className: String, hostname: String, port: Int): RouterMonitoring =
-        createInstance(className, hostname, port.toString())
-     */
-
     fun getRouterConfiguration(model: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration {
 
         val theClass = this.plugins.firstNotNullOfOrNull { it.routerConfigurationManager.get(model) } ?: throw IllegalArgumentException("$model does not exist")
@@ -62,36 +55,76 @@ object PluginLoader {
         return createInstance(theClass.name, hostname, port.toString())
     }
 
-    fun loadPlugins(directoryName: String) {
+    fun listPlugins(): List<Plugin> =
+        this.plugins.toList()
+
+    fun getPlugin(name: String) =
+        this.plugins.firstOrNull { it.metadata.name == name }
+
+    fun disablePlugin(plugin: Plugin) =
+        this.plugins.remove(plugin)
+
+    fun loadPlugins(vararg filesNames: String) {
+
+        for (fileName in filesNames) {
+
+            val file = File(fileName)
+
+            loadPlugin(file)
+        }
+
+    }
+
+    fun loadPluginsFromDirectory(directoryName: String) {
 
         val directory = File(directoryName)
 
         if (!directory.isDirectory)
-            throw IllegalArgumentException("Directory $directory is not a directory")
+            throw IllegalArgumentException("$directory is not a directory")
 
-        val files = directory.listFiles()
-            ?.filter { file -> file.extension == "jar" } ?: emptyList()
+        directory.listFiles()!!
+            .filter { file -> file.extension == "jar" }
+            .forEach { file -> loadPlugin(file) }
+    }
 
-        this.classLoader = URLClassLoader.newInstance(files.map { it.toURI().toURL() }.toTypedArray(), this::class.java.classLoader)
+    private fun loadPlugin(file: File) {
 
-        val jarFiles = files.map { JarFile(it) }
+        if (file.isDirectory)
+            throw IllegalArgumentException("$file is a directory")
 
-        for (jarFile in jarFiles) {
+        if (file.extension != "jar")
+            throw IllegalArgumentException("$file is not a JAR")
 
-            val entry = jarFile.getJarEntry("plugin.yaml") ?: throw IllegalStateException("Plugin ${jarFile.name} has an invalid plugin.yaml")
-            val inputStream = jarFile.getInputStream(entry)
-            val yaml = Yaml()
-            val pluginMetadata = yaml.loadAs(inputStream, PluginMetadata::class.java)
-            val className = pluginMetadata.entryPoint
-            val plugin = createInstance<Plugin>(className)
+        addFilesToClassLoader(file)
+        loadPluginFromJarFile(JarFile(file))
+    }
 
-            Logger.getGlobal().log(Level.INFO, "Loading plugin developed by {0}", pluginMetadata.author);
-            plugin.initialize()
-            plugins.add(plugin)
+    private fun addFilesToClassLoader(vararg files: File) {
 
-            inputStream.close()
+        val urls = files.map { it.toURI().toURL() }
+
+        if (this::classLoader.isInitialized) {
+            this.classLoader = URLClassLoader(urls.toTypedArray(), this.classLoader)
+            return
         }
 
+        this.classLoader = URLClassLoader.newInstance(urls.toTypedArray())
+    }
+
+    private fun loadPluginFromJarFile(jarFile: JarFile) {
+
+        val entry = jarFile.getJarEntry("plugin.yaml") ?: throw IllegalStateException("Plugin ${jarFile.name} has an invalid plugin.yaml")
+        val inputStream = jarFile.getInputStream(entry)
+        val yaml = Yaml()
+        val pluginMetadata = yaml.loadAs(inputStream, PluginMetadata::class.java)
+        val className = pluginMetadata.entryPoint
+        val plugin = createInstance<Plugin>(className, pluginMetadata)
+
+        Logger.getGlobal().log(Level.INFO, "Loading `${pluginMetadata.name}` plugin developed by {0}", pluginMetadata.author);
+        plugin.initialize()
+        plugins.add(plugin)
+
+        jarFile.close()
     }
 
 }

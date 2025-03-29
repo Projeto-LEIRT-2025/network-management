@@ -1,8 +1,11 @@
+package com.github.project.plugin.routeros
+
 import com.github.project.api.Plugin
+import com.github.project.api.PluginMetadata
 import java.util.logging.Level
 import java.util.logging.Logger
 
-class RouterOSPlugin : Plugin() {
+class RouterOSPlugin(metadata: PluginMetadata) : Plugin(metadata) {
 
     override fun initialize() {
 
