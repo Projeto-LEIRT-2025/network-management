@@ -100,6 +100,23 @@ class RouterConfigurationImpl(
     override fun changeSNMPVersion(version: Int) =
         executeCommand("/snmp set trap-version=$version")
 
+    override fun createOSPFArea(areaName: String, areaId: String, instanceName: String) {
+        executeCommand("/routing ospf area add name=$areaName area-id=$areaId instance=$instanceName")
+    }
+
+    override fun createOSPFInstance(instanceName: String, routerId: String) {
+        executeCommand("/routing ospf instance add name=$instanceName router-id=$routerId")
+    }
+
+/*    override fun addOSPFNetworks(network: String, mask: Int, areaName: String) {
+        executeCommand("/routing ospf network add network=$network/$mask area=$areaName")
+    }
+*/
+
+    override fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int) {
+        executeCommand("/routing ospf interface add interfaces=$interfaceName area=$areaName type=$networkType cost=$cost")
+    }
+
     override fun createAddressPool(name: String, address: String) =
         executeCommand("/ip pool add name=$name ranges=$address")
 
@@ -127,6 +144,8 @@ class RouterConfigurationImpl(
     override fun removeDHCPRelay(name: String) {
         executeCommand("/ip dhcp-relay remove $name")
     }
+
+
 
     private fun BufferedReader.readNonBlocking(): String? {
 

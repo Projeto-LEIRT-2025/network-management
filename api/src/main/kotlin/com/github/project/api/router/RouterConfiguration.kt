@@ -46,4 +46,13 @@ interface RouterConfiguration {
 
     fun changeSNMPVersion(version: Int): Response<Unit>
 
+    //OSPF
+
+    fun createOSPFArea(areaName: String, areaId: String, instanceName: String)
+
+    fun createOSPFInstance(instanceName: String, routerId: String)
+
+    // addOSPFNetworks(network: String, mask: Int, areaName: String)
+
+    fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int)
 }
