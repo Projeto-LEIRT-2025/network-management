@@ -108,7 +108,7 @@ object PluginLoader {
             return
         }
 
-        this.classLoader = URLClassLoader.newInstance(urls.toTypedArray())
+        this.classLoader = URLClassLoader.newInstance(urls.toTypedArray(), this.javaClass.classLoader)
     }
 
     private fun loadPluginFromJarFile(jarFile: JarFile) {
