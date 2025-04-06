@@ -100,12 +100,12 @@ class RouterConfigurationImpl(
     override fun changeSNMPVersion(version: Int) =
         executeCommand("/snmp set trap-version=$version")
 
-    override fun createOSPFArea(areaName: String, areaId: String, instanceName: String) {
-        executeCommand("/routing ospf area add name=$areaName area-id=$areaId instance=$instanceName")
+    override fun createOSPFProcess(processId: String, routerId: String) {
+        executeCommand("/routing ospf instance add name=$processId router-id=$routerId")
     }
 
-    override fun createOSPFInstance(instanceName: String, routerId: String) {
-        executeCommand("/routing ospf instance add name=$instanceName router-id=$routerId")
+    override fun createOSPFArea(areaName: String, areaId: String, processId: String) {
+        executeCommand("/routing ospf area add name=$areaName area-id=$areaId instance=$processId")
     }
 
 /*    override fun addOSPFNetworks(network: String, mask: Int, areaName: String) {

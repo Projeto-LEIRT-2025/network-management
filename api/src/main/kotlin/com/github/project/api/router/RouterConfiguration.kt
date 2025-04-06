@@ -48,9 +48,9 @@ interface RouterConfiguration {
 
     //OSPF
 
-    fun createOSPFArea(areaName: String, areaId: String, instanceName: String)
+    fun createOSPFProcess(processId: String, routerId: String)
 
-    fun createOSPFInstance(instanceName: String, routerId: String)
+    fun createOSPFArea(areaName: String, areaId: String, processId: String)
 
     // addOSPFNetworks(network: String, mask: Int, areaName: String)
 
