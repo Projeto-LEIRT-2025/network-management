@@ -104,17 +104,16 @@ class RouterConfigurationImpl(
         executeCommand("/routing ospf instance add name=$processId router-id=$routerId")
     }
 
-    override fun createOSPFArea(areaName: String, areaId: String, processId: String) {
-        executeCommand("/routing ospf area add name=$areaName area-id=$areaId instance=$processId")
+    override fun createOSPFArea(areaId: String, processId: String) {
+        executeCommand("/routing ospf area add area-id=$areaId instance=$processId")
     }
 
-/*    override fun addOSPFNetworks(network: String, mask: Int, areaName: String) {
-        executeCommand("/routing ospf network add network=$network/$mask area=$areaName")
+    override fun addOSPFNetworks(network: String, mask: String, areaName: String) {
+        executeCommand("/routing ospf interface-template add network=$network/$mask area=$areaName")
     }
-*/
 
     override fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int) {
-        executeCommand("/routing ospf interface add interfaces=$interfaceName area=$areaName type=$networkType cost=$cost")
+        executeCommand("/routing ospf interface-template add interfaces=$interfaceName area=$areaName type=$networkType cost=$cost")
     }
 
     override fun createAddressPool(name: String, address: String) =
