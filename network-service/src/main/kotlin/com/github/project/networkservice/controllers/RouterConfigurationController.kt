@@ -1,5 +1,6 @@
 package com.github.project.networkservice.controllers
 
+import com.github.project.networkservice.dto.StaticRouteDto
 import com.github.project.networkservice.dto.ApiResponseDto
 import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.dto.SetIpAddressDto
@@ -85,6 +86,20 @@ class RouterConfigurationController(
             .ok(
                 ApiResponseDto(
                     message = "SNMP disabled successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/route/static")
+    fun addStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: StaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.addStaticRoute(id, dto.username, dto.password, dto.gateway, dto.ipAddress)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Static route added successfully",
                     data = Unit
                 )
             )

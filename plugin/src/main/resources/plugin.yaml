@@ -1,3 +1,4 @@
 name: "Router OS"
 author: "Diogo"
+description: "Plugin for configure and get metrics via SNMP for RouterOS"
 entryPoint: "com.github.project.plugin.routeros.RouterOSPlugin"

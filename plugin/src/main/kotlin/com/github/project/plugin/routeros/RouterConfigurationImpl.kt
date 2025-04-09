@@ -144,8 +144,6 @@ class RouterConfigurationImpl(
         executeCommand("/ip dhcp-relay remove $name")
     }
 
-
-
     private fun BufferedReader.readNonBlocking(): String? {
 
         val buffer = StringBuilder()

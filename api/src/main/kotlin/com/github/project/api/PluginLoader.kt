@@ -11,6 +11,7 @@ import java.util.logging.Logger
 
 class PluginMetadata {
     lateinit var name: String
+    lateinit var description: String
     lateinit var author: String
     lateinit var entryPoint: String
 }
@@ -41,16 +42,16 @@ object PluginLoader {
 
     }
 
-    fun getRouterConfiguration(model: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration {
+    fun getRouterConfiguration(model: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration? {
 
-        val theClass = this.plugins.firstNotNullOfOrNull { it.routerConfigurationManager.get(model) } ?: throw IllegalArgumentException("$model does not exist")
+        val theClass = this.plugins.firstNotNullOfOrNull { it.routerConfigurationManager.get(model) } ?: return null
 
         return createInstance(theClass.name, hostname, port.toString(), username, password)
     }
 
-    fun getRouterMonitoring(model: String, hostname: String, port: Int): RouterMonitoring {
+    fun getRouterMonitoring(model: String, hostname: String, port: Int): RouterMonitoring? {
 
-        val theClass = this.plugins.firstNotNullOfOrNull { it.routerMonitoringManager.get(model) } ?: throw IllegalArgumentException("$model does not exist")
+        val theClass = this.plugins.firstNotNullOfOrNull { it.routerMonitoringManager.get(model) } ?: return null
 
         return createInstance(theClass.name, hostname, port.toString())
     }
@@ -64,30 +65,25 @@ object PluginLoader {
     fun disablePlugin(plugin: Plugin) =
         this.plugins.remove(plugin)
 
-    fun loadPlugins(vararg filesNames: String) {
-
-        for (fileName in filesNames) {
-
-            val file = File(fileName)
-
-            loadPlugin(file)
-        }
-
+    fun loadPlugins(vararg filesNames: String): List<Plugin> {
+        return filesNames
+            .map { File(it) }
+            .map { loadPlugin(it) }
     }
 
-    fun loadPluginsFromDirectory(directoryName: String) {
+    fun loadPluginsFromDirectory(directoryName: String): List<Plugin> {
 
         val directory = File(directoryName)
 
         if (!directory.isDirectory)
             throw IllegalArgumentException("$directory is not a directory")
 
-        directory.listFiles()!!
+        return directory.listFiles()!!
             .filter { file -> file.extension == "jar" }
-            .forEach { file -> loadPlugin(file) }
+            .map { file -> loadPlugin(file) }
     }
 
-    private fun loadPlugin(file: File) {
+    private fun loadPlugin(file: File): Plugin {
 
         if (file.isDirectory)
             throw IllegalArgumentException("$file is a directory")
@@ -96,7 +92,7 @@ object PluginLoader {
             throw IllegalArgumentException("$file is not a JAR")
 
         addFilesToClassLoader(file)
-        loadPluginFromJarFile(JarFile(file))
+        return loadPluginFromJarFile(JarFile(file))
     }
 
     private fun addFilesToClassLoader(vararg files: File) {
@@ -111,7 +107,7 @@ object PluginLoader {
         this.classLoader = URLClassLoader.newInstance(urls.toTypedArray(), this.javaClass.classLoader)
     }
 
-    private fun loadPluginFromJarFile(jarFile: JarFile) {
+    private fun loadPluginFromJarFile(jarFile: JarFile): Plugin {
 
         val entry = jarFile.getJarEntry("plugin.yaml") ?: throw IllegalStateException("Plugin ${jarFile.name} has an invalid plugin.yaml")
         val inputStream = jarFile.getInputStream(entry)
@@ -125,6 +121,7 @@ object PluginLoader {
         plugins.add(plugin)
 
         jarFile.close()
+        return plugin
     }
 
 }
