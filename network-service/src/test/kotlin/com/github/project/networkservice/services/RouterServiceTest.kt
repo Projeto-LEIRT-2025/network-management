@@ -9,7 +9,7 @@ import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito
+import org.mockito.Mockito.*
 import org.mockito.junit.jupiter.MockitoExtension
 import java.util.*
 
@@ -32,7 +32,7 @@ class RouterServiceTest {
             model = "Router OS"
         )
 
-        Mockito.`when`(routerRepository.save(expected.copy(id = 0))).thenReturn(expected)
+        `when`(routerRepository.save(expected.copy(id = 0))).thenReturn(expected)
         val actual = routerService.create(vendor = expected.vendor, ipAddress = expected.ipAddress, model = expected.model)
 
         assertEquals(expected, actual)
@@ -42,7 +42,7 @@ class RouterServiceTest {
     @Test
     fun `get a router that doesn't exist should fail`() {
 
-        Mockito.`when`(routerRepository.findById(1)).thenReturn(Optional.empty())
+        `when`(routerRepository.findById(1)).thenReturn(Optional.empty())
 
         assertThrows<RouterNotFoundException> {
             routerService.getById(1)
@@ -61,7 +61,7 @@ class RouterServiceTest {
             model = "Router OS"
         )
 
-        Mockito.`when`(routerRepository.findById(1)).thenReturn(Optional.of(expected))
+        `when`(routerRepository.findById(1)).thenReturn(Optional.of(expected))
         val actual = routerService.getById(1)
 
         assertEquals(expected, actual)
