@@ -36,6 +36,7 @@ class RouterServiceTest {
         val actual = routerService.create(vendor = expected.vendor, ipAddress = expected.ipAddress, model = expected.model)
 
         assertEquals(expected, actual)
+        Mockito.verify(routerRepository, Mockito.times(1)).save(expected.copy(0))
     }
 
     @Test
@@ -47,6 +48,7 @@ class RouterServiceTest {
             routerService.getById(1)
         }
 
+        Mockito.verify(routerRepository, Mockito.times(1)).findById(1)
     }
 
     @Test
@@ -63,6 +65,37 @@ class RouterServiceTest {
         val actual = routerService.getById(1)
 
         assertEquals(expected, actual)
+        Mockito.verify(routerRepository, Mockito.times(1)).findById(1)
+    }
+
+    @Test
+    fun `delete a router that doesn't exists should fail`() {
+
+        Mockito.`when`(routerRepository.findById(1)).thenReturn(Optional.empty())
+
+        assertThrows<RouterNotFoundException> {
+            routerService.delete(1)
+        }
+
+        Mockito.verify(routerRepository, Mockito.times(1)).findById(1)
+    }
+
+    @Test
+    fun `delete a router that exists should succeed`() {
+
+        val expected = Router(
+            id = 1,
+            vendor = "Mikrotik",
+            ipAddress = "192.168.0.1",
+            model = "Router OS"
+        )
+
+        Mockito.`when`(routerRepository.findById(1)).thenReturn(Optional.of(expected))
+
+        routerService.delete(1)
+
+        Mockito.verify(routerRepository, Mockito.times(1)).findById(1)
+        Mockito.verify(routerRepository, Mockito.times(1)).delete(expected)
     }
 
 }

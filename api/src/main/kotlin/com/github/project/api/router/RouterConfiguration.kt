@@ -55,4 +55,8 @@ interface RouterConfiguration {
     fun addOSPFNetworks(network: String, mask: String, areaName: String)
 
     fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int)
+
+    //NEIGHBORS
+
+    fun getNeighbors()
 }

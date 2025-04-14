@@ -144,6 +144,10 @@ class RouterConfigurationImpl(
         executeCommand("/ip dhcp-relay remove $name")
     }
 
+    override fun getNeighbors() {
+        executeCommand("/ip neighbor print detail") //falta o parse
+    }
+
     private fun BufferedReader.readNonBlocking(): String? {
 
         val buffer = StringBuilder()
