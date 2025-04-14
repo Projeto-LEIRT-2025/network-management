@@ -24,7 +24,7 @@ class RouterConfigurationController(
     @PostMapping("/address")
     fun setIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: SetIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.setIpAddress(id, dto.username, dto.password, dto.interfaceName, dto.ipAddress)
+        routerConfigurationService.setIpAddress(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.ipAddress)
 
         return ResponseEntity
             .ok(
@@ -94,7 +94,7 @@ class RouterConfigurationController(
     @PostMapping("/route/static")
     fun addStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: StaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.addStaticRoute(id, dto.username, dto.password, dto.gateway, dto.ipAddress)
+        routerConfigurationService.addStaticRoute(id, dto.credentials.username, dto.credentials.password, dto.gateway, dto.ipAddress)
 
         return ResponseEntity
             .ok(

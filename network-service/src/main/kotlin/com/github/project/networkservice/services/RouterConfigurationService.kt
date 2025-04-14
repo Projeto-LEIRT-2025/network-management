@@ -1,6 +1,7 @@
 package com.github.project.networkservice.services
 
 import com.github.project.api.PluginLoader
+import com.github.project.api.router.RouterConfiguration
 import com.github.project.networkservice.exceptions.PluginNotFoundException
 import com.github.project.networkservice.models.Router
 import org.springframework.stereotype.Service
@@ -8,9 +9,12 @@ import org.springframework.stereotype.Service
 @Service
 class RouterConfigurationService(
 
-    private val routerService: RouterService
+    private val routerService: RouterService,
+    private val pluginLoader: PluginLoader
 
 ) {
+    
+    private val configurations = mutableMapOf<Router, RouterConfiguration>()
 
     fun enableInterface(routerId: Long, username: String, password: String, interfaceName: String) {
 
@@ -78,12 +82,18 @@ class RouterConfigurationService(
         routerConfiguration.addStaticRoute(gateway, ipAddress)
     }
 
-    private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23) = PluginLoader.getRouterConfiguration(
-        model = this.model.lowercase(),
-        hostname = this.ipAddress,
-        username = username,
-        password = password,
-        port = port
-    ) ?: throw PluginNotFoundException("There is no router implementation for this device")
+    private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23): RouterConfiguration {
+
+        return configurations.getOrPut(this) {
+            pluginLoader.getRouterConfiguration(
+                model = model.lowercase(),
+                hostname = ipAddress,
+                username = username,
+                password = password,
+                port = port
+            ) ?: throw PluginNotFoundException("There is no router implementation for this device")
+        }
+
+    }
 
 }

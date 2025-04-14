@@ -6,9 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SetIpAddressDto(
 
-    val username: String,
-
-    val password: String,
+    val credentials: CredentialsDto,
 
     @SerialName("ip_address")
     val ipAddress: String,
