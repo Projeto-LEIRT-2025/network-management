@@ -66,4 +66,29 @@ class RouterConfigurationServiceTest {
         verify(routerConfiguration).enableInterface(interfaceName)
     }
 
+    @Test
+    fun `set an ip address should succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val interfaceName = "eth1"
+        val ipAddress = "192.168.0.3"
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+
+        routerConfigurationService.setIpAddress(router.id, username, password, interfaceName, ipAddress)
+
+        verify(routerConfiguration).setIpAddress(interfaceName, ipAddress)
+    }
+
 }
