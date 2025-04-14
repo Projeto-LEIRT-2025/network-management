@@ -91,7 +91,7 @@ class RouterConfigurationService(
                 username = username,
                 password = password,
                 port = port
-            ) ?: throw PluginNotFoundException("There is no router implementation for this device")
+            ) ?: throw PluginNotFoundException("There is no plugin for this device")
         }
 
     }
