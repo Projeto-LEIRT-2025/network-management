@@ -22,7 +22,7 @@ dependencies {
     implementation(libs.spring.boot)
     implementation(libs.spring.boot.web)
     implementation(libs.spring.data.jpa)
-    implementation(libs.jakarta.validation)
+    implementation(libs.spring.boot.validation)
     implementation(libs.postgresql)
     testImplementation(libs.spring.boot.test)
     testImplementation(kotlin("test"))

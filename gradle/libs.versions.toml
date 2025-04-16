@@ -6,7 +6,6 @@ snakeyaml = "2.4"
 kotlin = "2.1.10"
 spring-boot = "3.4.3"
 dependency-management = "1.1.7"
-jakarta-validation = "3.1.1"
 serialization = "1.8.0"
 postgresql = "42.7.5"
 
@@ -18,7 +17,7 @@ spring-boot = { module = "org.springframework.boot:spring-boot-starter" }
 spring-boot-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
-jakarta-validation = { module = "jakarta.validation:jakarta.validation-api", version.ref = "jakarta-validation" }
+spring-boot-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 reflection = { module = "org.jetbrains.kotlin:kotlin-reflect" }
