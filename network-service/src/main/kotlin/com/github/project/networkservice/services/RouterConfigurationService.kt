@@ -83,7 +83,6 @@ class RouterConfigurationService(
     }
 
     private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23): RouterConfiguration {
-
         return configurations.getOrPut(this) {
             pluginLoader.getRouterConfiguration(
                 model = model.lowercase(),

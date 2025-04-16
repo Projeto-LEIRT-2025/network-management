@@ -6,12 +6,19 @@ import com.github.project.networkservice.exceptions.PluginNotFoundException
 import com.github.project.networkservice.exceptions.RouterNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import kotlin.Exception
 
 @RestControllerAdvice
 class ErrorController {
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleValidationErrors(e: MethodArgumentNotValidException): ResponseEntity<ApiResponseDto<Unit>> {
+        return ResponseEntity.badRequest()
+            .body(ApiResponseDto(message = e.bindingResult.fieldError?.defaultMessage ?: "", data = Unit))
+    }
 
     @ExceptionHandler(RouterNotFoundException::class, PluginNotFoundException::class)
     fun handleNotFound(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =

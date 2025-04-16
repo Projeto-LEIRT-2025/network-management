@@ -1,5 +1,6 @@
 package com.github.project.networkservice.dto
 
+import com.github.project.networkservice.validators.IpAddress
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,6 +10,7 @@ data class SetIpAddressDto(
     val credentials: CredentialsDto,
 
     @SerialName("ip_address")
+    @IpAddress
     val ipAddress: String,
 
     @SerialName("interface_name")
