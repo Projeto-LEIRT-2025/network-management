@@ -73,8 +73,8 @@ class RouterConfigurationImpl(
     private fun executeCommand(command: String) =
         executeCommand(command) { Response(raw = it, data = Unit) }
 
-    override fun addStaticRoute(gateway: String, ipAddress: String) =
-        executeCommand("/ip route add dst-address=$ipAddress gateway=$gateway")
+    override fun addStaticRoute(gateway: String, ipAddress: String, mask: Int) =
+        executeCommand("/ip route add dst-address=$ipAddress/$mask gateway=$gateway")
 
     override fun removeStaticRoute(vararg number: Int) =
         executeCommand("/ip route remove numbers=${number.joinToString(",")}")

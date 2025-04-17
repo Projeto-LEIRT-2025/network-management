@@ -94,7 +94,7 @@ class RouterConfigurationController(
     @PostMapping("/route/static")
     fun addStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: StaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.addStaticRoute(id, dto.credentials.username, dto.credentials.password, dto.gateway, dto.ipAddress)
+        routerConfigurationService.addStaticRoute(id, dto.credentials.username, dto.credentials.password, dto.gateway, dto.ipAddress, dto.mask)
 
         return ResponseEntity
             .ok(

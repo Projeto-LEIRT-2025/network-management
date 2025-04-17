@@ -71,7 +71,7 @@ class RouterConfigurationService(
         routerConfiguration.disableSNMP()
     }
 
-    fun addStaticRoute(routerId: Long, username: String, password: String, gateway: String, ipAddress: String) {
+    fun addStaticRoute(routerId: Long, username: String, password: String, gateway: String, ipAddress: String, mask: Int) {
 
         val router = routerService.getById(routerId)
         val routerConfiguration = router.toRouterConfiguration(
@@ -79,7 +79,7 @@ class RouterConfigurationService(
             password = password
         )
 
-        routerConfiguration.addStaticRoute(gateway, ipAddress)
+        routerConfiguration.addStaticRoute(gateway, ipAddress, mask)
     }
 
     private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23): RouterConfiguration {
