@@ -13,8 +13,6 @@ class RouterConfigurationService(
     private val pluginLoader: PluginLoader
 
 ) {
-    
-    private val configurations = mutableMapOf<Router, RouterConfiguration>()
 
     fun enableInterface(routerId: Long, username: String, password: String, interfaceName: String) {
 
@@ -82,17 +80,13 @@ class RouterConfigurationService(
         routerConfiguration.addStaticRoute(gateway, ipAddress, mask)
     }
 
-    private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23): RouterConfiguration {
-        return configurations.getOrPut(this) {
-            pluginLoader.getRouterConfiguration(
-                model = model.lowercase(),
-                hostname = ipAddress,
-                username = username,
-                password = password,
-                port = port
-            ) ?: throw PluginNotFoundException("There is no plugin for this device")
-        }
-
-    }
+    private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23) =
+        pluginLoader.getRouterConfiguration(
+            model = model.lowercase(),
+            hostname = ipAddress,
+            username = username,
+            password = password,
+            port = port
+        ) ?: throw PluginNotFoundException("There is no plugin for this device")
 
 }
