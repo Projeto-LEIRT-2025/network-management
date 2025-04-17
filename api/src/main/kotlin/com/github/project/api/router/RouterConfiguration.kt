@@ -58,5 +58,5 @@ interface RouterConfiguration {
 
     //NEIGHBORS
 
-    fun getNeighbors()
+    fun getNeighbors(): Response<Unit>
 }

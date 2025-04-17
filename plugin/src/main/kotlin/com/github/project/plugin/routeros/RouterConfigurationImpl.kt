@@ -24,48 +24,57 @@ class RouterConfigurationImpl(
 
     private fun <T> executeCommand(command: String, mapper: (String) -> Response<T>): Response<T> {
 
-        var executed = false
         val reader = telnetClient.inputStream.bufferedReader()
         val writer = telnetClient.outputStream.bufferedWriter()
 
-        while (!executed) {
+        while (true) {
 
-            val line = reader.readNonBlocking()
+            val line = reader.readChunk()
 
-            if (line == null) {
-                Thread.sleep(100)
-                continue
-            }
-
-            println("Received: $line")
+            if (line.isBlank()) continue
 
             if (line.trim() == "Login:") writer.writeAndFlush("$username\r\n")
             else if (line.trim() == "Password:") writer.writeAndFlush("$password\r\n")
             else if (regex.matches(line.trim())) {
                 writer.writeAndFlush("$command\r\n")
-                executed = true
+                break
             }
 
         }
 
+        var started = false
         val response = StringBuilder()
 
-        while (reader.ready()) {
+        while (true) {
 
-            val line = reader.readNonBlocking()
+            val line = reader.readChunk().trim()
 
-            if (line == null || regex.matches(line.trim()) || line.trim().contains(command)) {
-                Thread.sleep(100)
+            if (line.isBlank()) continue
+
+            if (!started) {
+
+                if (regex.containsMatchIn(line) && line.contains(command)) {
+                    started = true
+                }
+
                 continue
             }
 
-            response.append("$line\n")
+            if (regex.matches(line)) {
+                break
+            }
+
+            response.appendLine(line)
+        }
+
+        response.lastIndexOf('\n').let {
+
+            if (it != -1)
+                response.deleteCharAt(it)
+
         }
 
         writer.writeAndFlush("\r\n") //for the next command
-
-        if (response.isNotEmpty())
-            response.deleteCharAt(response.length - 1)
 
         return mapper(response.toString())
     }
@@ -144,15 +153,14 @@ class RouterConfigurationImpl(
         executeCommand("/ip dhcp-relay remove $name")
     }
 
-    override fun getNeighbors() {
+    override fun getNeighbors() =
         executeCommand("/ip neighbor print detail") //falta o parse
-    }
 
-    private fun BufferedReader.readNonBlocking(): String? {
+    private fun BufferedReader.readChunk(): String {
 
         val buffer = StringBuilder()
 
-        while (this.ready()) {
+        do {
 
             val char = this.read()
 
@@ -160,12 +168,13 @@ class RouterConfigurationImpl(
 
             val theChar = char.toChar()
 
-            if (theChar == '\n' || theChar == '\r') break
+            if (theChar == '\r' || theChar == '\n') break
 
             buffer.append(theChar)
-        }
 
-        return if (buffer.isNotEmpty()) buffer.toString() else null
+        } while (this.ready())
+
+        return buffer.toString()
     }
 
     private fun BufferedWriter.writeAndFlush(data: String) {
