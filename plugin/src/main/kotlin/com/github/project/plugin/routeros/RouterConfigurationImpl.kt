@@ -109,21 +109,17 @@ class RouterConfigurationImpl(
     override fun changeSNMPVersion(version: Int) =
         executeCommand("/snmp set trap-version=$version")
 
-    override fun createOSPFProcess(processId: String, routerId: String) {
+    override fun createOSPFProcess(processId: String, routerId: String) =
         executeCommand("/routing ospf instance add name=$processId router-id=$routerId")
-    }
 
-    override fun createOSPFArea(areaId: String, processId: String) {
+    override fun createOSPFArea(areaId: String, processId: String) =
         executeCommand("/routing ospf area add area-id=$areaId instance=$processId")
-    }
 
-    override fun addOSPFNetworks(network: String, mask: String, areaName: String) {
+    override fun addOSPFNetworks(network: String, mask: String, areaName: String) =
         executeCommand("/routing ospf interface-template add network=$network/$mask area=$areaName")
-    }
 
-    override fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int) {
+    override fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int) =
         executeCommand("/routing ospf interface-template add interfaces=$interfaceName area=$areaName type=$networkType cost=$cost")
-    }
 
     override fun createAddressPool(name: String, address: String) =
         executeCommand("/ip pool add name=$name ranges=$address")
@@ -137,21 +133,17 @@ class RouterConfigurationImpl(
     override fun createDHCPServerNetwork(network: String, gateway: String): Response<Unit> =
         executeCommand("/ip dhcp-server network add address=$network gateway=$gateway")
 
-    override fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String) {
+    override fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String) =
         executeCommand("/ip dhcp-relay add name=$name interface=$interfaceName dhcp-server=$serverAddress")
-    }
 
-    override fun enableDHCPRelay(name: String) {
+    override fun enableDHCPRelay(name: String) =
         executeCommand("/ip dhcp-relay enable $name")
-    }
 
-    override fun disableDHCPRelay(name: String) {
+    override fun disableDHCPRelay(name: String) =
         executeCommand("/ip dhcp-relay disable $name")
-    }
 
-    override fun removeDHCPRelay(name: String) {
+    override fun removeDHCPRelay(name: String) =
         executeCommand("/ip dhcp-relay remove $name")
-    }
 
     override fun getNeighbors() =
         executeCommand("/ip neighbor print detail") //falta o parse

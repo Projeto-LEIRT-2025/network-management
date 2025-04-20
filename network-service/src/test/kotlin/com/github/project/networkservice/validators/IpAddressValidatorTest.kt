@@ -25,6 +25,7 @@ class IpAddressValidatorTest {
         assertFalse(regex.matches("255.1.256.3"))
         assertFalse(regex.matches("192.168.001.1"))
         assertFalse(regex.matches("1.2.3"))
+        assertFalse(regex.matches("192.168.0.1.3"))
     }
 
 }

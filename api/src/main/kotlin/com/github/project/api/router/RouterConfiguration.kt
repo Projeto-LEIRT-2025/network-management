@@ -24,13 +24,13 @@ interface RouterConfiguration {
 
     fun createDHCPServerNetwork(network: String, gateway: String): Response<Unit>
 
-    fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String)
+    fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String): Response<Unit>
 
-    fun enableDHCPRelay(name: String)
+    fun enableDHCPRelay(name: String): Response<Unit>
 
-    fun disableDHCPRelay(name: String)
+    fun disableDHCPRelay(name: String): Response<Unit>
 
-    fun removeDHCPRelay(name: String)
+    fun removeDHCPRelay(name: String): Response<Unit>
 
     //ROUTES
 
@@ -48,13 +48,13 @@ interface RouterConfiguration {
 
     //OSPF
 
-    fun createOSPFProcess(processId: String, routerId: String)
+    fun createOSPFProcess(processId: String, routerId: String): Response<Unit>
 
-    fun createOSPFArea(areaId: String, processId: String)
+    fun createOSPFArea(areaId: String, processId: String): Response<Unit>
 
-    fun addOSPFNetworks(network: String, mask: String, areaName: String)
+    fun addOSPFNetworks(network: String, mask: String, areaName: String): Response<Unit>
 
-    fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int)
+    fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int): Response<Unit>
 
     //NEIGHBORS
 

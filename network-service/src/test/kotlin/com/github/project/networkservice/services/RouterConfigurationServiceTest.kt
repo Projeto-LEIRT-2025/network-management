@@ -91,4 +91,27 @@ class RouterConfigurationServiceTest {
         verify(routerConfiguration).setIpAddress(interfaceName, ipAddress)
     }
 
+    @Test
+    fun `enable SNMP should succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+
+        routerConfigurationService.enableSNMP(router.id, username, password)
+
+        verify(routerConfiguration).enableSNMP()
+    }
+
 }
