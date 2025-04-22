@@ -69,6 +69,17 @@ class RouterConfigurationService(
         routerConfiguration.disableSNMP()
     }
 
+    fun changeSNMPVersion(routerId: Long, username: String, password: String, version: Int) {
+
+        val router = routerService.getById(routerId)
+        val routerConfiguration = router.toRouterConfiguration(
+            username = username,
+            password = password
+        )
+
+        routerConfiguration.changeSNMPVersion(version)
+    }
+
     fun addStaticRoute(routerId: Long, username: String, password: String, gateway: String, ipAddress: String, mask: Int) {
 
         val router = routerService.getById(routerId)
@@ -78,6 +89,39 @@ class RouterConfigurationService(
         )
 
         routerConfiguration.addStaticRoute(gateway, ipAddress, mask)
+    }
+
+    fun createOSPFProcess(routerId: Long, username: String, password: String, processId: String, theRouterId: String) {
+
+        val router = routerService.getById(routerId)
+        val routerConfiguration = router.toRouterConfiguration(
+            username = username,
+            password = password
+        )
+
+        routerConfiguration.createOSPFProcess(processId, theRouterId)
+    }
+
+    fun addOSPFNetwork(routerId: Long, username: String, password: String, network: String, mask: Int, areaName: String) {
+
+        val router = routerService.getById(routerId)
+        val routerConfiguration = router.toRouterConfiguration(
+            username = username,
+            password = password
+        )
+
+        routerConfiguration.addOSPFNetworks(network, mask, areaName)
+    }
+
+    fun addOSPFInterface(routerId: Long, username: String, password: String, interfaceName: String, areaName: String, networkType: String, cost: Int) {
+
+        val router = routerService.getById(routerId)
+        val routerConfiguration = router.toRouterConfiguration(
+            username = username,
+            password = password
+        )
+
+        routerConfiguration.addOSPFInterface(interfaceName, areaName, networkType, cost)
     }
 
     private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23) =

@@ -117,7 +117,7 @@ class RouterConfigurationImpl(
         executeCommand("/routing ospf area add area-id=$areaId instance=$processId")
     }
 
-    override fun addOSPFNetworks(network: String, mask: String, areaName: String) {
+    override fun addOSPFNetworks(network: String, mask: Int, areaName: String) {
         executeCommand("/routing ospf interface-template add network=$network/$mask area=$areaName")
     }
 

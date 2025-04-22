@@ -52,7 +52,7 @@ interface RouterConfiguration {
 
     fun createOSPFArea(areaId: String, processId: String)
 
-    fun addOSPFNetworks(network: String, mask: String, areaName: String)
+    fun addOSPFNetworks(network: String, mask: Int, areaName: String)
 
     fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int)
 

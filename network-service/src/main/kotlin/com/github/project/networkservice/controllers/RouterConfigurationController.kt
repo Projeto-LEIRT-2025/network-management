@@ -1,9 +1,6 @@
 package com.github.project.networkservice.controllers
 
-import com.github.project.networkservice.dto.StaticRouteDto
-import com.github.project.networkservice.dto.ApiResponseDto
-import com.github.project.networkservice.dto.CredentialsDto
-import com.github.project.networkservice.dto.SetIpAddressDto
+import com.github.project.networkservice.dto.*
 import com.github.project.networkservice.services.RouterConfigurationService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
@@ -86,6 +83,62 @@ class RouterConfigurationController(
             .ok(
                 ApiResponseDto(
                     message = "SNMP disabled successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/snmp/version")
+    fun changeSNMPVersion(@PathVariable id: Long, @RequestBody @Valid dto: ChangeSNMPVersionDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.changeSNMPVersion(id, dto.credentials.username, dto.credentials.password, dto.version)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "SNMP version changed successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/ospf/process")
+    fun createOSPFProcess(@PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFProcessDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createOSPFProcess(id, dto.credentials.username, dto.credentials.password, dto.processId, dto.routerId)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "OSPF process created successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/ospf/network")
+    fun addOSPFNetwork(@PathVariable id: Long, @RequestBody @Valid dto: AddOSPFNetworkDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.addOSPFNetwork(id, dto.credentials.username, dto.credentials.password, dto.network, dto.mask, dto.areaName)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "OSPF network added successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/ospf/interface")
+    fun addOSPFInterface(@PathVariable id: Long, @RequestBody @Valid dto: AddOSPFInterfaceDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.addOSPFInterface(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.areaName, dto.networkType, dto.cost)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "OSPF interface added successfully",
                     data = Unit
                 )
             )

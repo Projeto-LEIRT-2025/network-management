@@ -15,7 +15,7 @@ class PluginController(
 
     private val pluginService: PluginService
 
-    ) {
+) {
 
     @GetMapping
     fun listPlugins(): ResponseEntity<ApiResponseDto<List<PluginDto>>> {
