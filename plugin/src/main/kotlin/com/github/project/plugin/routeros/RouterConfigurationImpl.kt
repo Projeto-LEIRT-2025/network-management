@@ -121,14 +121,14 @@ class RouterConfigurationImpl(
     override fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int) =
         executeCommand("/routing ospf interface-template add interfaces=$interfaceName area=$areaName type=$networkType cost=$cost")
 
-    override fun createAddressPool(name: String, address: String) =
-        executeCommand("/ip pool add name=$name ranges=$address")
+    override fun createAddressPool(name: String, address: String, mask: Int) =
+        executeCommand("/ip pool add name=$name ranges=$address/$mask")
 
     override fun createDHCPServer(name: String, pool: String, interfaceName: String) =
-        executeCommand("/ip dhcp-server add address-pool=$pool disabled=no interface=$interfaceName name=$name")
+        executeCommand("/ip dhcp-server add address-pool=$pool interface=$interfaceName name=$name disabled=no")
 
     override fun createDHCPServerRelay(name: String, pool: String, interfaceName: String, relayAddress: String): Response<Unit> =
-        executeCommand("/ip dhcp-server add address-pool=$pool disabled=no interface=$interfaceName name=$name relay=$relayAddress")
+        executeCommand("/ip dhcp-server add address-pool=$pool interface=$interfaceName name=$name relay=$relayAddress disabled=no")
 
     override fun createDHCPServerNetwork(network: String, gateway: String): Response<Unit> =
         executeCommand("/ip dhcp-server network add address=$network gateway=$gateway")

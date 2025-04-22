@@ -16,7 +16,7 @@ interface RouterConfiguration {
 
     //DHCP
 
-    fun createAddressPool(name: String, address: String): Response<Unit>
+    fun createAddressPool(name: String, address: String, mask: Int): Response<Unit>
 
     fun createDHCPServer(name: String, pool: String, interfaceName: String): Response<Unit>
 

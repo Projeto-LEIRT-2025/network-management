@@ -124,6 +124,39 @@ class RouterConfigurationService(
         routerConfiguration.addOSPFInterface(interfaceName, areaName, networkType, cost)
     }
 
+    fun createAddressPool(routerId: Long, username: String, password: String, name: String, address: String, mask: Int) {
+
+        val router = routerService.getById(routerId)
+        val routerConfiguration = router.toRouterConfiguration(
+            username = username,
+            password = password
+        )
+
+        routerConfiguration.createAddressPool(name, address, mask)
+    }
+
+    fun createDHCPServer(routerId: Long, username: String, password: String, name: String, poolName: String, interfaceName: String) {
+
+        val router = routerService.getById(routerId)
+        val routerConfiguration = router.toRouterConfiguration(
+            username = username,
+            password = password
+        )
+
+        routerConfiguration.createDHCPServer(name, poolName, interfaceName)
+    }
+
+    fun createDHCPServerRelay(routerId: Long, username: String, password: String, name: String, poolName: String, interfaceName: String, relayAddress: String) {
+
+        val router = routerService.getById(routerId)
+        val routerConfiguration = router.toRouterConfiguration(
+            username = username,
+            password = password
+        )
+
+        routerConfiguration.createDHCPServerRelay(name, poolName, interfaceName, relayAddress)
+    }
+
     private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23) =
         pluginLoader.getRouterConfiguration(
             model = model.lowercase(),

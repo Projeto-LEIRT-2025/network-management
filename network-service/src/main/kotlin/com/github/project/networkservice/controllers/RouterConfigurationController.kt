@@ -158,4 +158,46 @@ class RouterConfigurationController(
             )
     }
 
+    @PostMapping("/address/pool")
+    fun createAddressPool(@PathVariable id: Long, @RequestBody @Valid dto: CreateAddressPoolDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createAddressPool(id, dto.credentials.username, dto.credentials.password, dto.name, dto.address, dto.mask)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Address pool created successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/dhcp")
+    fun createDHCPServer(@PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createDHCPServer(id, dto.credentials.username, dto.credentials.password, dto.name, dto.poolName, dto.interfaceName)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "DHCP server created successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/dhcp/relay")
+    fun createDHCPServerRelay(@PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createDHCPServerRelay(id, dto.credentials.username, dto.credentials.password, dto.name, dto.poolName, dto.interfaceName, dto.relayAddress)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "DHCP server relay created successfully",
+                    data = Unit
+                )
+            )
+    }
+
 }
