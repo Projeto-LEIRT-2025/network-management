@@ -10,7 +10,10 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class StaticRouteDto(
 
+    @field:NotNull
     val credentials: CredentialsDto,
+
+    @field:NotNull
     val gateway: String,
 
     @SerialName("ip_address")

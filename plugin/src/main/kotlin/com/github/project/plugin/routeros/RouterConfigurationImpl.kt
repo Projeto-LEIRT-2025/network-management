@@ -130,8 +130,8 @@ class RouterConfigurationImpl(
     override fun createDHCPServerRelay(name: String, pool: String, interfaceName: String, relayAddress: String): Response<Unit> =
         executeCommand("/ip dhcp-server add address-pool=$pool interface=$interfaceName name=$name relay=$relayAddress disabled=no")
 
-    override fun createDHCPServerNetwork(network: String, gateway: String): Response<Unit> =
-        executeCommand("/ip dhcp-server network add address=$network gateway=$gateway")
+    override fun createDHCPServerNetwork(network: String, mask: Int, gateway: String): Response<Unit> =
+        executeCommand("/ip dhcp-server network add address=$network/$mask gateway=$gateway")
 
     override fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String) =
         executeCommand("/ip dhcp-relay add name=$name interface=$interfaceName dhcp-server=$serverAddress")

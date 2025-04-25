@@ -8,10 +8,8 @@ import jakarta.validation.constraints.NotNull
 
 data class CreateAddressPoolDto(
 
+    @field:NotNull
     val credentials: CredentialsDto,
-
-    @field:NotBlank
-    val name: String,
 
     @IpAddress
     val address: String,

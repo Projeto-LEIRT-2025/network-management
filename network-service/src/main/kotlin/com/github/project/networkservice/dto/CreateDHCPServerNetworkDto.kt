@@ -5,10 +5,8 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class AddOSPFNetworkDto(
+data class CreateDHCPServerNetworkDto(
 
     @field:NotNull
     val credentials: CredentialsDto,
@@ -16,12 +14,12 @@ data class AddOSPFNetworkDto(
     @IpAddress
     val network: String,
 
+    @field:NotNull
     @field:Min(0)
     @field:Max(32)
-    @field:NotNull
     val mask: Int,
 
     @field:NotBlank
-    val areaName: String
+    val gateway: String
 
 )

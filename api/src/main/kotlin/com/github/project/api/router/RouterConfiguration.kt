@@ -22,7 +22,7 @@ interface RouterConfiguration {
 
     fun createDHCPServerRelay(name: String, pool: String, interfaceName: String, relayAddress: String): Response<Unit>
 
-    fun createDHCPServerNetwork(network: String, gateway: String): Response<Unit>
+    fun createDHCPServerNetwork(network: String, mask: Int, gateway: String): Response<Unit>
 
     fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String): Response<Unit>
 

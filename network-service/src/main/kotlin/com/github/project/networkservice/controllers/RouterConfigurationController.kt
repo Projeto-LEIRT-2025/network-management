@@ -4,6 +4,7 @@ import com.github.project.networkservice.dto.*
 import com.github.project.networkservice.services.RouterConfigurationService
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,6 +28,20 @@ class RouterConfigurationController(
             .ok(
                 ApiResponseDto(
                     message = "Successfully set ip address",
+                    data = Unit
+                )
+            )
+    }
+
+    @DeleteMapping("/address")
+    fun removeIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: RemoveIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.removeIpAddress(id, dto.credentials.username, dto.credentials.password, *dto.identifiers.toIntArray())
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Successfully remove ip address",
                     data = Unit
                 )
             )
@@ -116,6 +131,20 @@ class RouterConfigurationController(
             )
     }
 
+    @PostMapping("/ospf/area")
+    fun createOSPFArea(@PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFAreaDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createOSPFArea(id, dto.credentials.username, dto.credentials.password, dto.areaId, dto.processId)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "OSPF area created successfully",
+                    data = Unit
+                )
+            )
+    }
+
     @PostMapping("/ospf/network")
     fun addOSPFNetwork(@PathVariable id: Long, @RequestBody @Valid dto: AddOSPFNetworkDto): ResponseEntity<ApiResponseDto<Unit>> {
 
@@ -158,10 +187,24 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/address/pool")
-    fun createAddressPool(@PathVariable id: Long, @RequestBody @Valid dto: CreateAddressPoolDto): ResponseEntity<ApiResponseDto<Unit>> {
+    @DeleteMapping("/route/static")
+    fun removeStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: RemoveStaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createAddressPool(id, dto.credentials.username, dto.credentials.password, dto.name, dto.address, dto.mask)
+        routerConfigurationService.removeStaticRoute(id, dto.credentials.username, dto.credentials.password, *dto.identifiers.toIntArray())
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Static route removed successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/address/pool/{name}")
+    fun createAddressPool(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateAddressPoolDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createAddressPool(id, dto.credentials.username, dto.credentials.password, name, dto.address, dto.mask)
 
         return ResponseEntity
             .ok(
@@ -172,10 +215,10 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp")
-    fun createDHCPServer(@PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerDto): ResponseEntity<ApiResponseDto<Unit>> {
+    @PostMapping("/dhcp/server/{name}")
+    fun createDHCPServer(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createDHCPServer(id, dto.credentials.username, dto.credentials.password, dto.name, dto.poolName, dto.interfaceName)
+        routerConfigurationService.createDHCPServer(id, dto.credentials.username, dto.credentials.password, name, dto.poolName, dto.interfaceName)
 
         return ResponseEntity
             .ok(
@@ -186,15 +229,85 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp/relay")
-    fun createDHCPServerRelay(@PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
+    @PostMapping("/dhcp/server/relay/{name}")
+    fun createDHCPServerRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createDHCPServerRelay(id, dto.credentials.username, dto.credentials.password, dto.name, dto.poolName, dto.interfaceName, dto.relayAddress)
+        routerConfigurationService.createDHCPServerRelay(id, dto.credentials.username, dto.credentials.password, name, dto.poolName, dto.interfaceName, dto.relayAddress)
 
         return ResponseEntity
             .ok(
                 ApiResponseDto(
                     message = "DHCP server relay created successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/dhcp/server/network")
+    fun createDHCPServerNetwork(@PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerNetworkDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createDHCPServerNetwork(id, dto.credentials.username, dto.credentials.password, dto.network, dto.mask, dto.gateway)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "DHCP server network created successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/dhcp/relay/{name}")
+    fun createDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.createDHCPRelay(id, dto.credentials.username, dto.credentials.password, name, dto.interfaceName, dto.serverAddress)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "DHCP relay created successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/dhcp/relay/{name}/enable")
+    fun enableDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.enableDHCPRelay(id, dto.username, dto.password, name)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "DHCP relay enabled successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @PostMapping("/dhcp/relay/{name}/disable")
+    fun disableDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.disableDHCPRelay(id, dto.username, dto.password, name)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "DHCP relay disabled successfully",
+                    data = Unit
+                )
+            )
+    }
+
+    @DeleteMapping("/dhcp/relay/{name}")
+    fun removeDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+
+        routerConfigurationService.removeDHCPRelay(id, dto.username, dto.password, name)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "DHCP relay removed successfully",
                     data = Unit
                 )
             )

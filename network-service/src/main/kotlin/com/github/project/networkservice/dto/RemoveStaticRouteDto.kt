@@ -1,13 +1,14 @@
 package com.github.project.networkservice.dto
 
+import jakarta.validation.constraints.NotEmpty
 import jakarta.validation.constraints.NotNull
 
-data class ChangeSNMPVersionDto(
+data class RemoveStaticRouteDto(
 
     @field:NotNull
     val credentials: CredentialsDto,
 
-    @field:NotNull
-    val version: Int
+    @field:NotEmpty
+    val identifiers: List<Int>
 
 )

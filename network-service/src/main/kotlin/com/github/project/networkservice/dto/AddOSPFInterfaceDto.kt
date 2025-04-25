@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AddOSPFInterfaceDto(
 
+    @field:NotNull
     val credentials: CredentialsDto,
 
     @SerialName("interface_name")

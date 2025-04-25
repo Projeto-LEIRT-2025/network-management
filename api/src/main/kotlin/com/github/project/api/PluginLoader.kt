@@ -19,11 +19,9 @@ class PluginMetadata {
 object PluginLoader {
 
     private val plugins = mutableListOf<Plugin>()
-    private lateinit var classLoader: ClassLoader
+    private var classLoader: ClassLoader = this.javaClass.classLoader
 
     private inline fun <reified T> createInstance(className: String, vararg params: Any): T {
-
-        checkClassLoaderIsInitialized()
 
         val theClass = Class.forName(className, true, classLoader)
         val constructor = theClass.getConstructor(*params.map { it.javaClass }.toTypedArray())
@@ -33,13 +31,6 @@ object PluginLoader {
             throw IllegalArgumentException("Class $className is not a $instance")
 
         return instance
-    }
-
-    private fun checkClassLoaderIsInitialized() {
-
-        if (!::classLoader.isInitialized)
-            throw IllegalStateException("ClassLoader must be initialized before classLoader is called")
-
     }
 
     fun getRouterConfiguration(model: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration? {
@@ -98,11 +89,6 @@ object PluginLoader {
     private fun addFilesToClassLoader(vararg files: File) {
 
         val urls = files.map { it.toURI().toURL() }
-
-        if (this::classLoader.isInitialized) {
-            this.classLoader = URLClassLoader(urls.toTypedArray(), this.classLoader)
-            return
-        }
 
         this.classLoader = URLClassLoader.newInstance(urls.toTypedArray(), this.javaClass.classLoader)
     }
