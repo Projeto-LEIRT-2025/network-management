@@ -114,4 +114,51 @@ class RouterConfigurationServiceTest {
         verify(routerConfiguration).enableSNMP()
     }
 
+    @Test
+    fun `change SNMP version to a correct version should succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val version = 3
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+
+        routerConfigurationService.changeSNMPVersion(router.id, username, password, version)
+
+        verify(routerConfiguration).changeSNMPVersion(version)
+    }
+
+    @Test
+    fun `disable SNMP should succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+
+        routerConfigurationService.disableSNMP(router.id, username, password)
+
+        verify(routerConfiguration).disableSNMP()
+    }
+
 }
