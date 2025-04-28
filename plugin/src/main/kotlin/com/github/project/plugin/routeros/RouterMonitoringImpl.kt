@@ -148,7 +148,6 @@ class RouterMonitoringImpl(
 
     override fun getNetworkInterfaces(): List<NetworkInterface> {
 
-        val oidBase = OID(INTERFACE_BASE_OID)
         val oids = listOf(
             OID(INTERFACE_NAME_OID),
             OID(ACTUAL_MTU_OID),
