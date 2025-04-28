@@ -47,24 +47,24 @@ class RouterConfigurationImpl(
 
         while (true) {
 
-            val line = reader.readChunk().trim()
+            val chunk = reader.readChunk().trim()
 
-            if (line.isBlank()) continue
+            if (chunk.isBlank()) continue
 
             if (!started) {
 
-                if (regex.containsMatchIn(line) && line.contains(command)) {
+                if (regex.containsMatchIn(chunk) && chunk.contains(command)) {
                     started = true
                 }
 
                 continue
             }
 
-            if (regex.matches(line)) {
+            if (regex.matches(chunk)) {
                 break
             }
 
-            response.appendLine(line)
+            response.append(chunk)
         }
 
         response.lastIndexOf('\n').let {
