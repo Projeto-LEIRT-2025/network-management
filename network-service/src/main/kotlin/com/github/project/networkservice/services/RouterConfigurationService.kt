@@ -3,6 +3,7 @@ package com.github.project.networkservice.services
 import com.github.project.api.PluginLoader
 import com.github.project.api.router.RouterConfiguration
 import com.github.project.networkservice.exceptions.PluginNotFoundException
+import com.github.project.networkservice.exceptions.RouterConfigurationException
 import com.github.project.networkservice.models.Router
 import org.springframework.stereotype.Service
 
@@ -17,148 +18,211 @@ class RouterConfigurationService(
     fun enableInterface(routerId: Long, username: String, password: String, interfaceName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.enableInterface(interfaceName)
 
-        routerConfiguration.enableInterface(interfaceName)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun disableInterface(routerId: Long, username: String, password: String, interfaceName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.enableInterface(interfaceName)
 
-        routerConfiguration.enableInterface(interfaceName)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun setIpAddress(routerId: Long, username: String, password: String, interfaceName: String, ipAddress: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.setIpAddress(interfaceName, ipAddress)
 
-        routerConfiguration.setIpAddress(interfaceName, ipAddress)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun removeIpAddress(routerId: Long, username: String, password: String, vararg identifiers: Int) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.removeIpAddress(*identifiers)
 
-        routerConfiguration.removeIpAddress(*identifiers)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun enableSNMP(routerId: Long, username: String, password: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.enableSNMP()
 
-        routerConfiguration.enableSNMP()
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun disableSNMP(routerId: Long, username: String, password: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.disableSNMP()
 
-        routerConfiguration.disableSNMP()
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun changeSNMPVersion(routerId: Long, username: String, password: String, version: Int) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.changeSNMPVersion(version)
 
-        routerConfiguration.changeSNMPVersion(version)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun addStaticRoute(routerId: Long, username: String, password: String, gateway: String, ipAddress: String, mask: Int) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.addStaticRoute(gateway, ipAddress, mask)
 
-        routerConfiguration.addStaticRoute(gateway, ipAddress, mask)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun removeStaticRoute(routerId: Long, username: String, password: String, vararg identifiers: Int) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.removeStaticRoute(*identifiers)
 
-        routerConfiguration.removeStaticRoute(*identifiers)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun createOSPFProcess(routerId: Long, username: String, password: String, processId: String, theRouterId: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.createOSPFProcess(processId, theRouterId)
 
-        routerConfiguration.createOSPFProcess(processId, theRouterId)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun createOSPFArea(routerId: Long, username: String, password: String, areaId: String, processId: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.createOSPFArea(areaId, processId)
 
-        routerConfiguration.createOSPFArea(areaId, processId)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun addOSPFNetwork(routerId: Long, username: String, password: String, network: String, mask: Int, areaName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.addOSPFNetworks(network, mask, areaName)
 
-        routerConfiguration.addOSPFNetworks(network, mask, areaName)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun addOSPFInterface(routerId: Long, username: String, password: String, interfaceName: String, areaName: String, networkType: String, cost: Int) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.addOSPFInterface(interfaceName, areaName, networkType, cost)
 
-        routerConfiguration.addOSPFInterface(interfaceName, areaName, networkType, cost)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun createAddressPool(routerId: Long, username: String, password: String, name: String, address: String, mask: Int) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.createAddressPool(name, address, mask)
 
-        routerConfiguration.createAddressPool(name, address, mask)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun createDHCPServer(routerId: Long, username: String, password: String, name: String, poolName: String, interfaceName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.createDHCPServer(name, poolName, interfaceName)
 
-        routerConfiguration.createDHCPServer(name, poolName, interfaceName)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun createDHCPServerRelay(routerId: Long, username: String, password: String, name: String, poolName: String, interfaceName: String, relayAddress: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.createDHCPServerRelay(name, poolName, interfaceName, relayAddress)
 
-        routerConfiguration.createDHCPServerRelay(name, poolName, interfaceName, relayAddress)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun createDHCPServerNetwork(routerId: Long, username: String, password: String, network: String, mask: Int, gateway: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.createDHCPServerNetwork(network, mask, gateway)
 
-        routerConfiguration.createDHCPServerNetwork(network, mask, gateway)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun createDHCPRelay(routerId: Long, username: String, password: String, name: String, interfaceName: String, serverAddress: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.createDHCPRelay(name, interfaceName, serverAddress)
 
-        routerConfiguration.createDHCPRelay(name, interfaceName, serverAddress)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
     
     fun enableDHCPRelay(routerId: Long, username: String, password: String, name: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        
-        routerConfiguration.enableDHCPRelay(name)
+        val response = routerConfiguration.enableDHCPRelay(name)
+
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun disableDHCPRelay(routerId: Long, username: String, password: String, name: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.disableDHCPRelay(name)
 
-        routerConfiguration.disableDHCPRelay(name)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     fun removeDHCPRelay(routerId: Long, username: String, password: String, name: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.removeDHCPRelay(name)
 
-       routerConfiguration.removeDHCPRelay(name)
+        if (response.raw.isNotBlank())
+            throw RouterConfigurationException(response.raw)
+
     }
 
     private fun getRouterConfigurationByRouterId(id: Long, username: String, password: String): RouterConfiguration {
