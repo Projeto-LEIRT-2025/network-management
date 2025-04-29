@@ -1,5 +1,6 @@
 package com.github.project.api.router
 
+import com.github.project.api.router.response.Neighbor
 import com.github.project.api.router.response.Response
 
 interface RouterConfiguration {
@@ -58,5 +59,5 @@ interface RouterConfiguration {
 
     //NEIGHBORS
 
-    fun getNeighbors(): Response<Unit>
+    fun getNeighbors(): Response<List<Neighbor>>
 }

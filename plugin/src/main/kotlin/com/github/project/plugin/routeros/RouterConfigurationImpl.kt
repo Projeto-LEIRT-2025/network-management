@@ -2,6 +2,7 @@ package com.github.project.plugin.routeros
 
 import com.github.project.api.router.RouterConfiguration
 import com.github.project.api.router.response.Response
+import com.github.project.api.router.response.parseNeighbors
 import org.apache.commons.net.telnet.TelnetClient
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -47,36 +48,43 @@ class RouterConfigurationImpl(
 
         while (true) {
 
-            val chunk = reader.readChunk().trim()
+            val line = reader.readLine().trim()
 
-            if (chunk.isBlank()) continue
+            if (line.isBlank()) {
+                if (started)
+                    response.append('\n')
+                continue
+            }
 
             if (!started) {
 
-                if (regex.containsMatchIn(chunk) && chunk.contains(command)) {
+                if (regex.containsMatchIn(line) && line.contains(command)) {
                     started = true
                 }
 
                 continue
             }
 
-            if (regex.matches(chunk)) {
+            if (line.contains(command))
+                continue
+
+            if (regex.matches(line)) {
                 break
             }
 
-            response.append(chunk)
+            response.append("$line ")
         }
 
-        response.lastIndexOf('\n').let {
+        /*response.lastIndexOf('\n').let {
 
             if (it != -1)
                 response.deleteCharAt(it)
 
-        }
+        }*/
 
         writer.writeAndFlush("\r\n") //for the next command
 
-        return mapper(response.toString())
+        return mapper(response.toString().trim())
     }
 
     private fun executeCommand(command: String) =
@@ -146,7 +154,7 @@ class RouterConfigurationImpl(
         executeCommand("/ip dhcp-relay remove $name")
 
     override fun getNeighbors() =
-        executeCommand("/ip neighbor print detail") //falta o parse
+        executeCommand("/ip neighbor print detail without-paging") { parseNeighbors(it) }
 
     private fun BufferedReader.readChunk(): String {
 
@@ -160,7 +168,9 @@ class RouterConfigurationImpl(
 
             val theChar = char.toChar()
 
-            if (theChar == '\r' || theChar == '\n') break
+            if (theChar == '\r' || theChar == '\n') {
+                break
+            }
 
             buffer.append(theChar)
 
