@@ -1,5 +1,6 @@
 package com.github.project.api.router
 
+import com.github.project.api.router.response.InterfaceIpAddress
 import com.github.project.api.router.response.Neighbor
 import com.github.project.api.router.response.Response
 
@@ -10,6 +11,8 @@ interface RouterConfiguration {
     fun enableInterface(interfaceName: String): Response<Unit>
 
     fun disableInterface(interfaceName: String): Response<Unit>
+
+    fun getIpAddresses(): Response<List<InterfaceIpAddress>>
 
     fun setIpAddress(interfaceName: String, ipAddress: String): Response<Unit>
 

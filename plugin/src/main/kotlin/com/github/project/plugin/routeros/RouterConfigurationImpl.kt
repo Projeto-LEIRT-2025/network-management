@@ -1,8 +1,7 @@
 package com.github.project.plugin.routeros
 
 import com.github.project.api.router.RouterConfiguration
-import com.github.project.api.router.response.Response
-import com.github.project.api.router.response.parseNeighbors
+import com.github.project.api.router.response.*
 import org.apache.commons.net.telnet.TelnetClient
 import java.io.BufferedReader
 import java.io.BufferedWriter
@@ -75,13 +74,6 @@ class RouterConfigurationImpl(
             response.append("$line ")
         }
 
-        /*response.lastIndexOf('\n').let {
-
-            if (it != -1)
-                response.deleteCharAt(it)
-
-        }*/
-
         writer.writeAndFlush("\r\n") //for the next command
 
         return mapper(response.toString().trim())
@@ -107,6 +99,9 @@ class RouterConfigurationImpl(
 
     override fun removeIpAddress(vararg number: Int) =
         executeCommand("/ip address remove numbers=${number.joinToString(",")}")
+
+    override fun getIpAddresses(): Response<List<InterfaceIpAddress>> =
+        executeCommand("/ip/address/print detail") { parseInterfaces(it) }
 
     override fun enableSNMP() =
         executeCommand("/snmp set enabled=yes")
@@ -155,6 +150,68 @@ class RouterConfigurationImpl(
 
     override fun getNeighbors() =
         executeCommand("/ip neighbor print detail without-paging") { parseNeighbors(it) }
+
+    private fun parseNeighbors(raw: String): Response<List<Neighbor>> {
+
+        val params = raw
+            .split("\n")
+            .map { n -> n.split(" ").map { it.trim() }.filter { it.contains("=") } }
+
+        val paramMap = params.map {
+            it.associate { s ->
+                val (key, value) = s.split("=")
+                key to value.trim()
+            }
+        }
+
+        val neighbors = paramMap.map { m ->
+            val interfaceName = m["interface-name"]?.replace("\"", "") ?: ""
+            val ipAddress = m["address"] ?: ""
+            val mac = m["mac-address"] ?: ""
+            val connectedInterface = m["interface"] ?: ""
+
+            Neighbor(
+                connectedInterface = connectedInterface,
+                interfaceName = interfaceName,
+                ipAddress = ipAddress,
+                mac = mac
+            )
+        }
+
+        return Response(
+            raw = raw,
+            data = neighbors
+        )
+    }
+
+    private fun parseInterfaces(raw: String): Response<List<InterfaceIpAddress>> {
+
+        val params = raw
+            .split("\n")
+            .map { n -> n.split(" ").map { it.trim() }.filter { it.contains("=") } }
+
+        val paramMap = params.map {
+            it.associate { s ->
+                val (key, value) = s.split("=")
+                key to value.trim()
+            }
+        }
+
+        val interfaces = paramMap.map { m ->
+            val interfaceName = m["interface"] ?: ""
+            val ipAddress = m["address"]?.split("/")?.get(0) ?: ""
+
+            InterfaceIpAddress(
+                name = interfaceName,
+                address = ipAddress
+            )
+        }
+
+        return Response(
+            raw = raw,
+            data = interfaces
+        )
+    }
 
     private fun BufferedReader.readChunk(): String {
 

@@ -2,8 +2,13 @@ package com.github.project.networkservice.services
 
 import com.github.project.api.PluginLoader
 import com.github.project.api.router.RouterConfiguration
+import com.github.project.api.router.response.InterfaceIpAddress
+import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.exceptions.PluginNotFoundException
 import com.github.project.networkservice.exceptions.RouterConfigurationException
+import com.github.project.networkservice.exceptions.RouterNotFoundException
+import com.github.project.networkservice.models.Graph
+import com.github.project.networkservice.models.Node
 import com.github.project.networkservice.models.Router
 import org.springframework.stereotype.Service
 
@@ -223,6 +228,58 @@ class RouterConfigurationService(
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)
 
+    }
+
+    fun getIpAddresses(routerId: Long, username: String, password: String): List<InterfaceIpAddress> {
+
+        val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
+        val response = routerConfiguration.getIpAddresses()
+
+        return response.data
+    }
+
+    fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>): Graph {
+
+        val graph = Graph()
+        val routers = routerService.getAll()
+        val routerConfigurations = routers.associateWith {
+
+            val credentials = allCredentials[it.id] ?: throw RouterNotFoundException()
+            val configuration =
+                it.toRouterConfiguration(username = credentials.username, password = credentials.password)
+
+            configuration
+        }
+
+        val routerInterfaces = routerConfigurations.mapValues { entry -> entry.value.getIpAddresses().data }
+        val routerNeighbors = routerConfigurations.mapValues { entry -> entry.value.getNeighbors().data }
+
+        for ( (router, neighbors) in routerNeighbors) {
+
+            println("router id: ${router.id}, neighbors: $neighbors, interfaces: ${routerInterfaces[router]}")
+
+            val from = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
+
+            for (neighbor in neighbors) {
+
+                val routerNeighbor = routerInterfaces.entries.firstOrNull { (router, interfaces) ->
+                    interfaces.any {
+                        println("${it.name} : ${neighbor.interfaceName}")
+                        println("${it.address} : ${neighbor.ipAddress}")
+                        it.name == neighbor.interfaceName && it.address == neighbor.ipAddress
+                    }
+                }?.key ?: continue
+
+                val to = Node(routerNeighbor.id.toString(), "${routerNeighbor.model}@${routerNeighbor.ipAddress}")
+
+                graph.addNode(from)
+                graph.addNode(to)
+                graph.addEdge(from.id, to.id)
+            }
+
+        }
+
+        return graph
     }
 
     private fun getRouterConfigurationByRouterId(id: Long, username: String, password: String): RouterConfiguration {
