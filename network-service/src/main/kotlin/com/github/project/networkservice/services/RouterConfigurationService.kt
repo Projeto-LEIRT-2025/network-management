@@ -11,6 +11,7 @@ import com.github.project.networkservice.models.Graph
 import com.github.project.networkservice.models.Node
 import com.github.project.networkservice.models.Router
 import org.springframework.stereotype.Service
+import java.util.concurrent.CompletableFuture
 
 @Service
 class RouterConfigurationService(
@@ -242,21 +243,23 @@ class RouterConfigurationService(
 
         val graph = Graph()
         val routers = routerService.getAll()
-        val routerConfigurations = routers.associateWith {
+        val routerConfigurationsFutures = routers.associateWith {
 
             val credentials = allCredentials[it.id] ?: throw RouterNotFoundException()
-            val configuration =
-                it.toRouterConfiguration(username = credentials.username, password = credentials.password)
 
-            configuration
+            CompletableFuture.supplyAsync {
+                it.toRouterConfiguration(username = credentials.username, password = credentials.password)
+            }
+
         }
 
+        CompletableFuture.allOf(*routerConfigurationsFutures.values.toTypedArray()).join()
+
+        val routerConfigurations = routerConfigurationsFutures.mapValues { it.value.get() }
         val routerInterfaces = routerConfigurations.mapValues { entry -> entry.value.getIpAddresses().data }
         val routerNeighbors = routerConfigurations.mapValues { entry -> entry.value.getNeighbors().data }
 
         for ( (router, neighbors) in routerNeighbors) {
-
-            println("router id: ${router.id}, neighbors: $neighbors, interfaces: ${routerInterfaces[router]}")
 
             val from = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
 
@@ -264,8 +267,6 @@ class RouterConfigurationService(
 
                 val routerNeighbor = routerInterfaces.entries.firstOrNull { (router, interfaces) ->
                     interfaces.any {
-                        println("${it.name} : ${neighbor.interfaceName}")
-                        println("${it.address} : ${neighbor.ipAddress}")
                         it.name == neighbor.interfaceName && it.address == neighbor.ipAddress
                     }
                 }?.key ?: continue

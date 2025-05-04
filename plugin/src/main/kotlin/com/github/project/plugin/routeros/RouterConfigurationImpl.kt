@@ -20,6 +20,7 @@ class RouterConfigurationImpl(
 
     init {
         telnetClient.connect(hostname, port.toInt())
+        login()
     }
 
     private fun <T> executeCommand(command: String, mapper: (String) -> Response<T>): Response<T> {
@@ -77,6 +78,28 @@ class RouterConfigurationImpl(
         writer.writeAndFlush("\r\n") //for the next command
 
         return mapper(response.toString().trim())
+    }
+
+    private fun login() {
+
+        val reader = telnetClient.inputStream.bufferedReader()
+        val writer = telnetClient.outputStream.bufferedWriter()
+
+        while (true) {
+
+            val line = reader.readChunk()
+
+            if (line.isBlank()) continue
+
+            if (line.trim() == "Login:") writer.writeAndFlush("$username\r\n")
+            else if (line.trim() == "Password:") writer.writeAndFlush("$password\r\n")
+            else if (regex.matches(line.trim())) {
+                writer.writeAndFlush("\r\n")
+                break
+            }
+
+        }
+
     }
 
     private fun executeCommand(command: String) =
