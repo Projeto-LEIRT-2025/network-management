@@ -10,7 +10,9 @@ repositories {
 }
 
 dependencies {
+
     implementation(libs.snakeyaml)
+
     testImplementation(kotlin("test"))
 }
 

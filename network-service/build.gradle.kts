@@ -16,6 +16,7 @@ repositories {
 }
 
 dependencies {
+
     implementation(project(":api"))
     implementation(libs.serialization)
     implementation(libs.reflection)
@@ -24,14 +25,9 @@ dependencies {
     implementation(libs.spring.data.jpa)
     implementation(libs.spring.boot.validation)
     implementation(libs.postgresql)
+
     testImplementation(libs.spring.boot.test)
     testImplementation(kotlin("test"))
-}
-
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
 }
 
 dependencyManagement {
@@ -45,5 +41,10 @@ tasks.test {
 }
 
 kotlin {
+
+    compilerOptions {
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+
     jvmToolchain(23)
 }
