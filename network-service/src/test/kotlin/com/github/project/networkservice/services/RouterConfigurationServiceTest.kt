@@ -204,4 +204,34 @@ class RouterConfigurationServiceTest {
         verify(routerConfiguration).disableSNMP()
     }
 
+    @Test
+    fun `create OSPF process should succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val processId = "1"
+        val theRouterId = "1.1.1.1"
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+        `when`(routerConfiguration.createOSPFProcess(processId, theRouterId))
+            .thenReturn(Response(raw = "", data = Unit))
+
+        routerConfigurationService.createOSPFProcess(router.id, username, password, processId, theRouterId)
+
+        verify(routerConfiguration).createOSPFProcess(processId, theRouterId)
+    }
+
+
+
+
 }
