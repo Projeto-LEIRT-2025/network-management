@@ -231,7 +231,92 @@ class RouterConfigurationServiceTest {
         verify(routerConfiguration).createOSPFProcess(processId, theRouterId)
     }
 
+    @Test
+    fun `create OSPF area with wrong processId shouldn't succeed`() {
 
+        val username = "admin"
+        val password = "admin"
+        val processId = "-"
+        val theAreaId = "0.0.0.1"
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+        `when`(routerConfiguration.createOSPFArea(theAreaId, processId))
+            .thenReturn(Response(raw = "Invalid Process Id", data = Unit))
+
+        val exception = assertThrows<RouterConfigurationException> {
+            routerConfigurationService.createOSPFArea(router.id, username, password, theAreaId, processId)
+        }
+
+        assertEquals("Invalid Process Id", exception.message)
+        verify(routerConfiguration).createOSPFArea(theAreaId, processId)
+    }
+
+    @Test
+    fun `create DHCP server should succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val name = "pepeDHCP"
+        val poolName = "pepePool"
+        val interfaceName = "eth3"
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+        `when`(routerConfiguration.createDHCPServer(name, poolName, interfaceName))
+            .thenReturn(Response(raw = "", data = Unit))
+
+        routerConfigurationService.createDHCPServer(router.id, username, password, name, poolName, interfaceName)
+
+        verify(routerConfiguration).createDHCPServer(name, poolName, interfaceName)
+    }
+
+    @Test
+    fun `remove DHCP relay server that does not exist shouldn't succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val name = "pepeDHCPRelayServer"
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+        `when`(routerConfiguration.removeDHCPRelay(name))
+            .thenReturn(Response(raw = "Invalid DHCP relay server name", data = Unit))
+
+        val exception = assertThrows<RouterConfigurationException> {
+            routerConfigurationService.removeDHCPRelay(router.id, username, password, name)
+        }
+
+        assertEquals("Invalid DHCP relay server name", exception.message)
+        verify(routerConfiguration).removeDHCPRelay(name)
+    }
 
 
 }
