@@ -20,6 +20,12 @@ private const val MAC_ADDRESS_OID = ".1.3.6.1.2.1.2.2.1.6"
 private const val OPERATIONAL_STATUS_OID = ".1.3.6.1.2.1.2.2.1.8"
 private const val BYTES_IN_OID = ".1.3.6.1.2.1.31.1.1.1.6"
 private const val BYTES_OUT_OID = ".1.3.6.1.2.1.31.1.1.1.10"
+private const val PACKETS_IN_OID = ".1.3.6.1.2.1.31.1.1.1.7"
+private const val PACKETS_OUT_OID = ".1.3.6.1.2.1.31.1.1.1.11"
+private const val ERRORS_IN_OID = ".1.3.6.1.2.1.2.2.1.14"
+private const val ERRORS_OUT_OID = ".1.3.6.1.2.1.2.2.1.20"
+private const val DISCARDS_IN_OID = ".1.3.6.1.2.1.2.2.1.13"
+private const val DISCARDS_OUT_OID = ".1.3.6.1.2.1.2.2.1.19"
 
 class RouterMonitoringImpl(
 
@@ -49,7 +55,6 @@ class RouterMonitoringImpl(
     override fun getTotalMemory(): Int {
 
         val oid = OID(TOTAL_MEMORY_OID)
-
         val pdu = PDU().apply {
             add(VariableBinding(oid))
             type = PDU.GET
@@ -65,7 +70,6 @@ class RouterMonitoringImpl(
     override fun getMemoryUsed(): Int {
 
         val oid = OID(MEMORY_USED_OID)
-
         val pdu = PDU().apply {
             add(VariableBinding(oid))
             type = PDU.GET
@@ -81,7 +85,6 @@ class RouterMonitoringImpl(
     override fun getUptime(): String {
 
         val oid = OID(UPTIME_OID)
-
         val pdu = PDU().apply {
             add(VariableBinding(oid))
             type = PDU.GET
@@ -97,7 +100,6 @@ class RouterMonitoringImpl(
     override fun getCpuLoad(): Double {
 
         val oid = OID(CPU_LOAD_OID)
-
         val pdu = PDU().apply {
             add(VariableBinding(oid))
             type = PDU.GETBULK
@@ -117,7 +119,6 @@ class RouterMonitoringImpl(
     override fun getBytesIn(index: Int): Long {
 
         val oid = OID("$BYTES_IN_OID.$index")
-
         val pdu = PDU().apply {
             add(VariableBinding(oid))
             type = PDU.GET
@@ -133,7 +134,6 @@ class RouterMonitoringImpl(
     override fun getBytesOut(index: Int): Long {
 
         val oid = OID("$BYTES_OUT_OID.$index")
-
         val pdu = PDU().apply {
             add(VariableBinding(oid))
             type = PDU.GET
@@ -144,6 +144,96 @@ class RouterMonitoringImpl(
         val bytesOut = pduResponse.getVariable(oid).toLong()
 
         return bytesOut
+    }
+
+    override fun getPacketsIn(index: Int): Long {
+
+        val oid = OID("$PACKETS_IN_OID.$index")
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val packetsIn = pduResponse.getVariable(oid).toLong()
+
+        return packetsIn
+    }
+
+    override fun getPacketsOut(index: Int): Long {
+
+        val oid = OID("$PACKETS_OUT_OID.$index")
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val packetsOut = pduResponse.getVariable(oid).toLong()
+
+        return packetsOut
+    }
+
+    override fun getErrorPacketsIn(index: Int): Long {
+
+        val oid = OID("$ERRORS_IN_OID.$index")
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val errorsIn = pduResponse.getVariable(oid).toLong()
+
+        return errorsIn
+    }
+
+    override fun getErrorPacketsOut(index: Int): Long {
+
+        val oid = OID("$ERRORS_OUT_OID.$index")
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val errorsOut = pduResponse.getVariable(oid).toLong()
+
+        return errorsOut
+    }
+
+    override fun getDiscardedPacketsIn(index: Int): Long {
+
+        val oid = OID("$DISCARDS_IN_OID.$index")
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val discardsIn = pduResponse.getVariable(oid).toLong()
+
+        return discardsIn
+    }
+
+    override fun getDiscardedPacketsOut(index: Int): Long {
+
+        val oid = OID("$DISCARDS_OUT_OID.$index")
+        val pdu = PDU().apply {
+            add(VariableBinding(oid))
+            type = PDU.GET
+        }
+
+        val responseEvent = snmp.send(pdu, this.target)
+        val pduResponse = responseEvent.response
+        val discardsOut = pduResponse.getVariable(oid).toLong()
+
+        return discardsOut
     }
 
     override fun getNetworkInterfaces(): List<NetworkInterface> {

@@ -57,6 +57,48 @@ class RouterMonitoringService(
         return routerMonitoring.getBytesOut(index)
     }
 
+    fun getPacketsIn(routerId: Long, index: Int): Long {
+
+        val routerMonitoring = getRouterMonitoringByRouterId(routerId)
+
+        return routerMonitoring.getPacketsIn(index)
+    }
+
+    fun getPacketsOut(routerId: Long, index: Int): Long {
+
+        val routerMonitoring = getRouterMonitoringByRouterId(routerId)
+
+        return routerMonitoring.getPacketsOut(index)
+    }
+
+    fun getErrorPacketsIn(routerId: Long, index: Int): Long {
+
+        val routerMonitoring = getRouterMonitoringByRouterId(routerId)
+
+        return routerMonitoring.getErrorPacketsIn(index)
+    }
+
+    fun getErrorPacketsOut(routerId: Long, index: Int): Long {
+
+        val routerMonitoring = getRouterMonitoringByRouterId(routerId)
+
+        return routerMonitoring.getErrorPacketsOut(index)
+    }
+
+    fun getDiscardedPacketsIn(routerId: Long, index: Int): Long {
+
+        val routerMonitoring = getRouterMonitoringByRouterId(routerId)
+
+        return routerMonitoring.getDiscardedPacketsIn(index)
+    }
+
+    fun getDiscardedPacketsOut(routerId: Long, index: Int): Long {
+
+        val routerMonitoring = getRouterMonitoringByRouterId(routerId)
+
+        return routerMonitoring.getDiscardedPacketsOut(index)
+    }
+
     fun getNetworkInterfaces(routerId: Long): List<NetworkInterface> {
 
         val routerMonitoring = getRouterMonitoringByRouterId(routerId)
@@ -71,7 +113,7 @@ class RouterMonitoringService(
         return router.toRouterMonitoring()
     }
 
-    private fun Router.toRouterMonitoring(port: Int = 23) =
+    private fun Router.toRouterMonitoring(port: Int = 141) =
         pluginLoader.getRouterMonitoring(
             model = model.lowercase(),
             hostname = ipAddress,

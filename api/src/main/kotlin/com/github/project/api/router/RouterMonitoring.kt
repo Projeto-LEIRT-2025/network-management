@@ -18,4 +18,16 @@ interface RouterMonitoring {
 
     fun getBytesOut(index: Int): Long
 
+    fun getPacketsIn(index: Int): Long
+
+    fun getPacketsOut(index: Int): Long
+
+    fun getErrorPacketsIn(index: Int): Long
+
+    fun getErrorPacketsOut(index: Int): Long
+
+    fun getDiscardedPacketsIn(index: Int): Long
+
+    fun getDiscardedPacketsOut(index: Int): Long
+
 }
