@@ -2,6 +2,7 @@ package com.github.project.networkservice.services
 
 import com.github.project.api.PluginLoader
 import com.github.project.api.router.RouterConfiguration
+import com.github.project.api.router.response.InterfaceIpAddress
 import com.github.project.api.router.response.Response
 import com.github.project.networkservice.exceptions.RouterConfigurationException
 import com.github.project.networkservice.exceptions.RouterNotFoundException
@@ -316,6 +317,36 @@ class RouterConfigurationServiceTest {
 
         assertEquals("Invalid DHCP relay server name", exception.message)
         verify(routerConfiguration).removeDHCPRelay(name)
+    }
+
+    @Test
+    fun `get list of ip addresses should succeed`() {
+
+        val username = "admin"
+        val password = "admin"
+        val ipAddresses = listOf(
+            InterfaceIpAddress(name = "eth0", address = "192.168.1.1"),
+            InterfaceIpAddress(name = "eth1", address = "192.168.1.2")
+        )
+        val router = Router(id = 1, vendor = "Mikrotik", ipAddress = "192.168.0.2", model = "Router OS")
+
+        `when`(routerService.getById(1)).thenReturn(router)
+        `when`(
+            pluginLoader.getRouterConfiguration(
+                model = router.model.lowercase(),
+                hostname = router.ipAddress,
+                username = username,
+                password = password,
+                port = 23
+            )
+        ).thenReturn(routerConfiguration)
+        `when`(routerConfiguration.getIpAddresses())
+            .thenReturn(Response(raw = "", data = ipAddresses))
+
+        val result = routerConfigurationService.getIpAddresses(router.id, username, password)
+
+        assertEquals(ipAddresses, result)
+        verify(routerConfiguration).getIpAddresses()
     }
 
 
