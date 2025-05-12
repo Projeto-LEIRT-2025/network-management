@@ -1,4 +1,4 @@
-package com.github.project.networkservice.controllers
+package com.github.project.webapplication.controllers
 
 import com.github.project.networkservice.dto.ApiResponseDto
 import com.github.project.networkservice.exceptions.PluginLoadException

@@ -1,4 +1,4 @@
-package com.github.project.metricsservice.model
+package com.github.project.metricsservice.models
 
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -33,6 +33,6 @@ data class InterfaceStats(
     val discardedPacketsOut: Long,
 
     @CreationTimestamp
-    val timestamp: Instant = Instant.now(),
+    val timestamp: Instant = Instant.now()
 
 )

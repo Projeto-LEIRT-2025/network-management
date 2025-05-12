@@ -1,4 +1,4 @@
-package com.github.project.networkservice.controllers
+package com.github.project.webapplication.controllers
 
 import com.github.project.networkservice.dto.ApiResponseDto
 import com.github.project.networkservice.dto.CreateRouterDto
@@ -20,7 +20,7 @@ class RouterController(
     private val routerService: RouterService,
     private val routerConfigurationService: RouterConfigurationService
 
-    ) {
+) {
 
     @GetMapping("/network")
     fun getNetwork(): ResponseEntity<List<Edge>> {

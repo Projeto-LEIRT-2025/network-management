@@ -22,11 +22,11 @@ class RouterMonitoringService(
         return routerMonitoring.getTotalMemory()
     }
 
-    fun getMemoryUsed(routerId: Long): Int {
+    fun getMemoryUsage(routerId: Long): Int {
 
         val routerMonitoring = getRouterMonitoringByRouterId(routerId)
 
-        return routerMonitoring.getMemoryUsed()
+        return routerMonitoring.getMemoryUsage()
     }
 
     fun getUptime(routerId: Long): String {
@@ -36,11 +36,11 @@ class RouterMonitoringService(
         return routerMonitoring.getUptime()
     }
 
-    fun getCpuLoad(routerId: Long): Double {
+    fun getCpuUsage(routerId: Long): Double {
 
         val routerMonitoring = getRouterMonitoringByRouterId(routerId)
 
-        return routerMonitoring.getCpuLoad()
+        return routerMonitoring.getCpuUsage()
     }
 
     fun getBytesIn(routerId: Long, index: Int): Long {
@@ -113,7 +113,7 @@ class RouterMonitoringService(
         return router.toRouterMonitoring()
     }
 
-    private fun Router.toRouterMonitoring(port: Int = 141) =
+    private fun Router.toRouterMonitoring(port: Int = 161) =
         pluginLoader.getRouterMonitoring(
             model = model.lowercase(),
             hostname = ipAddress,

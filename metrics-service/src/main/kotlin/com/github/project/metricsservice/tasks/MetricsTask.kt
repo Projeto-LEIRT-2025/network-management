@@ -16,16 +16,17 @@ class MetricsTask(
 
     private val logger = LoggerFactory.getLogger(MetricsTask::class.java)
 
-    @Scheduled(fixedRate = 30 * 1000L)
+    @Scheduled(fixedRate = 5 * 1000L)
     fun reportInterfaceStats() {
 
         val routers = routerService.getAll()
 
         routers.forEach { router ->
             metricsService.collectInterfaceStats(router.id)
+            metricsService.collectDeviceStats(router.id)
         }
 
-        logger.info("Collected interface stats from ${routers.size} routers.")
+        logger.info("Collected stats from ${routers.size} routers.")
     }
 
 }

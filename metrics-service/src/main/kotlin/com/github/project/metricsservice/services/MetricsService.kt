@@ -1,7 +1,9 @@
 package com.github.project.metricsservice.services
 
-import com.github.project.metricsservice.model.InterfaceStats
-import com.github.project.metricsservice.repositories.MetricsRepository
+import com.github.project.metricsservice.models.DeviceStats
+import com.github.project.metricsservice.models.InterfaceStats
+import com.github.project.metricsservice.repositories.DeviceStatsRepository
+import com.github.project.metricsservice.repositories.InterfaceStatsRepository
 import com.github.project.networkservice.services.RouterMonitoringService
 import org.springframework.stereotype.Service
 import java.time.Instant
@@ -9,13 +11,33 @@ import java.time.Instant
 @Service
 class MetricsService(
 
-    private val metricsRepository: MetricsRepository,
+    private val interfaceStatsRepository: InterfaceStatsRepository,
+    private val deviceStatsRepository: DeviceStatsRepository,
     private val routerMonitoringService: RouterMonitoringService
 
 ) {
 
     fun getInterfaceStatsBetween(fromTimestamp: Instant, toTimestamp: Instant): List<InterfaceStats> {
-        return metricsRepository.findByTimestampBetween(fromTimestamp, toTimestamp)
+        return interfaceStatsRepository.findByTimestampBetween(fromTimestamp, toTimestamp)
+    }
+
+    fun collectDeviceStats(routerId: Long) {
+
+        val cpuUsage = routerMonitoringService.getCpuUsage(routerId)
+        val memoryUsage = routerMonitoringService.getMemoryUsage(routerId)
+        val totalMemory = routerMonitoringService.getTotalMemory(routerId)
+        val uptime = routerMonitoringService.getUptime(routerId)
+
+        deviceStatsRepository.save(
+            DeviceStats(
+                routerId = routerId,
+                uptime = uptime,
+                memoryUsage = memoryUsage,
+                totalMemory = totalMemory,
+                cpuUsage = cpuUsage
+            )
+        )
+
     }
 
     fun collectInterfaceStats(routerId: Long) {
@@ -31,7 +53,7 @@ class MetricsService(
         val discardedPacketsOut = networkInterfaces.associateWith { routerMonitoringService.getDiscardedPacketsOut(routerId, it.index) }
 
         networkInterfaces.map { networkInterface ->
-            metricsRepository.save(
+            interfaceStatsRepository.save(
                 InterfaceStats(
                     routerId = routerId,
                     interfaceName = networkInterface.name,

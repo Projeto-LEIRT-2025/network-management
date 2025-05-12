@@ -6,11 +6,11 @@ interface RouterMonitoring {
 
     fun getTotalMemory(): Int
 
-    fun getMemoryUsed(): Int
+    fun getMemoryUsage(): Int
 
     fun getUptime(): String
 
-    fun getCpuLoad(): Double
+    fun getCpuUsage(): Double
 
     fun getNetworkInterfaces(): List<NetworkInterface>
 

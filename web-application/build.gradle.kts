@@ -4,6 +4,7 @@ plugins {
     kotlin("plugin.spring") version libs.versions.kotlin
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.dependency.management)
+    alias(libs.plugins.shadow)
 }
 
 group = "com.github.project"
@@ -15,16 +16,18 @@ repositories {
 
 dependencies {
 
-    compileOnly(project(":api"))
-    compileOnly(libs.serialization)
-    compileOnly(libs.reflection)
-    compileOnly(libs.spring.data.jpa)
-    compileOnly(libs.spring.boot.validation)
-    compileOnly(libs.postgresql)
+    implementation(project(":api"))
+    implementation(project(":network-service"))
+    implementation(project(":metrics-service"))
+    implementation(libs.serialization)
+    implementation(libs.reflection)
+    implementation(libs.spring.boot)
+    implementation(libs.spring.boot.web)
+    implementation(libs.spring.data.jpa)
+    implementation(libs.spring.boot.validation)
+    implementation(libs.postgresql)
 
     testImplementation(libs.spring.boot.test)
-    testImplementation(libs.spring.data.jpa)
-    testImplementation(project(":api"))
     testImplementation(kotlin("test"))
 }
 

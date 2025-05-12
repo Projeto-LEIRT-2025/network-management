@@ -67,7 +67,7 @@ class RouterMonitoringImpl(
         return totalMemory / 1024 //1 kibibyte is 1024 bytes -> MiB (mebibyte)
     }
 
-    override fun getMemoryUsed(): Int {
+    override fun getMemoryUsage(): Int {
 
         val oid = OID(MEMORY_USED_OID)
         val pdu = PDU().apply {
@@ -77,9 +77,9 @@ class RouterMonitoringImpl(
 
         val responseEvent = snmp.send(pdu, this.target)
         val pduResponse = responseEvent.response
-        val memoryUsed = pduResponse.getVariable(oid).toInt() //kibibyte
+        val memoryUsage = pduResponse.getVariable(oid).toInt() //kibibyte
 
-        return memoryUsed / 1024 //1 kibibyte is 1024 bytes -> MiB (mebibyte)
+        return memoryUsage / 1024 //1 kibibyte is 1024 bytes -> MiB (mebibyte)
     }
 
     override fun getUptime(): String {
@@ -97,7 +97,7 @@ class RouterMonitoringImpl(
         return uptime
     }
 
-    override fun getCpuLoad(): Double {
+    override fun getCpuUsage(): Double {
 
         val oid = OID(CPU_LOAD_OID)
         val pdu = PDU().apply {
