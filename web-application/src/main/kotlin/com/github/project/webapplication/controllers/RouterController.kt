@@ -1,12 +1,9 @@
 package com.github.project.webapplication.controllers
 
-import com.github.project.networkservice.dto.ApiResponseDto
+import com.github.project.webapplication.dto.ApiResponseDto
 import com.github.project.networkservice.dto.CreateRouterDto
-import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.dto.RouterDto
-import com.github.project.networkservice.models.Edge
 import com.github.project.networkservice.models.Router
-import com.github.project.networkservice.services.RouterConfigurationService
 import com.github.project.networkservice.services.RouterService
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
@@ -17,23 +14,9 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/routers")
 class RouterController(
 
-    private val routerService: RouterService,
-    private val routerConfigurationService: RouterConfigurationService
+    private val routerService: RouterService
 
 ) {
-
-    @GetMapping("/network")
-    fun getNetwork(): ResponseEntity<List<Edge>> {
-
-        val edges = routerConfigurationService.getNetworkGraph(
-            mapOf(
-                1L to CredentialsDto("admin", "pepe"),
-                2L to CredentialsDto("admin", "pepe")
-            )
-        ).edges
-
-        return ResponseEntity.ok(edges)
-    }
 
     @PostMapping
     fun create(@RequestBody @Valid dto: CreateRouterDto): ResponseEntity<ApiResponseDto<RouterDto>> {

@@ -1,4 +1,4 @@
-package com.github.project.networkservice.dto
+package com.github.project.webapplication.dto
 
 import kotlinx.serialization.Serializable
 

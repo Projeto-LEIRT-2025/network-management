@@ -17,8 +17,12 @@ class MetricsService(
 
 ) {
 
-    fun getInterfaceStatsBetween(fromTimestamp: Instant, toTimestamp: Instant): List<InterfaceStats> {
-        return interfaceStatsRepository.findByTimestampBetween(fromTimestamp, toTimestamp)
+    fun getInterfaceStatsBetween(routerId: Long, fromTimestamp: Instant, toTimestamp: Instant): List<InterfaceStats> {
+        return interfaceStatsRepository.findByRouterIdAndTimestampBetween(routerId, fromTimestamp, toTimestamp)
+    }
+
+    fun getDeviceStatsBetween(routerId: Long, fromTimestamp: Instant, toTimestamp: Instant): List<DeviceStats> {
+        return deviceStatsRepository.findByRouterIdAndTimestampBetween(routerId, fromTimestamp, toTimestamp)
     }
 
     /**
@@ -84,7 +88,8 @@ class MetricsService(
                     errorPacketsIn = errorPacketsIn[networkInterface] ?: 0L,
                     errorPacketsOut = errorPacketsOut[networkInterface] ?: 0L,
                     discardedPacketsIn = discardedPacketsIn[networkInterface] ?: 0L,
-                    discardedPacketsOut = discardedPacketsOut[networkInterface] ?: 0L
+                    discardedPacketsOut = discardedPacketsOut[networkInterface] ?: 0L,
+                    status = networkInterface.operationalStatus
                 )
             )
         }

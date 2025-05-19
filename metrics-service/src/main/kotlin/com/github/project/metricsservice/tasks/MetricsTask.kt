@@ -17,7 +17,7 @@ class MetricsTask(
     private val logger = LoggerFactory.getLogger(MetricsTask::class.java)
 
     @Scheduled(fixedRate = 30 * 1000L)
-    fun reportInterfaceStats() {
+    fun reportStats() {
 
         val routers = routerService.getAll()
 

@@ -1,6 +1,6 @@
 package com.github.project.webapplication.controllers
 
-import com.github.project.networkservice.dto.ApiResponseDto
+import com.github.project.webapplication.dto.ApiResponseDto
 import com.github.project.networkservice.exceptions.PluginLoadException
 import com.github.project.networkservice.exceptions.PluginNotFoundException
 import com.github.project.networkservice.exceptions.RouterConfigurationException

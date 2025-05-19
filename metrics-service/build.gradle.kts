@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version libs.versions.kotlin
+    kotlin("plugin.serialization") version libs.versions.kotlin
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.dependency.management)
 }
@@ -16,6 +17,7 @@ dependencies {
     compileOnly(project(":api"))
     compileOnly(project(":network-service"))
 
+    compileOnly(libs.serialization)
     compileOnly(libs.reflection)
     compileOnly(libs.spring.data.jpa)
     compileOnly(libs.postgresql)

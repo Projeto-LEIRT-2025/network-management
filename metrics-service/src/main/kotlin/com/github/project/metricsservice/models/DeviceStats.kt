@@ -12,15 +12,15 @@ data class DeviceStats(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    val routerId: Long,
+    val routerId: Long = 0,
 
-    val uptime: String,
+    val uptime: String = "",
 
-    val cpuUsage: Double,
+    val cpuUsage: Double = 0.0,
 
-    val totalMemory: Int,
+    val totalMemory: Int = 0,
 
-    val memoryUsage: Int,
+    val memoryUsage: Int = 0,
 
     @CreationTimestamp
     val timestamp: Instant = Instant.now()
@@ -28,6 +28,6 @@ data class DeviceStats(
 ) {
 
     val freeMemory: Int
-        get() = memoryUsage - totalMemory
+        get() = totalMemory - memoryUsage
 
 }

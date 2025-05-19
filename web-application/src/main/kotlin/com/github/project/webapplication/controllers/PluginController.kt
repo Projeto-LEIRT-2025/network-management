@@ -1,7 +1,7 @@
 package com.github.project.webapplication.controllers
 
 import com.github.project.api.Plugin
-import com.github.project.networkservice.dto.ApiResponseDto
+import com.github.project.webapplication.dto.ApiResponseDto
 import com.github.project.networkservice.dto.LoadPluginsDto
 import com.github.project.networkservice.dto.PluginDto
 import com.github.project.networkservice.services.PluginService

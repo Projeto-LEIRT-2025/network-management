@@ -261,6 +261,10 @@ class RouterMonitoringImpl(
         for (vb in variableBindings) {
 
             val index = vb.oid.last()
+
+            if (index <= 0)
+                continue
+
             var builder = interfaces[index]
 
             if (builder == null) {
@@ -281,7 +285,8 @@ class RouterMonitoringImpl(
 
         }
 
-        return interfaces.values.map { it.build() }
+        return interfaces.values
+            .map { it.build() }
     }
 
 }
