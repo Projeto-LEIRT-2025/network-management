@@ -239,33 +239,45 @@ class RouterConfigurationService(
         return response.data
     }
 
-    fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>): Graph {
+    fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>, parallel: Int = 10): Graph {
 
         val graph = Graph()
         val routers = routerService.getAll()
-        val routerConfigurationsFutures = routers.associateWith {
+        val routerConfigurations = mutableMapOf<Router, RouterConfiguration>()
 
-            val credentials = allCredentials[it.id] ?: throw RouterNotFoundException()
+        routers.chunked(parallel).forEach { batch ->
 
-            CompletableFuture.supplyAsync {
-                it.toRouterConfiguration(username = credentials.username, password = credentials.password)
+            val futures = batch.associateWith { router ->
+
+                val credentials = allCredentials[router.id] ?: throw RouterNotFoundException()
+
+                CompletableFuture.supplyAsync {
+                    router.toRouterConfiguration(
+                        username = credentials.username,
+                        password = credentials.password
+                    )
+                }
+
+            }
+
+            CompletableFuture.allOf(*futures.values.toTypedArray()).join()
+
+            futures.forEach { (router, future) ->
+                routerConfigurations[router] = future.get()
             }
 
         }
 
-        CompletableFuture.allOf(*routerConfigurationsFutures.values.toTypedArray()).join()
+        val routerInterfaces = routerConfigurations.mapValues { it.value.getIpAddresses().data }
+        val routerNeighbors = routerConfigurations.mapValues { it.value.getNeighbors().data }
 
-        val routerConfigurations = routerConfigurationsFutures.mapValues { it.value.get() }
-        val routerInterfaces = routerConfigurations.mapValues { entry -> entry.value.getIpAddresses().data }
-        val routerNeighbors = routerConfigurations.mapValues { entry -> entry.value.getNeighbors().data }
-
-        for ( (router, neighbors) in routerNeighbors) {
+        for ((router, neighbors) in routerNeighbors) {
 
             val from = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
 
             for (neighbor in neighbors) {
 
-                val routerNeighbor = routerInterfaces.entries.firstOrNull { (router, interfaces) ->
+                val routerNeighbor = routerInterfaces.entries.firstOrNull { (_, interfaces) ->
                     interfaces.any {
                         it.name == neighbor.interfaceName && it.address == neighbor.ipAddress
                     }

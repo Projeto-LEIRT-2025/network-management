@@ -61,7 +61,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val totalMemory = pduResponse.getVariable(oid).toInt() //kibibyte
 
         return totalMemory / 1024 //1 kibibyte is 1024 bytes -> MiB (mebibyte)
@@ -76,7 +76,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val memoryUsage = pduResponse.getVariable(oid).toInt() //kibibyte
 
         return memoryUsage / 1024 //1 kibibyte is 1024 bytes -> MiB (mebibyte)
@@ -91,7 +91,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return ""
         val uptime = pduResponse.getVariable(oid).toString()
 
         return uptime
@@ -108,7 +108,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val response = responseEvent.response
+        val response = responseEvent.response ?: return 0.0
 
         return response.variableBindings
             .filter { it.oid.startsWith(oid) }
@@ -125,7 +125,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val bytesIn = pduResponse.getVariable(oid).toLong()
 
         return bytesIn
@@ -140,7 +140,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val bytesOut = pduResponse.getVariable(oid).toLong()
 
         return bytesOut
@@ -155,7 +155,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val packetsIn = pduResponse.getVariable(oid).toLong()
 
         return packetsIn
@@ -170,7 +170,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val packetsOut = pduResponse.getVariable(oid).toLong()
 
         return packetsOut
@@ -185,7 +185,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val errorsIn = pduResponse.getVariable(oid).toLong()
 
         return errorsIn
@@ -200,7 +200,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val errorsOut = pduResponse.getVariable(oid).toLong()
 
         return errorsOut
@@ -215,7 +215,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val discardsIn = pduResponse.getVariable(oid).toLong()
 
         return discardsIn
@@ -230,7 +230,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return 0
         val discardsOut = pduResponse.getVariable(oid).toLong()
 
         return discardsOut
@@ -255,7 +255,7 @@ class RouterMonitoringImpl(
         }
 
         val responseEvent = snmp.send(pdu, this.target)
-        val pduResponse = responseEvent.response
+        val pduResponse = responseEvent.response ?: return emptyList()
         val variableBindings = pduResponse.variableBindings
 
         for (vb in variableBindings) {
