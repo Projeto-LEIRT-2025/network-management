@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.spring.boot.web)
     implementation(libs.spring.data.jpa)
     implementation(libs.spring.boot.validation)
+    implementation(libs.spring.boot.thymeleaf)
     implementation(libs.postgresql)
 
     testImplementation(libs.spring.boot.test)

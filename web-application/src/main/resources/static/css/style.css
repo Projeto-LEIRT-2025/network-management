@@ -1,0 +1,90 @@
+:root {
+
+    --background: oklch(21% 0.034 264.665);
+    --foreground: oklch(27.8% 0.033 256.848);
+    --primary: oklch(98.7% 0.022 95.277);
+
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--background);
+    color: var(--primary);
+    display: flex;
+    flex-direction: column;
+
+}
+
+a {
+
+    text-decoration: none;
+    color: var(--primary);
+    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    transition: 0.5s;
+
+}
+
+a:hover {
+
+    opacity: 0.75;
+
+}
+
+ul {
+
+    list-style: none;
+
+}
+
+header {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--foreground);
+
+}
+
+header h1 {
+
+    letter-spacing: 0.1em;
+    cursor: default;
+
+}
+
+header ul {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+
+}
+
+main {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+
+}
+
+.graph {
+
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+}
