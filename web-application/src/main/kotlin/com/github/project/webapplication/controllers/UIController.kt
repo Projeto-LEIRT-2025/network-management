@@ -1,18 +1,28 @@
 package com.github.project.webapplication.controllers
 
+import com.github.project.networkservice.services.RouterService
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 
 @Controller
-class UIController {
+class UIController(
+
+    private val routerService: RouterService
+
+) {
 
     @GetMapping
-    fun home(model: Model): String {
+    fun home() = "home"
 
-        model.addAttribute("name", "João")
+    @GetMapping("/routers")
+    fun routers(model: Model): String {
 
-        return "home"
+        val routers = routerService.getAll()
+
+        model.addAttribute("routers", routers)
+
+        return "routers"
     }
 
 }

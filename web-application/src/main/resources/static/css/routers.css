@@ -1,0 +1,47 @@
+.routers {
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+
+}
+
+.router {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--foreground);
+    padding: 40px 20px;
+    border-radius: 10px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+.router label {
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+}
+
+.router .buttons {
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    gap: 10px;
+
+}
+
+.router .buttons .delete {
+
+    background-color: var(--red);
+
+}

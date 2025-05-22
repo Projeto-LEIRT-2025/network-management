@@ -10,22 +10,13 @@
 </head>
 <body>
 
-    <header>
-
-        <h1>Network Management</h1>
-
-        <ul>
-            <li><a th:href="@{/}">Home</a></li>
-            <li><a th:href="@{/routers}">Routers</a></li>
-        </ul>
-
-    </header>
+    <header th:replace="~{fragments :: header}"></header>
 
     <main>
 
         <div class="graph">
 
-            <div th:replace="fragments :: loader"></div>
+            <div th:replace="~{fragments :: loader}"></div>
 
         </div>
 

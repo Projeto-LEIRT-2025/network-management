@@ -1,0 +1,26 @@
+header {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--foreground);
+
+}
+
+header h1 {
+
+    letter-spacing: 0.1em;
+    cursor: default;
+
+}
+
+header ul {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+
+}
