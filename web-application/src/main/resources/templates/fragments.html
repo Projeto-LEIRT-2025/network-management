@@ -22,5 +22,17 @@
 
     </header>
 
+    <!-- modal fragment -->
+    <div th:fragment="modal">
+        <link rel="stylesheet" th:href="@{/css/modal.css}">
+        <div id="modal" class="modal" style="display:none;">
+            <div class="modal-content">
+                <span id="close-modal" class="close">&times;</span>
+                <h2 id="modal-title"></h2>
+                <form id="modal-form"></form>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

@@ -11,9 +11,17 @@
 </head>
 <body>
 
+    <div th:replace="fragments :: modal"></div>
+
+    <div id="notification"></div>
+
     <header th:replace="~{fragments :: header}"></header>
 
     <main>
+
+        <div>
+            <button class="create" id="open-modal">Create Router</button>
+        </div>
 
         <div class="routers">
 
@@ -45,5 +53,7 @@
 
     </main>
 
+    <script th:src="@{/scripts/modal.js}"></script>
+    <script th:src="@{/scripts/routers.js}"></script>
 </body>
 </html>

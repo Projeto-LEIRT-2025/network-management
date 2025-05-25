@@ -8,6 +8,7 @@
     --border: oklch(50% 0.134 242.749);
     --button: oklch(50% 0.134 242.749);
     --red: oklch(63.7% 0.237 25.331);
+    --green: oklch(52.7% 0.154 150.069);
 
 }
 
@@ -63,8 +64,10 @@ main {
 
     display: flex;
     flex-direction: column;
-    margin: 80px auto;
+    margin: auto;
+    padding: 80px;
     width: 80%;
+    gap: 20px;
     flex: 1;
 
 }
@@ -109,10 +112,79 @@ button:hover {
 
 }
 
+#notification {
+
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    cursor: default;
+    font-size: 18px;
+
+}
+
+.show {
+
+    animation: showAnimation 1s ease forwards;
+
+}
+
+.hide {
+
+    animation: hideAnimation 1s ease forwards;
+
+}
+
+@keyframes showAnimation {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+@keyframes hideAnimation {
+
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+
+}
+
+.success {
+
+    background-color: var(--green);
+
+}
+
+.error {
+
+    background-color: var(--red);
+
+}
+
 .graph {
 
     display: flex;
     justify-content: center;
     width: 100%;
+
+}
+
+#create {
+
+    background-color: var(--green);
 
 }
