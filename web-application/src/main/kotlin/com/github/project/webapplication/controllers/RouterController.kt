@@ -3,6 +3,7 @@ package com.github.project.webapplication.controllers
 import com.github.project.webapplication.dto.ApiResponseDto
 import com.github.project.networkservice.dto.CreateRouterDto
 import com.github.project.networkservice.dto.RouterDto
+import com.github.project.networkservice.dto.UpdateRouterDto
 import com.github.project.networkservice.models.Router
 import com.github.project.networkservice.services.RouterService
 import jakarta.validation.Valid
@@ -61,6 +62,20 @@ class RouterController(
                 ApiResponseDto(
                     message = "Routers retrieved successfully",
                     data = routers.map { it.toDto() }
+                )
+            )
+    }
+
+    @PutMapping("/{id}")
+    fun update(@PathVariable id: Long, @RequestBody dto: UpdateRouterDto): ResponseEntity<ApiResponseDto<RouterDto>> {
+
+        val router = routerService.update(id, dto.ipAddress, dto.model, dto.vendor)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Router updated successfully",
+                    data = router.toDto()
                 )
             )
     }

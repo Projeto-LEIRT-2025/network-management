@@ -83,4 +83,30 @@ class RouterService(
         routerRepository.delete(router)
     }
 
+    /**
+     *
+     * Update the router given an id
+     *
+     * @param id the id of router
+     * @param ipAddress the ip address of router
+     * @param model the model of router
+     * @param vendor the vendor of router
+     *
+     * @return the updated router
+     *
+     */
+
+    fun update(id: Long, ipAddress: String?, model: String?, vendor: String?): Router {
+
+        val router = getById(id)
+
+        return routerRepository.save(
+            router.copy(
+                model = model ?: router.model,
+                vendor = vendor ?: router.vendor,
+                ipAddress = ipAddress ?: router.ipAddress
+            )
+        )
+    }
+
 }

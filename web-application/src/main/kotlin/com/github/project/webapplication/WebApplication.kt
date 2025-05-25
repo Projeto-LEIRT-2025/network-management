@@ -16,6 +16,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 class WebApplication
 
 fun main(args: Array<String>) {
-    PluginLoader.loadPluginsFromDirectory("/plugins")
+    //PluginLoader.loadPluginsFromDirectory("/plugins")
     runApplication<WebApplication>(*args)
 }
