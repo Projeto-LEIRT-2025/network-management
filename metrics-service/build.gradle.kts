@@ -23,6 +23,7 @@ dependencies {
     compileOnly(libs.postgresql)
 
     testImplementation(kotlin("test"))
+    testImplementation(project(":network-service"))
 }
 
 kotlin {

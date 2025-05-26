@@ -1,5 +1,6 @@
 package com.github.project.networkservice.services
 
+import com.github.project.networkservice.exceptions.RouterIpAddressAlreadyExistsException
 import com.github.project.networkservice.exceptions.RouterNotFoundException
 import com.github.project.networkservice.models.Router
 import com.github.project.networkservice.repositories.RouterRepository
@@ -31,6 +32,10 @@ class RouterService(
      */
 
     fun create(vendor: String, model: String, ipAddress: String): Router {
+
+        if(routerRepository.existsByIpAddress(ipAddress))
+            throw RouterIpAddressAlreadyExistsException()
+
         return routerRepository.save(
             Router(
                 vendor = vendor,

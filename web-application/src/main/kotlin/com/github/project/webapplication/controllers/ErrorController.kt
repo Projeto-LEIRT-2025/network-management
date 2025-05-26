@@ -1,10 +1,7 @@
 package com.github.project.webapplication.controllers
 
+import com.github.project.networkservice.exceptions.*
 import com.github.project.webapplication.dto.ApiResponseDto
-import com.github.project.networkservice.exceptions.PluginLoadException
-import com.github.project.networkservice.exceptions.PluginNotFoundException
-import com.github.project.networkservice.exceptions.RouterConfigurationException
-import com.github.project.networkservice.exceptions.RouterNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
@@ -32,7 +29,7 @@ class ErrorController {
                 )
             )
 
-    @ExceptionHandler(RouterConfigurationException::class)
+    @ExceptionHandler(RouterConfigurationException::class, RouterIpAddressAlreadyExistsException::class)
     fun handleBadRequest(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =
         ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
