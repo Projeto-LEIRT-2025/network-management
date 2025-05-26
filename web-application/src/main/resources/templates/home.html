@@ -14,13 +14,15 @@
 
     <main>
 
-        <div class="graph">
+        <div id="graph">
 
             <div th:replace="~{fragments :: loader}"></div>
 
         </div>
 
     </main>
+
+    <script type="module" th:src="@{/scripts/graph.js}"></script>
 
 </body>
 </html>

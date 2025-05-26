@@ -273,7 +273,7 @@ class RouterConfigurationService(
 
         for ((router, neighbors) in routerNeighbors) {
 
-            val from = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
+            val source = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
 
             for (neighbor in neighbors) {
 
@@ -283,11 +283,11 @@ class RouterConfigurationService(
                     }
                 }?.key ?: continue
 
-                val to = Node(routerNeighbor.id.toString(), "${routerNeighbor.model}@${routerNeighbor.ipAddress}")
+                val target = Node(routerNeighbor.id.toString(), "${routerNeighbor.model}@${routerNeighbor.ipAddress}")
 
-                graph.addNode(from)
-                graph.addNode(to)
-                graph.addEdge(from.id, to.id)
+                graph.addNode(source)
+                graph.addNode(target)
+                graph.addEdge(source.id, target.id)
             }
 
         }

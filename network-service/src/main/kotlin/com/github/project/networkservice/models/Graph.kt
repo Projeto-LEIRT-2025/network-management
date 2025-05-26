@@ -9,8 +9,8 @@ class Node(
 
 class Edge(
 
-    val from: Node,
-    val to: Node
+    val source: Node,
+    val target: Node
 
 )
 
@@ -19,6 +19,9 @@ class Graph {
     private val _nodes = mutableMapOf<String, Node>()
     private val _edges = mutableListOf<Edge>()
 
+    val nodes: List<Node>
+        get() = _nodes.values.toList()
+
     val edges: List<Edge>
         get() = _edges
 
@@ -26,11 +29,11 @@ class Graph {
         _nodes.putIfAbsent(node.id, node)
     }
 
-    fun addEdge(fromId: String, toId: String) {
+    fun addEdge(sourceId: String, targetId: String) {
 
-        val from = _nodes[fromId] ?: throw IllegalArgumentException("Node $fromId doesn't exist")
-        val to = _nodes[toId] ?: throw IllegalArgumentException("Node $toId doesn't exist")
-        val edge = Edge(from, to)
+        val source = _nodes[sourceId] ?: throw IllegalArgumentException("Node $sourceId doesn't exist")
+        val target = _nodes[targetId] ?: throw IllegalArgumentException("Node $targetId doesn't exist")
+        val edge = Edge(source, target)
 
         _edges.add(edge)
     }
