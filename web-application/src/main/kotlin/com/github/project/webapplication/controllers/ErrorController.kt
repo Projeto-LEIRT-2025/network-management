@@ -41,13 +41,13 @@ class ErrorController {
             )
 
     @ExceptionHandler(RouterLoginException::class)
-    fun handleUnauthenticated(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =
+    fun handleRouterLoginUnauthenticated(e: RouterLoginException): ResponseEntity<ApiResponseDto<Long>> =
         ResponseEntity
             .status(HttpStatus.UNAUTHORIZED)
             .body(
                 ApiResponseDto(
-                    message = e.message ?: "",
-                    data = Unit
+                    message = e.message,
+                    data = e.routerId
                 )
             )
 

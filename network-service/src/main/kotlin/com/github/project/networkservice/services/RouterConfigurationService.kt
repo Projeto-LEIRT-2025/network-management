@@ -242,6 +242,8 @@ class RouterConfigurationService(
 
     fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>, parallel: Int = 10): Graph {
 
+        println(allCredentials)
+
         val graph = Graph()
         val routers = routerService.getAll()
         val routerConfigurations = mutableMapOf<Router, RouterConfiguration>()
@@ -250,7 +252,7 @@ class RouterConfigurationService(
 
             val futures = batch.associateWith { router ->
 
-                val credentials = allCredentials[router.id] ?: throw RouterNotFoundException()
+                val credentials = allCredentials[router.id] ?: throw RouterLoginException(router.id)
 
                 CompletableFuture.supplyAsync {
                     router.toRouterConfiguration(
@@ -317,7 +319,7 @@ class RouterConfigurationService(
         ) ?: throw PluginNotFoundException("There is no plugin for this device")
 
         if (!routerConfiguration.login())
-            throw RouterLoginException()
+            throw RouterLoginException(this.id)
 
         return routerConfiguration
     }

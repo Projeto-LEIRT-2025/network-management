@@ -8,8 +8,10 @@ import com.github.project.networkservice.models.Graph
 import com.github.project.networkservice.models.Node
 import com.github.project.networkservice.services.RouterConfigurationService
 import com.github.project.webapplication.dto.ApiResponseDto
+import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
@@ -22,30 +24,9 @@ class RouterGlobalConfigurationController(
 ) {
 
     @GetMapping("/network")
-    fun getNetwork(): ResponseEntity<ApiResponseDto<GraphDto>> {
+    fun getNetwork(@RequestBody @Valid dto: Map<Long, CredentialsDto>): ResponseEntity<ApiResponseDto<GraphDto>> {
 
-        /*val graph = routerConfigurationService.getNetworkGraph(
-            mapOf(
-                1L to CredentialsDto("admin", "pepe"),
-                2L to CredentialsDto("admin", "pepe")
-            )
-        )*/
-
-        val graph = Graph()
-
-        graph.addNode(Node("1", "192.168.0.1"))
-        graph.addNode(Node("2", "192.168.0.2"))
-        graph.addNode(Node("3", "192.168.0.3"))
-        graph.addNode(Node("4", "192.168.0.4"))
-
-        graph.addEdge("1", "2")
-        graph.addEdge("2", "1")
-        graph.addEdge("2", "3")
-        graph.addEdge("3", "2")
-        graph.addEdge("3", "4")
-        graph.addEdge("4", "3")
-        graph.addEdge("4", "1")
-        graph.addEdge("1", "4")
+        val graph = routerConfigurationService.getNetworkGraph(dto)
 
         return ResponseEntity
             .ok(
