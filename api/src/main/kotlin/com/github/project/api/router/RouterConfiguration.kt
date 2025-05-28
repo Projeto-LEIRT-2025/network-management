@@ -6,6 +6,8 @@ import com.github.project.api.router.response.Response
 
 interface RouterConfiguration {
 
+    fun login(): Boolean
+
     //INTERFACES
 
     fun enableInterface(interfaceName: String): Response<Unit>

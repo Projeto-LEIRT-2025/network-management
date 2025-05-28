@@ -6,6 +6,7 @@ import com.github.project.api.router.response.InterfaceIpAddress
 import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.exceptions.PluginNotFoundException
 import com.github.project.networkservice.exceptions.RouterConfigurationException
+import com.github.project.networkservice.exceptions.RouterLoginException
 import com.github.project.networkservice.exceptions.RouterNotFoundException
 import com.github.project.networkservice.models.Graph
 import com.github.project.networkservice.models.Node
@@ -305,13 +306,20 @@ class RouterConfigurationService(
         )
     }
 
-    private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23) =
-        pluginLoader.getRouterConfiguration(
+    private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23): RouterConfiguration {
+
+        val routerConfiguration = pluginLoader.getRouterConfiguration(
             model = model.lowercase(),
             hostname = ipAddress,
             username = username,
             password = password,
             port = port
         ) ?: throw PluginNotFoundException("There is no plugin for this device")
+
+        if (!routerConfiguration.login())
+            throw RouterLoginException()
+
+        return routerConfiguration
+    }
 
 }

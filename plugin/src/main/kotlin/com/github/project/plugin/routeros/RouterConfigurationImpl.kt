@@ -20,7 +20,6 @@ class RouterConfigurationImpl(
 
     init {
         telnetClient.connect(hostname, port.toInt())
-        login()
     }
 
     private fun <T> executeCommand(command: String, mapper: (String) -> Response<T>): Response<T> {
@@ -58,9 +57,8 @@ class RouterConfigurationImpl(
 
             if (!started) {
 
-                if (regex.containsMatchIn(line) && line.contains(command)) {
+                if (regex.containsMatchIn(line) && line.contains(command))
                     started = true
-                }
 
                 continue
             }
@@ -68,9 +66,8 @@ class RouterConfigurationImpl(
             if (line.contains(command))
                 continue
 
-            if (regex.matches(line)) {
+            if (regex.matches(line))
                 break
-            }
 
             response.append("$line ")
         }
@@ -80,7 +77,7 @@ class RouterConfigurationImpl(
         return mapper(response.toString().trim())
     }
 
-    private fun login() {
+    override fun login(): Boolean {
 
         val reader = telnetClient.inputStream.bufferedReader()
         val writer = telnetClient.outputStream.bufferedWriter()
@@ -93,9 +90,10 @@ class RouterConfigurationImpl(
 
             if (line.trim() == "Login:") writer.writeAndFlush("$username\r\n")
             else if (line.trim() == "Password:") writer.writeAndFlush("$password\r\n")
+            else if (line.trim().contains("Login failed")) return false
             else if (regex.matches(line.trim())) {
                 writer.writeAndFlush("\r\n")
-                break
+                return true
             }
 
         }

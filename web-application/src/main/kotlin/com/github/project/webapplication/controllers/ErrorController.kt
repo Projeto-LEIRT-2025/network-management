@@ -40,6 +40,17 @@ class ErrorController {
                 )
             )
 
+    @ExceptionHandler(RouterLoginException::class)
+    fun handleUnauthenticated(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =
+        ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(
+                ApiResponseDto(
+                    message = e.message ?: "",
+                    data = Unit
+                )
+            )
+
     @ExceptionHandler(PluginLoadException::class)
     fun handleInternalServerError(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =
         ResponseEntity
