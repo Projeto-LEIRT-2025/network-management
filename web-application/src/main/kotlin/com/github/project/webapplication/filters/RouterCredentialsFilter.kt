@@ -33,8 +33,8 @@ class RouterCredentialsFilter(
         filterChain: FilterChain
     ) {
 
-        val objectMapper = ObjectMapper()
         val wrapper = ContentCachingRequestWrapper(request)
+        val objectMapper = ObjectMapper()
         val uri = request.requestURI
 
         try {
@@ -76,11 +76,11 @@ class RouterCredentialsFilter(
                         val credentialsNode = rootNode["credentials"]
                         val hasUserAndPass = credentialsNode.hasNonNull("username") && credentialsNode.hasNonNull("password")
 
-                        if (!hasUserAndPass && credentialsNode is ObjectNode) {
+                        if (!hasUserAndPass) {
 
                             val cached = cache[id]
 
-                            if (cached == null) {
+                            if (credentialsNode !is ObjectNode || cached == null) {
                                 handlerExceptionResolver.resolveException(request, response, null, RouterLoginException(id))
                                 return
                             }
@@ -91,15 +91,16 @@ class RouterCredentialsFilter(
                             val newBodyBytes = objectMapper.writeValueAsBytes(rootNode)
 
                             filterChain.doFilter(buildWrappedRequest(wrapper, newBodyBytes), response)
-                            return
                         }else {
                             cache[id] = CredentialsDto(credentialsNode["username"].asText(), credentialsNode["password"].asText())
+                            filterChain.doFilter(buildWrappedRequest(wrapper, wrapper.contentAsByteArray), response)
                         }
 
                     }else {
 
                         if (rootNode.has("username") && rootNode.has("password")) {
                             cache[id] = CredentialsDto(rootNode["username"].asText(), rootNode["password"].asText())
+                            filterChain.doFilter(buildWrappedRequest(wrapper, wrapper.contentAsByteArray), response)
                         }else {
 
                             val cached = cache[id]
@@ -112,25 +113,26 @@ class RouterCredentialsFilter(
                                 }
 
                                 val newBodyBytes = objectMapper.writeValueAsBytes(updated)
+                                println(newBodyBytes.toString(Charsets.UTF_8))
 
                                 filterChain.doFilter(buildWrappedRequest(wrapper, newBodyBytes), response)
-                                return
                             }
-
 
                         }
 
                     }
 
+                    return
                 }
 
             }
 
         }catch (e: Exception) {
             handlerExceptionResolver.resolveException(request, response, null, e)
+            return
         }
 
-        filterChain.doFilter(buildWrappedRequest(request, wrapper.contentAsByteArray), response)
+        filterChain.doFilter(request, response)
     }
 
     private fun buildWrappedRequest(
