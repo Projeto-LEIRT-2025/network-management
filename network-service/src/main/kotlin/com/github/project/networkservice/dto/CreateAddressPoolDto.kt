@@ -5,18 +5,21 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CreateAddressPoolDto(
 
     @field:NotNull
     val credentials: CredentialsDto,
 
     @IpAddress
-    val address: String,
+    @SerialName("range_start")
+    val rangeStart: String,
 
-    @field:Min(0)
-    @field:Max(32)
-    @field:NotNull
-    val mask: Int
+    @IpAddress
+    @SerialName("range_end")
+    val rangeEnd: String
 
 )

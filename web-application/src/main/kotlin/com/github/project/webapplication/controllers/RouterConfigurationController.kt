@@ -205,7 +205,7 @@ class RouterConfigurationController(
     @PostMapping("/address/pool/{name}")
     fun createAddressPool(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateAddressPoolDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createAddressPool(id, dto.credentials.username, dto.credentials.password, name, dto.address, dto.mask)
+        routerConfigurationService.createAddressPool(id, dto.credentials.username, dto.credentials.password, name, dto.rangeStart, dto.rangeEnd)
 
         return ResponseEntity
             .ok(

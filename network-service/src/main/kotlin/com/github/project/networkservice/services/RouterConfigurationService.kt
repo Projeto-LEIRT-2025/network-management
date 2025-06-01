@@ -152,10 +152,10 @@ class RouterConfigurationService(
 
     }
 
-    fun createAddressPool(routerId: Long, username: String, password: String, name: String, address: String, mask: Int) {
+    fun createAddressPool(routerId: Long, username: String, password: String, name: String, rangeStart: String, rangeEnd: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.createAddressPool(name, address, mask)
+        val response = routerConfiguration.createAddressPool(name, rangeStart, rangeEnd)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)

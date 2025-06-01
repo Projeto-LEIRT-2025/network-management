@@ -33,7 +33,6 @@ class RouterCredentialsFilter(
         filterChain: FilterChain
     ) {
 
-        val wrapper = ContentCachingRequestWrapper(request)
         val objectMapper = ObjectMapper()
         val uri = request.requestURI
 
@@ -41,6 +40,7 @@ class RouterCredentialsFilter(
 
             if (uri.equals("/api/v1/routers/configuration/network")) {
 
+                val wrapper = ContentCachingRequestWrapper(request)
                 val json = wrapper.inputStream.bufferedReader().readText()
                 val body = objectMapper.readValue(
                     json, object : TypeReference<MutableMap<Long, CredentialsDto>>() {}
@@ -66,10 +66,12 @@ class RouterCredentialsFilter(
 
                 val match = routerConfigRegex.find(uri)
                 val id = match?.groupValues?.get(1)?.toLongOrNull()
-                val json = wrapper.inputStream.bufferedReader().readText()
-                val rootNode = objectMapper.readTree(json)
 
                 if (id != null) {
+
+                    val wrapper = ContentCachingRequestWrapper(request)
+                    val json = wrapper.inputStream.bufferedReader().readText()
+                    val rootNode = objectMapper.readTree(json)
 
                     if (rootNode.has("credentials")) {
 
@@ -93,14 +95,14 @@ class RouterCredentialsFilter(
                             filterChain.doFilter(buildWrappedRequest(wrapper, newBodyBytes), response)
                         }else {
                             cache[id] = CredentialsDto(credentialsNode["username"].asText(), credentialsNode["password"].asText())
-                            filterChain.doFilter(buildWrappedRequest(wrapper, wrapper.contentAsByteArray), response)
+                            filterChain.doFilter(buildWrappedRequest(request, wrapper.contentAsByteArray), response)
                         }
 
                     }else {
 
                         if (rootNode.has("username") && rootNode.has("password")) {
                             cache[id] = CredentialsDto(rootNode["username"].asText(), rootNode["password"].asText())
-                            filterChain.doFilter(buildWrappedRequest(wrapper, wrapper.contentAsByteArray), response)
+                            filterChain.doFilter(buildWrappedRequest(request, wrapper.contentAsByteArray), response)
                         }else {
 
                             val cached = cache[id]

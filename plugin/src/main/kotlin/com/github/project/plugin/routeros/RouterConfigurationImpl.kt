@@ -16,7 +16,7 @@ class RouterConfigurationImpl(
 ) : RouterConfiguration {
 
     private val telnetClient = TelnetClient()
-    private val regex = Regex("\\[$username@[\\w-]+] >")
+    private val regex = Regex("\\[$username@[\\w-]+]")
 
     init {
         telnetClient.connect(hostname, port.toInt())
@@ -35,7 +35,7 @@ class RouterConfigurationImpl(
 
             if (line.trim() == "Login:") writer.writeAndFlush("$username\r\n")
             else if (line.trim() == "Password:") writer.writeAndFlush("$password\r\n")
-            else if (regex.matches(line.trim())) {
+            else if (regex.containsMatchIn(line.trim())) {
                 writer.writeAndFlush("$command\r\n")
                 break
             }
@@ -47,7 +47,7 @@ class RouterConfigurationImpl(
 
         while (true) {
 
-            val line = reader.readLine().trim()
+            val line = reader.readLine().replace("<", "").replace(">", "").trim()
 
             if (line.isBlank()) {
                 if (started)
@@ -57,17 +57,20 @@ class RouterConfigurationImpl(
 
             if (!started) {
 
-                if (regex.containsMatchIn(line) && line.contains(command))
+                if (regex.containsMatchIn(line))
                     started = true
 
                 continue
             }
 
-            if (line.contains(command))
+            if (command.contains(line))
                 continue
 
             if (regex.matches(line))
                 break
+
+            if (regex.containsMatchIn(line))
+                continue
 
             response.append("$line ")
         }
@@ -91,7 +94,7 @@ class RouterConfigurationImpl(
             if (line.trim() == "Login:") writer.writeAndFlush("$username\r\n")
             else if (line.trim() == "Password:") writer.writeAndFlush("$password\r\n")
             else if (line.trim().contains("Login failed")) return false
-            else if (regex.matches(line.trim())) {
+            else if (regex.containsMatchIn(line.trim())) {
                 writer.writeAndFlush("\r\n")
                 return true
             }
@@ -145,8 +148,8 @@ class RouterConfigurationImpl(
     override fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int) =
         executeCommand("/routing ospf interface-template add interfaces=$interfaceName area=$areaName type=$networkType cost=$cost")
 
-    override fun createAddressPool(name: String, address: String, mask: Int) =
-        executeCommand("/ip pool add name=$name ranges=$address/$mask")
+    override fun createAddressPool(name: String, rangeStart: String, rangeEnd: String) =
+        executeCommand("/ip pool add name=$name ranges=$rangeStart-$rangeEnd")
 
     override fun createDHCPServer(name: String, pool: String, interfaceName: String) =
         executeCommand("/ip dhcp-server add address-pool=$pool interface=$interfaceName name=$name disabled=no")
