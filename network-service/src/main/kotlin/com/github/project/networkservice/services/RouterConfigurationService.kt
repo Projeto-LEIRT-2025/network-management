@@ -242,8 +242,6 @@ class RouterConfigurationService(
 
     fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>, parallel: Int = 10): Graph {
 
-        println(allCredentials)
-
         val graph = Graph()
         val routers = routerService.getAll()
         val routerConfigurations = mutableMapOf<Router, RouterConfiguration>()

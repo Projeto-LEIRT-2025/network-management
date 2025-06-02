@@ -4,7 +4,13 @@ window.addEventListener("load", init)
 
 async function init() {
 
-    const response = await fetch("http://localhost:8080/api/v1/routers/configuration/network")
+    const response = await fetch("http://localhost:8080/api/v1/routers/configuration/network", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({}),
+    })
 
     if (!response.ok) {
         showNotification("An error occurred while retrieving the network")
