@@ -31,6 +31,9 @@ class Graph {
 
     fun addEdge(sourceId: String, targetId: String) {
 
+        if (sourceId == targetId)
+            return
+
         val source = _nodes[sourceId] ?: throw IllegalArgumentException("Node $sourceId doesn't exist")
         val target = _nodes[targetId] ?: throw IllegalArgumentException("Node $targetId doesn't exist")
         val edge = Edge(source, target)
