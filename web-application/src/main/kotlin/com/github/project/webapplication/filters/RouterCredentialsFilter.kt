@@ -115,7 +115,6 @@ class RouterCredentialsFilter(
                                 }
 
                                 val newBodyBytes = objectMapper.writeValueAsBytes(updated)
-                                println(newBodyBytes.toString(Charsets.UTF_8))
 
                                 filterChain.doFilter(buildWrappedRequest(wrapper, newBodyBytes), response)
                             }

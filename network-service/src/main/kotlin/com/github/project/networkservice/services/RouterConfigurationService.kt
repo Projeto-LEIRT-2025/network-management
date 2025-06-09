@@ -8,12 +8,13 @@ import com.github.project.networkservice.exceptions.ManyRouterLoginException
 import com.github.project.networkservice.exceptions.PluginNotFoundException
 import com.github.project.networkservice.exceptions.RouterConfigurationException
 import com.github.project.networkservice.exceptions.RouterLoginException
-import com.github.project.networkservice.exceptions.RouterNotFoundException
 import com.github.project.networkservice.models.Graph
 import com.github.project.networkservice.models.Node
 import com.github.project.networkservice.models.Router
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Service
-import java.util.concurrent.CompletableFuture
 
 @Service
 class RouterConfigurationService(
@@ -23,6 +24,16 @@ class RouterConfigurationService(
 
 ) {
 
+    /**
+     *
+     * Enable an interface on the router given its name
+     *
+     * @param routerId router id
+     * @param username router username
+     * @param password router password
+     * @param interfaceName interface name to enable
+     *
+     */
     fun enableInterface(routerId: Long, username: String, password: String, interfaceName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
@@ -33,6 +44,16 @@ class RouterConfigurationService(
 
     }
 
+    /**
+     *
+     * Disable an interface on the router given its name
+     *
+     * @param routerId router id
+     * @param username router username
+     * @param password router password
+     * @param interfaceName interface name to disable
+     *
+     */
     fun disableInterface(routerId: Long, username: String, password: String, interfaceName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
@@ -242,7 +263,7 @@ class RouterConfigurationService(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>, parallel: Int = 10): Graph {
+    suspend fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>, parallel: Int = 10): Graph = coroutineScope {
 
         val graph = Graph()
         val routers = routerService.getAll()
@@ -251,33 +272,35 @@ class RouterConfigurationService(
 
         routers.chunked(parallel).forEach { batch ->
 
-            val futures = batch.associateWith { router ->
+            val jobs = batch.mapNotNull { router ->
 
                 val credentials = allCredentials[router.id]
                 if (credentials == null) {
                     missingCredentials.add(router.id)
-                    return@associateWith null
+                    return@mapNotNull null
                 }
 
-                CompletableFuture.supplyAsync {
-                    router.toRouterConfiguration(
-                        username = credentials.username,
-                        password = credentials.password
-                    )
-                }.exceptionally { throwable ->
+                async {
 
-                    if (throwable.cause is RouterLoginException)
+                    try {
+                        val config = router.toRouterConfiguration(
+                            username = credentials.username,
+                            password = credentials.password
+                        )
+                        router to config
+                    } catch (_: RouterLoginException) {
                         missingCredentials.add(router.id)
+                        null
+                    }
 
-                    null
                 }
 
-            }.filterValues { it != null } as Map<Router, CompletableFuture<RouterConfiguration>>
+            }
 
-            CompletableFuture.allOf(*futures.values.toTypedArray()).join()
+            val results = jobs.awaitAll().filterNotNull()
 
-            futures.forEach { (router, future) ->
-                routerConfigurations[router] = future.get()
+            for ((router, config) in results) {
+                routerConfigurations[router] = config
             }
 
         }
@@ -290,11 +313,9 @@ class RouterConfigurationService(
         val routerNeighbors = routerConfigurations.mapValues { it.value.getNeighbors().data }
 
         for ((router, neighbors) in routerNeighbors) {
-
             val source = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
 
             for (neighbor in neighbors) {
-
                 val routerNeighbor = routerInterfaces.entries.firstOrNull { (_, interfaces) ->
                     interfaces.any {
                         it.name == neighbor.interfaceName && it.address == neighbor.ipAddress
@@ -307,10 +328,9 @@ class RouterConfigurationService(
                 graph.addNode(target)
                 graph.addEdge(source.id, target.id)
             }
-
         }
 
-        return graph
+        return@coroutineScope graph
     }
 
     private fun getRouterConfigurationByRouterId(id: Long, username: String, password: String): RouterConfiguration {

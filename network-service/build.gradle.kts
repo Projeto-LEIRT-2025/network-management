@@ -21,6 +21,7 @@ dependencies {
     compileOnly(libs.spring.data.jpa)
     compileOnly(libs.spring.boot.validation)
     compileOnly(libs.postgresql)
+    compileOnly(libs.coroutines)
 
     testImplementation(libs.spring.boot.test)
     testImplementation(libs.spring.data.jpa)

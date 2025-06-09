@@ -9,6 +9,7 @@ import com.github.project.networkservice.models.Node
 import com.github.project.networkservice.services.RouterConfigurationService
 import com.github.project.webapplication.dto.ApiResponseDto
 import jakarta.validation.Valid
+import kotlinx.coroutines.runBlocking
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,17 +26,19 @@ class RouterGlobalConfigurationController(
 ) {
 
     @PostMapping("/network")
-    fun getNetwork(@RequestBody @Valid dto: Map<Long, CredentialsDto>): ResponseEntity<ApiResponseDto<GraphDto>> {
+    fun getNetwork(
+        @RequestBody @Valid dto: Map<Long, CredentialsDto>
+    ): ResponseEntity<ApiResponseDto<GraphDto>> = runBlocking {
 
-        val graph = routerConfigurationService.getNetworkGraph(dto)
+            val graph = routerConfigurationService.getNetworkGraph(dto)
 
-        return ResponseEntity
-            .ok(
-                ApiResponseDto(
-                    message = "Graph retrieved successfully",
-                    data = GraphDto(nodes = graph.nodes, edges = graph.edges.map { EdgeDto(it.source.id, it.target.id) })
+            ResponseEntity
+                .ok(
+                    ApiResponseDto(
+                        message = "Graph retrieved successfully",
+                        data = GraphDto(nodes = graph.nodes, edges = graph.edges.map { EdgeDto(it.source.id, it.target.id) })
+                    )
                 )
-            )
-    }
+        }
 
 }

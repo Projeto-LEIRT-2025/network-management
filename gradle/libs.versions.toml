@@ -8,6 +8,7 @@ spring-boot = "3.4.3"
 dependency-management = "1.1.7"
 serialization = "1.8.0"
 postgresql = "42.7.5"
+coroutines = "1.9.0"
 
 [libraries]
 commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
@@ -22,6 +23,7 @@ spring-boot-validation = { module = "org.springframework.boot:spring-boot-starte
 serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 reflection = { module = "org.jetbrains.kotlin:kotlin-reflect" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }

@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.spring.boot.validation)
     implementation(libs.spring.boot.thymeleaf)
     implementation(libs.postgresql)
+    implementation(libs.coroutines)
 
     testImplementation(libs.spring.boot.test)
     testImplementation(kotlin("test"))
