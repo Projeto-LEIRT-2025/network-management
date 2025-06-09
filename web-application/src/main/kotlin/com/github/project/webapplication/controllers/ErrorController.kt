@@ -51,6 +51,17 @@ class ErrorController {
                 )
             )
 
+    @ExceptionHandler(ManyRouterLoginException::class)
+    fun handleManyRouterLoginUnauthenticated(e: ManyRouterLoginException): ResponseEntity<ApiResponseDto<List<Long>>> =
+        ResponseEntity
+            .status(HttpStatus.UNAUTHORIZED)
+            .body(
+                ApiResponseDto(
+                    message = e.message,
+                    data = e.routersId
+                )
+            )
+
     @ExceptionHandler(PluginLoadException::class)
     fun handleInternalServerError(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =
         ResponseEntity

@@ -22,6 +22,7 @@ dependencies {
     compileOnly(libs.spring.data.jpa)
     compileOnly(libs.postgresql)
 
+    testImplementation(libs.spring.boot.test)
     testImplementation(kotlin("test"))
     testImplementation(project(":network-service"))
 }

@@ -4,6 +4,7 @@ import com.github.project.api.PluginLoader
 import com.github.project.api.router.RouterConfiguration
 import com.github.project.api.router.response.InterfaceIpAddress
 import com.github.project.networkservice.dto.CredentialsDto
+import com.github.project.networkservice.exceptions.ManyRouterLoginException
 import com.github.project.networkservice.exceptions.PluginNotFoundException
 import com.github.project.networkservice.exceptions.RouterConfigurationException
 import com.github.project.networkservice.exceptions.RouterLoginException
@@ -240,26 +241,38 @@ class RouterConfigurationService(
         return response.data
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>, parallel: Int = 10): Graph {
 
         val graph = Graph()
         val routers = routerService.getAll()
         val routerConfigurations = mutableMapOf<Router, RouterConfiguration>()
+        val missingCredentials = mutableListOf<Long>()
 
         routers.chunked(parallel).forEach { batch ->
 
             val futures = batch.associateWith { router ->
 
-                val credentials = allCredentials[router.id] ?: throw RouterLoginException(router.id)
+                val credentials = allCredentials[router.id]
+                if (credentials == null) {
+                    missingCredentials.add(router.id)
+                    return@associateWith null
+                }
 
                 CompletableFuture.supplyAsync {
                     router.toRouterConfiguration(
                         username = credentials.username,
                         password = credentials.password
                     )
+                }.exceptionally { throwable ->
+
+                    if (throwable.cause is RouterLoginException)
+                        missingCredentials.add(router.id)
+
+                    null
                 }
 
-            }
+            }.filterValues { it != null } as Map<Router, CompletableFuture<RouterConfiguration>>
 
             CompletableFuture.allOf(*futures.values.toTypedArray()).join()
 
@@ -267,6 +280,10 @@ class RouterConfigurationService(
                 routerConfigurations[router] = future.get()
             }
 
+        }
+
+        if (missingCredentials.isNotEmpty()) {
+            throw ManyRouterLoginException(missingCredentials)
         }
 
         val routerInterfaces = routerConfigurations.mapValues { it.value.getIpAddresses().data }

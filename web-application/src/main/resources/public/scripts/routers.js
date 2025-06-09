@@ -32,8 +32,6 @@ function init() {
                 const model = data.get("model");
                 const vendor = data.get("vendor");
 
-                console.log(ipAddress, model);
-
                 if (ipAddress.trim() === "" || model.trim() === "" || vendor.trim() === "") {
                     showNotification("The fields cannot be empty", "error");
                     return;
@@ -186,21 +184,4 @@ async function deleteHandler(event, router) {
 
     router.remove();
     showNotification(json.message, "success");
-}
-
-function showNotification(message, type) {
-
-    const notification = document.getElementById("notification");
-
-    notification.classList.value = "";
-    notification.textContent = message;
-    notification.classList.add(type, "show");
-
-    setTimeout(() => {
-
-        notification.classList.remove("show");
-        notification.classList.add("hide");
-
-    }, 3000);
-
 }

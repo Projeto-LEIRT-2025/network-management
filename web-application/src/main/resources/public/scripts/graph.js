@@ -4,13 +4,57 @@ window.addEventListener("load", init)
 
 async function init() {
 
+    await loadGraph({})
+
+}
+
+async function loadGraph(credentials) {
+
     const response = await fetch("http://localhost:8080/api/v1/routers/configuration/network", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify(credentials),
     })
+
+    if (response.status === 401) {
+
+        const json = await response.json();
+        const routersId = json.data;
+        const theCredentials = {};
+
+        for (const routerId of routersId) {
+
+            await new Promise(resolve => {
+                openModal(
+                    `Router credentials for ${routerId}`,
+                    [
+                        { name: "username", label: "Username" },
+                        { name: "password", label: "Password", type: "password" }
+                    ],
+                    async data => {
+
+                        closeModal();
+
+                        const username = data.get("username");
+                        const password = data.get("password");
+
+                        theCredentials[routerId] = {
+                            username,
+                            password
+                        };
+
+                        resolve();
+                    }
+                );
+            });
+
+        }
+
+        await loadGraph(theCredentials);
+        return;
+    }
 
     if (!response.ok) {
         showNotification("An error occurred while retrieving the network")

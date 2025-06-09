@@ -11,6 +11,7 @@ import com.github.project.webapplication.dto.ApiResponseDto
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -23,7 +24,7 @@ class RouterGlobalConfigurationController(
 
 ) {
 
-    @GetMapping("/network")
+    @PostMapping("/network")
     fun getNetwork(@RequestBody @Valid dto: Map<Long, CredentialsDto>): ResponseEntity<ApiResponseDto<GraphDto>> {
 
         val graph = routerConfigurationService.getNetworkGraph(dto)

@@ -11,7 +11,7 @@
 </head>
 <body>
 
-    <div th:replace="fragments :: modal"></div>
+<div th:replace="~{fragments :: modal}"></div>
 
     <div id="notification"></div>
 
@@ -53,6 +53,7 @@
 
     </main>
 
+    <script th:src="@{/scripts/notification.js}"></script>
     <script th:src="@{/scripts/modal.js}"></script>
     <script th:src="@{/scripts/routers.js}"></script>
 </body>
