@@ -62,14 +62,30 @@ async function loadGraph(credentials) {
     }
 
     const json = await response.json();
+    const nodes = json.data.nodes
+    const links = json.data.edges
 
     const graphElement = document.getElementById("graph");
     graphElement.style.justifyContent = "start";
     graphElement.innerHTML = ""
 
+    if (nodes.length === 0) {
+        graphElement.style.alignItems = "center";
+        graphElement.style.justifyContent = "center";
+        graphElement.innerHTML = "<h2 style='opacity: 0.8'>There is no router in the network</h2>"
+        return
+    }
+
     const graphHeader = document.createElement("div")
     graphHeader.classList.add("graph-header");
-    graphHeader.innerHTML = '<button id="toggle-labels">Toggle Labels</button>'
+    graphHeader.innerHTML = `
+        <button id="toggle-labels">Toggle Labels</button>
+        <div class="zoom">
+            <span id="zoom-value">1.00</span>
+            <span id="zoom-in">+</span>
+            <span id="zoom-out">-</span>
+        </div>
+    `
     graphElement.appendChild(graphHeader);
 
     const graphContentElement = document.createElement("div")
@@ -78,8 +94,8 @@ async function loadGraph(credentials) {
 
     const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
-    svgElement.setAttribute("width", "600");
-    svgElement.setAttribute("height", "400");
+    svgElement.setAttribute("width", "1280");
+    svgElement.setAttribute("height", "720");
     graphContentElement.appendChild(svgElement);
 
     document.getElementById("toggle-labels").addEventListener("click", () => {
@@ -90,22 +106,82 @@ async function loadGraph(credentials) {
             .style("display", labelsVisible ? "none" : "block");
     });
 
-    const nodes = json.data.nodes
-    const links = json.data.edges
-
-    console.log(links)
-
-
+    const maxZoom = 2;
+    const minZoom = 0.5;
     const svg = d3.select("svg");
+    const zoomGroup = svg.append("g");
+    const zoom = d3.zoom()
+        .scaleExtent([minZoom, maxZoom])
+        .on("zoom", (event) => {
+            zoomGroup.attr("transform", event.transform);
+            document.getElementById("zoom-value").innerHTML = event.transform.k.toFixed(2);
+        });
+
+
+    document.getElementById("zoom-in").addEventListener("click", () => {
+
+        const transform = d3.zoomTransform(svg.node());
+        const newScale = Math.min(transform.k + 0.1, maxZoom);
+
+        svg.transition()
+            .duration(300)
+            .call(
+                zoom.transform,
+                d3.zoomIdentity.translate(transform.x, transform.y).scale(newScale)
+            );
+
+    })
+
+    document.getElementById("zoom-out").addEventListener("click", () => {
+
+        const transform = d3.zoomTransform(svg.node());
+        const newScale = Math.max(transform.k - 0.1, minZoom);
+
+        svg.transition()
+            .duration(300)
+            .call(
+                zoom.transform,
+                d3.zoomIdentity.translate(transform.x, transform.y).scale(newScale)
+            );
+
+    })
+
+    svg.call(zoom);
+
     const width = +svg.attr("width");
     const height = +svg.attr("height");
+    const distance = 100
+    const degrees = {};
+
+    nodes.forEach(node => degrees[node.id] = 0);
+    links.forEach(link => {
+        degrees[link.source.id || link.source]++;
+        degrees[link.target.id || link.target]++;
+    });
+
+    const sortedNodes = [...nodes].sort((a, b) => degrees[b.id] - degrees[a.id]);
+    const nodesPerRow = Math.floor(width / distance);
+    Math.ceil(nodes.length / nodesPerRow);
+    sortedNodes.forEach((node, i) => {
+
+        const row = Math.floor(i / nodesPerRow);
+        const col = i % nodesPerRow;
+        const nodesInThisRow = Math.min(nodesPerRow, nodes.length - row * nodesPerRow);
+        const startX = (width - (nodesInThisRow - 1) * distance) / 2;
+
+        node.x = startX + col * distance;
+        node.y = distance + row * distance;
+
+        node.fx = node.x;
+        node.fy = node.y;
+    });
 
     const simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links).id(d => d.id).distance(200))
         .force("charge", d3.forceManyBody().strength(-300))
         .force("center", d3.forceCenter(width / 2, height / 2));
 
-    const link = svg.append("g")
+    const link = zoomGroup.append("g")
         .attr("stroke", "#999")
         .attr("stroke-opacity", 0.6)
         .selectAll("line")
@@ -113,7 +189,7 @@ async function loadGraph(credentials) {
         .join("line")
         .attr("stroke-width", 2);
 
-    const node = svg.append("g")
+    const node = zoomGroup.append("g")
         .attr("stroke", "#fff")
         .attr("stroke-width", 1.5)
         .selectAll("circle")
@@ -122,7 +198,7 @@ async function loadGraph(credentials) {
         .attr("r", 20)
         .attr("fill", "var(--node)");
 
-    const label = svg.append("g")
+    const label = zoomGroup.append("g")
         .attr("class", "labels")
         .selectAll("text")
         .data(nodes)
@@ -150,3 +226,4 @@ async function loadGraph(credentials) {
     });
 
 }
+

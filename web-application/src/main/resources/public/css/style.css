@@ -188,11 +188,16 @@ button:hover {
     align-items: center;
     flex: 1;
     width: 100%;
+
 }
 
 .graph-header {
 
     width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 20px;
 
 }
 
@@ -203,5 +208,34 @@ button:hover {
     align-items: center;
     height: 100%;
     width: 100%;
+
+}
+
+.zoom {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px;
+    border-radius: 15px;
+    background-color: var(--foreground);
+    color: var(--primary);
+
+}
+
+.zoom span {
+
+    display: flex;
+    flex-direction: row;
+    border-radius: 15px;
+    font-size: 30px;
+    cursor: pointer;
+
+}
+
+#zoom-value {
+
+    font-size: 18px;
 
 }
