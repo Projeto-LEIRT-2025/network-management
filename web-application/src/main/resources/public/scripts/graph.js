@@ -1,31 +1,25 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-window.addEventListener("load", init)
+window.addEventListener("load", init);
 
 async function init() {
-
-    await loadGraph({})
-
+    await loadGraph({});
 }
 
 async function loadGraph(credentials) {
 
     const response = await fetch("http://localhost:8080/api/v1/routers/configuration/network", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(credentials),
-    })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials)
+    });
 
     if (response.status === 401) {
-
         const json = await response.json();
         const routersId = json.data;
         const theCredentials = {};
 
         for (const routerId of routersId) {
-
             await new Promise(resolve => {
                 openModal(
                     `Router credentials for ${routerId}`,
@@ -34,22 +28,15 @@ async function loadGraph(credentials) {
                         { name: "password", label: "Password", type: "password" }
                     ],
                     async data => {
-
                         closeModal();
-
-                        const username = data.get("username");
-                        const password = data.get("password");
-
                         theCredentials[routerId] = {
-                            username,
-                            password
+                            username: data.get("username"),
+                            password: data.get("password")
                         };
-
                         resolve();
                     }
                 );
             });
-
         }
 
         await loadGraph(theCredentials);
@@ -57,129 +44,103 @@ async function loadGraph(credentials) {
     }
 
     if (!response.ok) {
-        showNotification("An error occurred while retrieving the network")
-        return
+        showNotification("An error occurred while retrieving the network");
+        return;
     }
 
-    const json = await response.json();
-    const nodes = json.data.nodes
-    const links = json.data.edges
+    const { nodes, edges: links } = (await response.json()).data;
 
     const graphElement = document.getElementById("graph");
     graphElement.style.justifyContent = "start";
-    graphElement.innerHTML = ""
+    graphElement.innerHTML = "";
 
     if (nodes.length === 0) {
         graphElement.style.alignItems = "center";
         graphElement.style.justifyContent = "center";
-        graphElement.innerHTML = "<h2 style='opacity: 0.8'>There is no router in the network</h2>"
-        return
+        graphElement.innerHTML = "<h2 style='opacity: 0.8'>There is no router in the network</h2>";
+        return;
     }
 
-    const graphHeader = document.createElement("div")
-    graphHeader.classList.add("graph-header");
-    graphHeader.innerHTML = `
+    renderControls(graphElement);
+    const svgElement = createSvg();
+    document.querySelector(".graph-content").appendChild(svgElement);
+
+    const width = +svgElement.getAttribute("width");
+    const height = +svgElement.getAttribute("height");
+    const svg = d3.select(svgElement);
+    const zoomGroup = svg.append("g");
+
+    configureZoom(svg, zoomGroup);
+    renderGraph({ svg, zoomGroup, nodes, links, width, height });
+}
+
+function renderControls(container) {
+    const header = document.createElement("div");
+    header.classList.add("graph-header");
+    header.innerHTML = `
         <button id="toggle-labels">Toggle Labels</button>
+        <button id="toggle-interfaces">Toggle Interfaces</button>
         <div class="zoom">
             <span id="zoom-value">1.00</span>
             <span id="zoom-in">+</span>
             <span id="zoom-out">-</span>
         </div>
-    `
-    graphElement.appendChild(graphHeader);
+    `;
+    container.appendChild(header);
 
-    const graphContentElement = document.createElement("div")
-    graphContentElement.classList.add("graph-content")
-    graphElement.appendChild(graphContentElement);
-
-    const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-
-    svgElement.setAttribute("width", "1280");
-    svgElement.setAttribute("height", "720");
-    graphContentElement.appendChild(svgElement);
+    const content = document.createElement("div");
+    content.classList.add("graph-content");
+    container.appendChild(content);
 
     document.getElementById("toggle-labels").addEventListener("click", () => {
-
-        const labelsVisible = d3.selectAll(".labels text").style("display") !== "none";
-
-        d3.selectAll(".labels text")
-            .style("display", labelsVisible ? "none" : "block");
+        const visible = d3.selectAll(".labels text").style("display") !== "none";
+        d3.selectAll(".labels text").style("display", visible ? "none" : "block");
     });
 
-    const maxZoom = 2;
-    const minZoom = 0.5;
-    const svg = d3.select("svg");
-    const zoomGroup = svg.append("g");
+    document.getElementById("toggle-interfaces").addEventListener("click", () => {
+        const visible = d3.selectAll(".interfaces text").style("display") !== "none";
+        d3.selectAll(".interfaces text").style("display", visible ? "none" : "block");
+    });
+}
+
+function createSvg() {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("width", "1280");
+    svg.setAttribute("height", "720");
+    return svg;
+}
+
+function configureZoom(svg, zoomGroup) {
+
+    const maxZoom = 2, minZoom = 0.5;
     const zoom = d3.zoom()
         .scaleExtent([minZoom, maxZoom])
-        .on("zoom", (event) => {
-            zoomGroup.attr("transform", event.transform);
-            document.getElementById("zoom-value").innerHTML = event.transform.k.toFixed(2);
+        .on("zoom", e => {
+            zoomGroup.attr("transform", e.transform);
+            document.getElementById("zoom-value").textContent = e.transform.k.toFixed(2);
         });
-
-
-    document.getElementById("zoom-in").addEventListener("click", () => {
-
-        const transform = d3.zoomTransform(svg.node());
-        const newScale = Math.min(transform.k + 0.1, maxZoom);
-
-        svg.transition()
-            .duration(300)
-            .call(
-                zoom.transform,
-                d3.zoomIdentity.translate(transform.x, transform.y).scale(newScale)
-            );
-
-    })
-
-    document.getElementById("zoom-out").addEventListener("click", () => {
-
-        const transform = d3.zoomTransform(svg.node());
-        const newScale = Math.max(transform.k - 0.1, minZoom);
-
-        svg.transition()
-            .duration(300)
-            .call(
-                zoom.transform,
-                d3.zoomIdentity.translate(transform.x, transform.y).scale(newScale)
-            );
-
-    })
 
     svg.call(zoom);
 
-    const width = +svg.attr("width");
-    const height = +svg.attr("height");
-    const distance = 100
-    const degrees = {};
+    document.getElementById("zoom-in").addEventListener("click", () => zoomBy(svg, zoom, 0.1, maxZoom));
+    document.getElementById("zoom-out").addEventListener("click", () => zoomBy(svg, zoom, -0.1, minZoom));
+}
 
-    nodes.forEach(node => degrees[node.id] = 0);
-    links.forEach(link => {
-        degrees[link.source.id || link.source]++;
-        degrees[link.target.id || link.target]++;
-    });
+function zoomBy(svg, zoom, delta, limit) {
+    const t = d3.zoomTransform(svg.node());
+    const newScale = delta > 0 ? Math.min(t.k + delta, limit) : Math.max(t.k + delta, limit);
+    svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity.translate(t.x, t.y).scale(newScale));
+}
 
-    const sortedNodes = [...nodes].sort((a, b) => degrees[b.id] - degrees[a.id]);
-    const nodesPerRow = Math.floor(width / distance);
-    Math.ceil(nodes.length / nodesPerRow);
-    sortedNodes.forEach((node, i) => {
+function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
 
-        const row = Math.floor(i / nodesPerRow);
-        const col = i % nodesPerRow;
-        const nodesInThisRow = Math.min(nodesPerRow, nodes.length - row * nodesPerRow);
-        const startX = (width - (nodesInThisRow - 1) * distance) / 2;
-
-        node.x = startX + col * distance;
-        node.y = distance + row * distance;
-
-        node.fx = node.x;
-        node.fy = node.y;
-    });
+    const radius = 20
 
     const simulation = d3.forceSimulation(nodes)
         .force("link", d3.forceLink(links).id(d => d.id).distance(200))
         .force("charge", d3.forceManyBody().strength(-300))
-        .force("center", d3.forceCenter(width / 2, height / 2));
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        .force("collision", d3.forceCollide().radius(50));
 
     const link = zoomGroup.append("g")
         .attr("stroke", "#999")
@@ -195,7 +156,7 @@ async function loadGraph(credentials) {
         .selectAll("circle")
         .data(nodes)
         .join("circle")
-        .attr("r", 20)
+        .attr("r", radius)
         .attr("fill", "var(--node)");
 
     const label = zoomGroup.append("g")
@@ -208,6 +169,58 @@ async function loadGraph(credentials) {
         .attr("dy", -30)
         .attr("text-anchor", "middle")
         .attr("fill", "var(--primary)");
+
+    const interfaceLabel = zoomGroup.append("g")
+        .attr("class", "interfaces")
+        .selectAll("g")
+        .data(links)
+        .join("g");
+
+    const sourceGroup = interfaceLabel.append("g");
+
+    sourceGroup.append("circle")
+        .attr("r", 4)
+        .attr("fill", d => color(d.source_interface.status))
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1)
+        .on("mouseover", (event, d) => {
+            d3.select(event.currentTarget.parentNode).select("text").style("display", "block");
+        })
+        .on("mouseout", (event, d) => {
+            d3.select(event.currentTarget.parentNode).select("text").style("display", "none");
+        });
+
+    sourceGroup.append("text")
+        .attr("class", "interfaces")
+        .attr("display", "none")
+        .attr("font-size", 12)
+        .attr("fill", d => color(d.source_interface.status))
+        .attr("x", 6)
+        .attr("y", 4)
+        .text(d => d.source_interface.name);
+
+    const targetGroup = interfaceLabel.append("g");
+
+    targetGroup.append("circle")
+        .attr("r", 4)
+        .attr("fill", d => color(d.target_interface.status))
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 1)
+        .on("mouseover", (event, d) => {
+            d3.select(event.currentTarget.parentNode).select("text").style("display", "block");
+        })
+        .on("mouseout", (event, d) => {
+            d3.select(event.currentTarget.parentNode).select("text").style("display", "none");
+        });
+
+    targetGroup.append("text")
+        .attr("class", "interfaces")
+        .attr("display", "none")
+        .attr("font-size", 12)
+        .attr("fill", d => color(d.target_interface.status))
+        .attr("x", 6)
+        .attr("y", 4)
+        .text(d => d.target_interface.name);
 
     simulation.on("tick", () => {
         link
@@ -223,7 +236,31 @@ async function loadGraph(credentials) {
         label
             .attr("x", d => d.x)
             .attr("y", d => d.y);
+
+        sourceGroup.attr("transform", d => {
+            const dx = d.target.x - d.source.x;
+            const dy = d.target.y - d.source.y;
+            const len = Math.sqrt(dx*dx + dy*dy);
+            const x = d.source.x + (dx / len) * radius;
+            const y = d.source.y + (dy / len) * radius;
+            return `translate(${x},${y})`;
+        });
+
+        targetGroup.attr("transform", d => {
+            const dx = d.source.x - d.target.x;
+            const dy = d.source.y - d.target.y;
+            const len = Math.sqrt(dx*dx + dy*dy);
+            const x = d.target.x + (dx / len) * radius;
+            const y = d.target.y + (dy / len) * radius;
+            return `translate(${x},${y})`;
+        });
+
     });
 
-}
+    function color(status) {
+        if (status === "UP") return "var(--green)";
+        if (status === "DOWN") return "var(--red)";
+        return "var(--orange)";
+    }
 
+}

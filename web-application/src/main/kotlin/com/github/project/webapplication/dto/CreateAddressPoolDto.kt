@@ -1,9 +1,7 @@
-package com.github.project.networkservice.dto
+package com.github.project.webapplication.dto
 
+import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.validators.IpAddress
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

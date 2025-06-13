@@ -1,8 +1,22 @@
 package com.github.project.webapplication.controllers
 
-import com.github.project.networkservice.dto.*
 import com.github.project.networkservice.services.RouterConfigurationService
+import com.github.project.webapplication.dto.AddOSPFInterfaceDto
+import com.github.project.webapplication.dto.AddOSPFNetworkDto
 import com.github.project.webapplication.dto.ApiResponseDto
+import com.github.project.webapplication.dto.ChangeSNMPVersionDto
+import com.github.project.webapplication.dto.CreateAddressPoolDto
+import com.github.project.webapplication.dto.CreateDHCPRelayDto
+import com.github.project.webapplication.dto.CreateDHCPServerDto
+import com.github.project.webapplication.dto.CreateDHCPServerNetworkDto
+import com.github.project.webapplication.dto.CreateDHCPServerRelayDto
+import com.github.project.webapplication.dto.CreateOSPFAreaDto
+import com.github.project.webapplication.dto.CreateOSPFProcessDto
+import com.github.project.networkservice.dto.CredentialsDto
+import com.github.project.webapplication.dto.RemoveIpAddressDto
+import com.github.project.webapplication.dto.RemoveStaticRouteDto
+import com.github.project.webapplication.dto.SetIpAddressDto
+import com.github.project.webapplication.dto.StaticRouteDto
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping

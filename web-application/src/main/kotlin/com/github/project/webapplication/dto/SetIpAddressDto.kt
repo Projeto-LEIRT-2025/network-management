@@ -1,5 +1,6 @@
-package com.github.project.networkservice.dto
+package com.github.project.webapplication.dto
 
+import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.validators.IpAddress
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

@@ -1,12 +1,14 @@
-package com.github.project.networkservice.dto
+package com.github.project.webapplication.dto
 
+import com.github.project.networkservice.dto.CredentialsDto
+import com.github.project.networkservice.validators.IpAddress
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AddOSPFInterfaceDto(
+data class CreateDHCPRelayDto(
 
     @field:NotNull
     val credentials: CredentialsDto,
@@ -15,15 +17,8 @@ data class AddOSPFInterfaceDto(
     @field:NotBlank
     val interfaceName: String,
 
-    @SerialName("area_name")
-    @field:NotBlank
-    val areaName: String,
-
-    @SerialName("network_type")
-    @field:NotBlank
-    val networkType: String,
-
-    @field:NotNull
-    val cost: Int
+    @SerialName("server_address")
+    @IpAddress
+    val serverAddress: String
 
 )

@@ -1,11 +1,13 @@
 package com.github.project.webapplication.controllers
 
+import com.github.project.api.router.response.NetworkInterface
 import com.github.project.metricsservice.dto.DeviceStatsDto
 import com.github.project.metricsservice.dto.InterfaceStatsDto
 import com.github.project.metricsservice.models.DeviceStats
 import com.github.project.metricsservice.models.InterfaceStats
 import com.github.project.metricsservice.services.MetricsService
 import com.github.project.webapplication.dto.ApiResponseDto
+import com.github.project.webapplication.dto.NetworkInterfaceDto
 import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -24,6 +26,28 @@ class MetricsController(
 ) {
 
     @GetMapping("/interfaces")
+    fun getInterfaces(@PathVariable id: Long): ResponseEntity<ApiResponseDto<List<NetworkInterfaceDto>>> {
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Interfaces retrieved successfully",
+                    data = metricsService.getNetworkInterfaces(id).map { it.toDto() }
+                )
+            )
+    }
+
+    @GetMapping("/interfaces/{name}")
+    fun getInterfaceStatus(@PathVariable id: Long, @PathVariable name: String): ResponseEntity<ApiResponseDto<NetworkInterface.OperationalStatus>> {
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Interface status retrieved successfully",
+                    data = metricsService.getNetworkInterfaceStatus(id, name)
+                )
+            )
+    }
+
+    @GetMapping("/interfaces/stats")
     fun getInterfaceStats(
         @PathVariable id: Long,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Instant,
@@ -38,7 +62,7 @@ class MetricsController(
             )
     }
 
-    @GetMapping
+    @GetMapping("/devices/stats")
     fun getDeviceStats(
         @PathVariable id: Long,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Instant,
@@ -76,6 +100,11 @@ class MetricsController(
         memoryUsage = this.memoryUsage,
         freeMemory = this.freeMemory,
         timestamp = this.timestamp.toString()
+    )
+
+    private fun NetworkInterface.toDto() = NetworkInterfaceDto(
+        this.name,
+        this.operationalStatus
     )
 
 }

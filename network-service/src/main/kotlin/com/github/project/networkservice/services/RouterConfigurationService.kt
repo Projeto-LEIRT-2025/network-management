@@ -313,9 +313,11 @@ class RouterConfigurationService(
         val routerNeighbors = routerConfigurations.mapValues { it.value.getNeighbors().data }
 
         for ((router, neighbors) in routerNeighbors) {
+
             val source = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
 
             for (neighbor in neighbors) {
+
                 val routerNeighbor = routerInterfaces.entries.firstOrNull { (_, interfaces) ->
                     interfaces.any {
                         it.name == neighbor.interfaceName && it.address == neighbor.ipAddress
@@ -326,7 +328,7 @@ class RouterConfigurationService(
 
                 graph.addNode(source)
                 graph.addNode(target)
-                graph.addEdge(source.id, target.id)
+                graph.addEdge(source.id, target.id, neighbor.connectedInterface, neighbor.interfaceName)
             }
         }
 

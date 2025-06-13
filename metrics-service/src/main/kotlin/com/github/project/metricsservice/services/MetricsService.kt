@@ -1,5 +1,6 @@
 package com.github.project.metricsservice.services
 
+import com.github.project.api.router.response.NetworkInterface
 import com.github.project.metricsservice.models.DeviceStats
 import com.github.project.metricsservice.models.InterfaceStats
 import com.github.project.metricsservice.repositories.DeviceStatsRepository
@@ -23,6 +24,18 @@ class MetricsService(
 
     fun getDeviceStatsBetween(routerId: Long, fromTimestamp: Instant, toTimestamp: Instant): List<DeviceStats> {
         return deviceStatsRepository.findByRouterIdAndTimestampBetween(routerId, fromTimestamp, toTimestamp)
+    }
+
+    fun getNetworkInterfaces(routerId: Long): List<NetworkInterface> {
+        return routerMonitoringService.getNetworkInterfaces(routerId)
+    }
+
+    fun getNetworkInterfaceStatus(routerId: Long, interfaceName: String): NetworkInterface.OperationalStatus {
+
+        val networkInterfaces = routerMonitoringService.getNetworkInterfaces(routerId)
+
+        return networkInterfaces.firstOrNull { it.name == interfaceName }
+            ?.operationalStatus ?: NetworkInterface.OperationalStatus.UNKNOWN
     }
 
     /**

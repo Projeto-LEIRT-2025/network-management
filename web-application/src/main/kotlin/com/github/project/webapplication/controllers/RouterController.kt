@@ -1,9 +1,9 @@
 package com.github.project.webapplication.controllers
 
 import com.github.project.webapplication.dto.ApiResponseDto
-import com.github.project.networkservice.dto.CreateRouterDto
-import com.github.project.networkservice.dto.RouterDto
-import com.github.project.networkservice.dto.UpdateRouterDto
+import com.github.project.webapplication.dto.CreateRouterDto
+import com.github.project.webapplication.dto.RouterDto
+import com.github.project.webapplication.dto.UpdateRouterDto
 import com.github.project.networkservice.models.Router
 import com.github.project.networkservice.services.RouterService
 import jakarta.validation.Valid

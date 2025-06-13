@@ -1,27 +1,29 @@
-package com.github.project.networkservice.dto
+package com.github.project.webapplication.dto
 
+import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.validators.IpAddress
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class AddOSPFNetworkDto(
+data class StaticRouteDto(
 
     @field:NotNull
     val credentials: CredentialsDto,
 
-    @IpAddress
-    val network: String,
+    @field:NotNull
+    val gateway: String,
 
+    @SerialName("ip_address")
+    @IpAddress
+    val ipAddress: String,
+
+    @field:NotNull
     @field:Min(0)
     @field:Max(32)
-    @field:NotNull
-    val mask: Int,
-
-    @field:NotBlank
-    val areaName: String
+    val mask: Int
 
 )
