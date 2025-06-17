@@ -57,7 +57,7 @@ class RouterConfigurationService(
     fun disableInterface(routerId: Long, username: String, password: String, interfaceName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.enableInterface(interfaceName)
+        val response = routerConfiguration.disableInterface(interfaceName)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)

@@ -15,6 +15,7 @@ async function loadGraph(credentials) {
     });
 
     if (response.status === 401) {
+
         const json = await response.json();
         const routersId = json.data;
         const theCredentials = {};
@@ -177,6 +178,7 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         .join("g");
 
     const sourceGroup = interfaceLabel.append("g");
+    menuEvent(sourceGroup)
 
     sourceGroup.append("circle")
         .attr("r", 4)
@@ -200,6 +202,7 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         .text(d => d.source_interface.name);
 
     const targetGroup = interfaceLabel.append("g");
+    menuEvent(targetGroup)
 
     targetGroup.append("circle")
         .attr("r", 4)
@@ -221,6 +224,8 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         .attr("x", 6)
         .attr("y", 4)
         .text(d => d.target_interface.name);
+
+
 
     simulation.on("tick", () => {
         link
@@ -262,5 +267,79 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         if (status === "DOWN") return "var(--red)";
         return "var(--orange)";
     }
+
+}
+
+function menuEvent(group) {
+
+    group.on("contextmenu", (event, d) => {
+
+        event.preventDefault();
+
+        const offsetX = 0;
+        const offsetY = 20;
+        const x = event.clientX + offsetX;
+        const y = event.clientY + offsetY;
+        const routerId = d.source.id;
+        const interfaceName = d.target_interface.name;
+        const group = d3.select(event.currentTarget.parentNode);
+
+        openMenu(x, y, [
+            {
+                name: "Habilitar Interface",
+                onClick: async () => {
+
+                    showNotification("Please, wait...", 'success')
+                    closeMenu()
+                    const response = await fetch(`http://localhost:8080/api/v1/routers/${routerId}/configuration/interfaces/${interfaceName}/enable`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    if (response.ok) {
+
+                        showNotification("Interface enabled", 'success')
+
+                        group.select("circle").attr("fill", "var(--green)");
+                        group.select("text").attr("fill", "var(--green)");
+                    }else {
+                        const json = await response.json();
+                        showNotification(json.message, 'error')
+                    }
+                }
+            },
+            {
+                name: "Desabilitar Interface",
+                onClick: async () => {
+
+                    showNotification("Please, wait...", 'success')
+                    closeMenu()
+                    const response = await fetch(`http://localhost:8080/api/v1/routers/${routerId}/configuration/interfaces/${interfaceName}/disable`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    if (response.ok) {
+
+                        showNotification("Interface disabled", 'success')
+
+                        group.select("circle").attr("fill", "var(--red)");
+                        group.select("text").attr("fill", "var(--red)");
+                    }else {
+                        const json = await response.json();
+                        showNotification(json.message, 'error')
+                    }
+
+                }
+            }
+        ])
+
+    })
 
 }
