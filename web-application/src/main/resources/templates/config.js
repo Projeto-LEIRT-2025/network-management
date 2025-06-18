@@ -1,0 +1,32 @@
+const config = {
+    server: /*[[${config.server}]]*/ "",
+    routers_base_path: /*[[${config.routersBasePath}]]*/ "",
+    configuration_base_path: /*[[${config.configurationBasePath}]]*/ "",
+    metrics_base_path: /*[[${config.metricsBasePath}]]*/ "",
+    plugins_base_path: /*[[${config.pluginsBasePath}]]*/ "",
+
+    configuration_address_path: /*[[${config.configurationAddressPath}]]*/ "",
+    configuration_interfaces_path: /*[[${config.configurationInterfacesPath}]]*/ "",
+    configuration_interfaces_enable_path: /*[[${config.configurationInterfacesEnablePath}]]*/ "",
+    configuration_interfaces_disable_path: /*[[${config.configurationInterfacesDisablePath}]]*/ "",
+    configuration_snmp_enable_path: /*[[${config.configurationSnmpEnablePath}]]*/ "",
+    configuration_snmp_disable_path: /*[[${config.configurationSnmpDisablePath}]]*/ "",
+    configuration_snmp_version_path: /*[[${config.configurationSnmpVersionPath}]]*/ "",
+    configuration_ospf_process_path: /*[[${config.configurationOspfProcessPath}]]*/ "",
+    configuration_ospf_area_path: /*[[${config.configurationOspfAreaPath}]]*/ "",
+    configuration_ospf_network_path: /*[[${config.configurationOspfNetworkPath}]]*/ "",
+    configuration_ospf_interface_path: /*[[${config.configurationOspfInterfacePath}]]*/ "",
+    configuration_route_static_path: /*[[${config.configurationRouteStaticPath}]]*/ "",
+    configuration_address_pool_path: /*[[${config.configurationAddressPoolPath}]]*/ "",
+    configuration_dhcp_server_path: /*[[${config.configurationDhcpServerPath}]]*/ "",
+    configuration_dhcp_server_relay_path: /*[[${config.configurationDhcpServerRelayPath}]]*/ "",
+    configuration_dhcp_server_network_path: /*[[${config.configurationDhcpServerNetworkPath}]]*/ "",
+    configuration_dhcp_relay_path: /*[[${config.configurationDhcpRelayPath}]]*/ "",
+    configuration_dhcp_relay_enable_path: /*[[${config.configurationDhcpRelayEnablePath}]]*/ "",
+    configuration_dhcp_relay_disable_path: /*[[${config.configurationDhcpRelayDisablePath}]]*/ "",
+    routers_network_path: /*[[${config.routersNetworkPath}]]*/ "",
+
+    metrics_interfaces_path: /*[[${config.metricsInterfacesPath}]]*/ "",
+    metrics_interfaces_stats_path: /*[[${config.metricsInterfacesStatsPath}]]*/ "",
+    metrics_device_stats_path: /*[[${config.metricsDeviceStatsPath}]]*/ ""
+};

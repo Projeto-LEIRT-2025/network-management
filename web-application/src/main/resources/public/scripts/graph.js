@@ -8,7 +8,7 @@ async function init() {
 
 async function loadGraph(credentials) {
 
-    const response = await fetch("http://localhost:8080/api/v1/routers/configuration/network", {
+    const response = await fetch(`${config.server}${config.routers_base_path}${config.configuration_base_path}${config.routers_network_path}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials)
@@ -277,7 +277,7 @@ function menuEvent(group) {
         event.preventDefault();
 
         const offsetX = 0;
-        const offsetY = 20;
+        const offsetY = 10;
         const x = event.clientX + offsetX;
         const y = event.clientY + offsetY;
         const routerId = d.source.id;
@@ -291,7 +291,7 @@ function menuEvent(group) {
 
                     showNotification("Please, wait...", 'success')
                     closeMenu()
-                    const response = await fetch(`http://localhost:8080/api/v1/routers/${routerId}/configuration/interfaces/${interfaceName}/enable`, {
+                    const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"
@@ -317,7 +317,7 @@ function menuEvent(group) {
 
                     showNotification("Please, wait...", 'success')
                     closeMenu()
-                    const response = await fetch(`http://localhost:8080/api/v1/routers/${routerId}/configuration/interfaces/${interfaceName}/disable`, {
+                    const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration.configuration_interfaces_disable_path}`, {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json"

@@ -27,14 +27,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/api/v1/routers/{id}/configuration")
+@RequestMapping("\${ROUTERS_BASE_PATH}/{id}\${CONFIGURATION_BASE_PATH}")
 class RouterConfigurationController(
 
     private val routerConfigurationService: RouterConfigurationService
 
 ) {
 
-    @PostMapping("/address")
+    @PostMapping("\${CONFIGURATION_ADDRESS_PATH}")
     fun setIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: SetIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.setIpAddress(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.ipAddress)
@@ -48,7 +48,7 @@ class RouterConfigurationController(
             )
     }
 
-    @DeleteMapping("/address")
+    @DeleteMapping("\${CONFIGURATION_ADDRESS_PATH}")
     fun removeIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: RemoveIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.removeIpAddress(id, dto.credentials.username, dto.credentials.password, *dto.identifiers.toIntArray())
@@ -62,7 +62,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/interfaces/{name}/enable")
+    @PostMapping("\${CONFIGURATION_INTERFACES_PATH}/{name}\${CONFIGURATION_INTERFACES_ENABLE_PATH}")
     fun enableInterface(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.enableInterface(id, dto.username, dto.password, name)
@@ -76,7 +76,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/interfaces/{name}/disable")
+    @PostMapping("\${CONFIGURATION_INTERFACES_PATH}/{name}\${CONFIGURATION_INTERFACES_DISABLE_PATH}")
     fun disableInterface(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.disableInterface(id, dto.username, dto.password, name)
@@ -90,7 +90,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/snmp/enable")
+    @PostMapping("\${CONFIGURATION_SNMP_ENABLE_PATH}")
     fun enableSNMP(@PathVariable id: Long, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.enableSNMP(id, dto.username, dto.password)
@@ -104,7 +104,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/snmp/disable")
+    @PostMapping("\${CONFIGURATION_SNMP_DISABLE_PATH}")
     fun disableSNMP(@PathVariable id: Long, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.disableSNMP(id, dto.username, dto.password)
@@ -118,7 +118,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/snmp/version")
+    @PostMapping("\${CONFIGURATION_SNMP_VERSION_PATH}")
     fun changeSNMPVersion(@PathVariable id: Long, @RequestBody @Valid dto: ChangeSNMPVersionDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.changeSNMPVersion(id, dto.credentials.username, dto.credentials.password, dto.version)
@@ -132,7 +132,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/ospf/process")
+    @PostMapping("\${CONFIGURATION_OSPF_PROCESS_PATH}")
     fun createOSPFProcess(@PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFProcessDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.createOSPFProcess(id, dto.credentials.username, dto.credentials.password, dto.processId, dto.routerId)
@@ -146,7 +146,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/ospf/area")
+    @PostMapping("\${CONFIGURATION_OSPF_AREA_PATH}")
     fun createOSPFArea(@PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFAreaDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.createOSPFArea(id, dto.credentials.username, dto.credentials.password, dto.areaId, dto.processId)
@@ -160,7 +160,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/ospf/network")
+    @PostMapping("\${CONFIGURATION_OSPF_NETWORK_PATH}")
     fun addOSPFNetwork(@PathVariable id: Long, @RequestBody @Valid dto: AddOSPFNetworkDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.addOSPFNetwork(id, dto.credentials.username, dto.credentials.password, dto.network, dto.mask, dto.areaName)
@@ -174,7 +174,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/ospf/interface")
+    @PostMapping("\${CONFIGURATION_OSPF_INTERFACE_PATH}")
     fun addOSPFInterface(@PathVariable id: Long, @RequestBody @Valid dto: AddOSPFInterfaceDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.addOSPFInterface(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.areaName, dto.networkType, dto.cost)
@@ -188,7 +188,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/route/static")
+    @PostMapping("\${CONFIGURATION_ROUTE_STATIC_PATH}")
     fun addStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: StaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.addStaticRoute(id, dto.credentials.username, dto.credentials.password, dto.gateway, dto.ipAddress, dto.mask)
@@ -202,7 +202,7 @@ class RouterConfigurationController(
             )
     }
 
-    @DeleteMapping("/route/static")
+    @DeleteMapping("\${CONFIGURATION_ROUTE_STATIC_PATH}")
     fun removeStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: RemoveStaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.removeStaticRoute(id, dto.credentials.username, dto.credentials.password, *dto.identifiers.toIntArray())
@@ -216,7 +216,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/address/pool/{name}")
+    @PostMapping("\${CONFIGURATION_ADDRESS_POOL_PATH}/{name}")
     fun createAddressPool(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateAddressPoolDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.createAddressPool(id, dto.credentials.username, dto.credentials.password, name, dto.rangeStart, dto.rangeEnd)
@@ -230,7 +230,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp/server/{name}")
+    @PostMapping("\${CONFIGURATION_DHCP_SERVER_PATH}/{name}")
     fun createDHCPServer(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.createDHCPServer(id, dto.credentials.username, dto.credentials.password, name, dto.poolName, dto.interfaceName)
@@ -244,7 +244,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp/server/relay/{name}")
+    @PostMapping("\${CONFIGURATION_DHCP_SERVER_RELAY_PATH}/{name}")
     fun createDHCPServerRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.createDHCPServerRelay(id, dto.credentials.username, dto.credentials.password, name, dto.poolName, dto.interfaceName, dto.relayAddress)
@@ -258,7 +258,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp/server/network")
+    @PostMapping("\${CONFIGURATION_DHCP_SERVER_NETWORK_PATH}")
     fun createDHCPServerNetwork(@PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerNetworkDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.createDHCPServerNetwork(id, dto.credentials.username, dto.credentials.password, dto.network, dto.mask, dto.gateway)
@@ -272,7 +272,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp/relay/{name}")
+    @PostMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}")
     fun createDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.createDHCPRelay(id, dto.credentials.username, dto.credentials.password, name, dto.interfaceName, dto.serverAddress)
@@ -286,7 +286,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp/relay/{name}/enable")
+    @PostMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}\${CONFIGURATION_DHCP_RELAY_ENABLE_PATH}")
     fun enableDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.enableDHCPRelay(id, dto.username, dto.password, name)
@@ -300,7 +300,7 @@ class RouterConfigurationController(
             )
     }
 
-    @PostMapping("/dhcp/relay/{name}/disable")
+    @PostMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}\${CONFIGURATION_DHCP_RELAY_DISABLE_PATH}")
     fun disableDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.disableDHCPRelay(id, dto.username, dto.password, name)
@@ -314,7 +314,7 @@ class RouterConfigurationController(
             )
     }
 
-    @DeleteMapping("/dhcp/relay/{name}")
+    @DeleteMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}")
     fun removeDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.removeDHCPRelay(id, dto.username, dto.password, name)

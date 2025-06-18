@@ -7,3 +7,5 @@ data class PluginDto(
     val author: String
 
 )
+
+data class LoadPluginsDto(val filenames: List<String>)

@@ -37,7 +37,7 @@ function init() {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:8080/api/v1/routers`, {
+                const response = await fetch(`${config.server}${config.routers_base_path}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -143,7 +143,7 @@ async function updateHandler(event, router) {
     const model = router.querySelector(".model input").value;
     const vendor = router.querySelector(".vendor input").value;
 
-    const response = await fetch(`http://localhost:8080/api/v1/routers/${id}`, {
+    const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json"
@@ -171,7 +171,7 @@ async function deleteHandler(event, router) {
 
     const id = router.getAttribute('key');
 
-    const response = await fetch(`http://localhost:8080/api/v1/routers/${id}`, {
+    const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
         method: "DELETE"
     });
 
