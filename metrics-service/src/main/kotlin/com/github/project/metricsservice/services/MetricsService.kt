@@ -42,7 +42,7 @@ class MetricsService(
      *
      * Collect the device stats and save in the database.
      * The stats are cpu usage, memory usage, total memory and uptime.
-     * To collect these stats, the function use the RouterMonitoringService from network-service.
+     * To collect these stats, the function uses the RouterMonitoringService from network-service.
      *
      * @param routerId the router id
      *
@@ -71,7 +71,7 @@ class MetricsService(
      *
      * Collect the interface stats and save in the database.
      * The stats are bytes in and out, packets in and out, packets with errors in and out, discarded packets in and out.
-     * To collect these stats, the function use the RouterMonitoringService from network-service.
+     * To collect these stats, the function uses the RouterMonitoringService from network-service.
      *
      * @param routerId the router id
      *

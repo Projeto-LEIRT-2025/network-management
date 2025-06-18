@@ -23,8 +23,14 @@ dependencies {
     compileOnly(libs.postgresql)
 
     testImplementation(libs.spring.boot.test)
-    testImplementation(kotlin("test"))
+    testImplementation(libs.spring.data.jpa)
+    testImplementation(project(":api"))
     testImplementation(project(":network-service"))
+    testImplementation(kotlin("test"))
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 kotlin {
