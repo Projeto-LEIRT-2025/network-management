@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 
 @RestController
-@RequestMapping("/api/v1/routers/{id}/metrics")
+@RequestMapping("\${ROUTERS_BASE_PATH}/{id}\${METRICS_BASE_PATH}")
 class MetricsController(
 
     private val metricsService: MetricsService
 
 ) {
 
-    @GetMapping("/interfaces")
+    @GetMapping("\${METRICS_INTERFACES_PATH}")
     fun getInterfaces(@PathVariable id: Long): ResponseEntity<ApiResponseDto<List<NetworkInterfaceDto>>> {
         return ResponseEntity
             .ok(
@@ -36,7 +36,7 @@ class MetricsController(
             )
     }
 
-    @GetMapping("/interfaces/{name}")
+    @GetMapping("\${METRICS_INTERFACES_PATH}/{name}")
     fun getInterfaceStatus(@PathVariable id: Long, @PathVariable name: String): ResponseEntity<ApiResponseDto<NetworkInterface.OperationalStatus>> {
         return ResponseEntity
             .ok(
@@ -47,7 +47,7 @@ class MetricsController(
             )
     }
 
-    @GetMapping("/interfaces/stats")
+    @GetMapping("\${METRICS_INTERFACES_STATS_PATH}")
     fun getInterfaceStats(
         @PathVariable id: Long,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Instant,
@@ -62,7 +62,7 @@ class MetricsController(
             )
     }
 
-    @GetMapping("/devices/stats")
+    @GetMapping("\${METRICS_DEVICE_STATS_PATH}")
     fun getDeviceStats(
         @PathVariable id: Long,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Instant,
