@@ -64,10 +64,10 @@ class RouterConfigurationService(
 
     }
 
-    fun setIpAddress(routerId: Long, username: String, password: String, interfaceName: String, ipAddress: String) {
+    fun setIpAddress(routerId: Long, username: String, password: String, interfaceName: String, ipAddress: String, mask: Int) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.setIpAddress(interfaceName, ipAddress)
+        val response = routerConfiguration.setIpAddress(interfaceName, ipAddress, mask)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)

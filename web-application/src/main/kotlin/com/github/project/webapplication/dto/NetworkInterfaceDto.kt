@@ -9,4 +9,4 @@ data class NetworkInterfaceDto(
     val name: String,
     val status: NetworkInterface.OperationalStatus = NetworkInterface.OperationalStatus.UNKNOWN
 
-    )
+)

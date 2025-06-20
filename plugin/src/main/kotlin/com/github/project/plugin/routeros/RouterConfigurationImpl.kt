@@ -118,8 +118,8 @@ class RouterConfigurationImpl(
     override fun disableInterface(interfaceName: String) =
         executeCommand("/interface disable $interfaceName")
 
-    override fun setIpAddress(interfaceName: String, ipAddress: String) =
-        executeCommand("/ip address add address=$ipAddress interface=$interfaceName")
+    override fun setIpAddress(interfaceName: String, ipAddress: String, mask: Int) =
+        executeCommand("/ip address add address=$ipAddress/$mask interface=$interfaceName")
 
     override fun removeIpAddress(vararg number: Int) =
         executeCommand("/ip address remove numbers=${number.joinToString(",")}")

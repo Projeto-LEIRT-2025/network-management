@@ -37,7 +37,7 @@ class RouterConfigurationController(
     @PostMapping("\${CONFIGURATION_ADDRESS_PATH}")
     fun setIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: SetIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.setIpAddress(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.ipAddress)
+        routerConfigurationService.setIpAddress(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.ipAddress, dto.mask)
 
         return ResponseEntity
             .ok(

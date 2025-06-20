@@ -345,13 +345,15 @@ function menuEvent(group) {
                     openModal(
                         "Set  IP Address",
                         [
-                            {name: "ip_address", label: "IP Address"}
+                            { name: "ip_address", label: "IP Address" },
+                            { name: "mask", label: "Mask" }
                         ],
                         async data => {
 
-                            const ip_address = data.get("ip_address");
+                            const ipAddress = data.get("ip_address");
+                            const mask = data.get("mask");
 
-                            if (ipAddress.trim() === "") {
+                            if (ipAddress.trim() === "" || mask.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
@@ -359,7 +361,7 @@ function menuEvent(group) {
                             closeModal()
                             showNotification("Please, wait...", 'success');
 
-                            const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration.configuration_address_path}`, {
+                            const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json"
@@ -368,7 +370,8 @@ function menuEvent(group) {
                                     {
                                         credentials: {},
                                         interface_name: interfaceName,
-                                        ip_address: ip
+                                        ip_address: ipAddress,
+                                        mask: mask
                                     }
                                 )
                             });

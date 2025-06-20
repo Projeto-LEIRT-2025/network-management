@@ -16,7 +16,7 @@ interface RouterConfiguration {
 
     fun getIpAddresses(): Response<List<InterfaceIpAddress>>
 
-    fun setIpAddress(interfaceName: String, ipAddress: String): Response<Unit>
+    fun setIpAddress(interfaceName: String, ipAddress: String, mask: Int): Response<Unit>
 
     fun removeIpAddress(vararg number: Int): Response<Unit>
 
