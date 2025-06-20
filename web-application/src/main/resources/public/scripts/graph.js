@@ -286,7 +286,7 @@ function menuEvent(group) {
 
         openMenu(x, y, [
             {
-                name: "Habilitar Interface",
+                name: "Enable Interface",
                 onClick: async () => {
 
                     showNotification("Please, wait...", 'success')
@@ -312,7 +312,7 @@ function menuEvent(group) {
                 }
             },
             {
-                name: "Desabilitar Interface",
+                name: "Disable Interface",
                 onClick: async () => {
 
                     showNotification("Please, wait...", 'success')
@@ -335,6 +335,55 @@ function menuEvent(group) {
                         const json = await response.json();
                         showNotification(json.message, 'error')
                     }
+
+                }
+            },
+            {
+                name: "Set IP Address",
+                onClick: async () => {
+                    closeMenu();
+                    openModal(
+                        "Set  IP Address",
+                        [
+                            {name: "ip_address", label: "IP Address"}
+                        ],
+                        async data => {
+
+                            const ip_address = data.get("ip_address");
+
+                            if (ipAddress.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            closeModal()
+                            showNotification("Please, wait...", 'success');
+
+                            const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration.configuration_address_path}`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify(
+                                    {
+                                        credentials: {},
+                                        interface_name: interfaceName,
+                                        ip_address: ip
+                                    }
+                                )
+                            });
+
+                            if (response.ok) {
+                                showNotification("IP address set", 'success');
+                                group.select("circle").attr("fill", "var(--green)");
+                                group.select("text").attr("fill", "var(--green)");
+                            } else {
+                                const json = await response.json();
+                                showNotification(json.message, 'error');
+                            }
+
+                        }
+                    )
 
                 }
             }
