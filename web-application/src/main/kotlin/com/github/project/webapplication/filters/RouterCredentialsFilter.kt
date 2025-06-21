@@ -11,6 +11,7 @@ import jakarta.servlet.ServletInputStream
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletRequestWrapper
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.servlet.HandlerExceptionResolver
@@ -21,7 +22,16 @@ import java.util.concurrent.ConcurrentHashMap
 @Configuration
 class RouterCredentialsFilter(
 
-    private val handlerExceptionResolver: HandlerExceptionResolver
+    private val handlerExceptionResolver: HandlerExceptionResolver,
+
+    @Value("\${ROUTERS_BASE_PATH}")
+    private val routersBasePath: String,
+
+    @Value("\${CONFIGURATION_BASE_PATH}")
+    private val configurationBasePath: String,
+
+    @Value("\${ROUTERS_NETWORK_PATH}")
+    private val routersNetworkPath: String
 
 ) : OncePerRequestFilter() {
 
@@ -38,7 +48,7 @@ class RouterCredentialsFilter(
 
         try {
 
-            if (uri.equals("/api/v1/routers/configuration/network")) {
+            if (uri.equals("$routersBasePath$configurationBasePath$routersNetworkPath")) {
 
                 val wrapper = ContentCachingRequestWrapper(request)
                 val json = wrapper.inputStream.bufferedReader().readText()
@@ -60,7 +70,7 @@ class RouterCredentialsFilter(
                 return
             }
 
-            val routerConfigRegex = Regex("""/api/v1/routers/(\d+)/configuration""")
+            val routerConfigRegex = Regex("""$routersBasePath/(\d+)$configurationBasePath""")
 
             if (routerConfigRegex.containsMatchIn(uri)) {
 
