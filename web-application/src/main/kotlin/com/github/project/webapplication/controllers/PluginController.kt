@@ -2,12 +2,12 @@ package com.github.project.webapplication.controllers
 
 import com.github.project.api.Plugin
 import com.github.project.webapplication.dto.ApiResponseDto
-import com.github.project.webapplication.dto.LoadPluginsDto
 import com.github.project.webapplication.dto.PluginDto
 import com.github.project.networkservice.services.PluginService
-import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.util.UUID
 
 @RestController
 @RequestMapping("\${PLUGINS_BASE_PATH}")
@@ -26,7 +26,7 @@ class PluginController(
             .ok(
                 ApiResponseDto(
                     message = "Plugins retrieved successfully",
-                    data = plugins.map { it.toDto() }
+                    data = plugins.map { it.key.toDto(it.value) }
                 )
             )
     }
@@ -34,13 +34,13 @@ class PluginController(
     @GetMapping("/{name}")
     fun getPlugin(@PathVariable name: String): ResponseEntity<ApiResponseDto<PluginDto>> {
 
-        val plugin = pluginService.getPlugin(name)
+        val pair = pluginService.getPlugin(name)
 
         return ResponseEntity
             .ok(
                 ApiResponseDto(
                     message = "Plugin retrieved successfully",
-                    data = plugin.toDto()
+                    data = pair.first.toDto(pair.second)
                 )
             )
     }
@@ -59,24 +59,39 @@ class PluginController(
             )
     }
 
-    @PostMapping("/enable")
-    fun enablePlugins(@RequestBody @Valid dto: LoadPluginsDto): ResponseEntity<ApiResponseDto<List<PluginDto>>> {
+    @PostMapping("/{name}/enable")
+    fun enablePlugin(@PathVariable name: String): ResponseEntity<ApiResponseDto<Unit>> {
 
-        val plugins = pluginService.enablePlugins(*dto.filenames.toTypedArray())
+        pluginService.enablePlugin(name)
 
         return ResponseEntity
             .ok(
                 ApiResponseDto(
-                    message = "Plugins enabled successfully",
-                    data = plugins.map { it.toDto() }
+                    message = "Plugin enabled successfully",
+                    data = Unit
                 )
             )
     }
 
-    private fun Plugin.toDto() = PluginDto(
+    @PostMapping("/upload")
+    fun uploadPlugin(@RequestParam("file") file: MultipartFile): ResponseEntity<ApiResponseDto<PluginDto>> {
+
+        val plugin = pluginService.uploadPlugin(file.originalFilename ?: UUID.randomUUID().toString(), file.bytes)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Plugin uploaded successfully",
+                    data = plugin.toDto(false)
+                )
+            )
+    }
+
+    private fun Plugin.toDto(enabled: Boolean) = PluginDto(
         name = this.metadata.name,
         description = this.metadata.description,
-        author = this.metadata.author
+        author = this.metadata.author,
+        enabled = enabled
     )
 
 }

@@ -24,8 +24,18 @@ class PluginMetadata {
 
 object PluginLoader {
 
-    private val plugins = mutableListOf<Plugin>()
+    val pluginsDirectoryName = System.getenv("PLUGINS_DIRECTORY")
+    private val pluginsDirectory = File(pluginsDirectoryName)
+    private val plugins = mutableMapOf<Plugin, Boolean>()
     private var classLoader: ClassLoader = this.javaClass.classLoader
+
+    init {
+
+        require(pluginsDirectory.exists() && pluginsDirectory.isDirectory) {
+            "Plugins directory does not exist: $pluginsDirectory"
+        }
+
+    }
 
     /**
      *
@@ -68,7 +78,10 @@ object PluginLoader {
 
     fun getRouterConfiguration(model: String, hostname: String, port: Int, username: String, password: String): RouterConfiguration? {
 
-        val theClass = this.plugins.firstNotNullOfOrNull { it.routerConfigurationManager.get(model) } ?: return null
+        val theClass = this.plugins
+            .filter { it.value }
+            .keys
+            .firstNotNullOfOrNull { it.routerConfigurationManager.get(model) } ?: return null
 
         return createInstance(theClass.name, hostname, port.toString(), username, password)
     }
@@ -87,25 +100,39 @@ object PluginLoader {
 
     fun getRouterMonitoring(model: String, hostname: String, port: Int): RouterMonitoring? {
 
-        val theClass = this.plugins.firstNotNullOfOrNull { it.routerMonitoringManager.get(model) } ?: return null
+        val theClass = this.plugins
+            .filter { it.value }
+            .keys.firstNotNullOfOrNull { it.routerMonitoringManager.get(model) } ?: return null
 
         return createInstance(theClass.name, hostname, port.toString())
     }
 
+    fun uploadPlugin(fileName: String, content: ByteArray): Plugin {
+
+        val file = File(pluginsDirectory, fileName)
+
+        file.writeBytes(content)
+
+        Logger.getGlobal().log(Level.INFO, "Plugin uploaded: ${file.absolutePath}")
+
+        return loadPlugin(file)
+    }
+
     /**
      *
-     * List the loaded plugins
+     * Returns a map of all loaded plugins along with their enabled status.
      *
-     * @return list of the plugins
+     * @return a map where the key is the loaded [Plugin] instance, and the value is a [Boolean]
+     * indicating whether the plugin is currently enabled (`true`) or disabled (`false`)
      *
      */
 
-    fun listPlugins(): List<Plugin> =
-        this.plugins.toList()
+    fun listPlugins(): Map<Plugin, Boolean> =
+        this.plugins
 
     /**
      *
-     * Get the plugin
+     * Get the plugin if it is enabled
      *
      * @param name name of the plugin
      *
@@ -113,8 +140,9 @@ object PluginLoader {
      *
      */
 
-    fun getPlugin(name: String) =
-        this.plugins.firstOrNull { it.metadata.name == name }
+    fun getPlugin(name: String): Pair<Plugin, Boolean>? {
+        return this.plugins.entries.firstOrNull { it.key.metadata.name == name }?.toPair()
+    }
 
     /**
      *
@@ -124,8 +152,23 @@ object PluginLoader {
      *
      */
 
-    fun disablePlugin(plugin: Plugin) =
-        this.plugins.remove(plugin)
+    fun disablePlugin(plugin: Plugin) {
+        plugin.disable()
+        plugins[plugin] = false
+    }
+
+    /**
+     *
+     * Enable the plugin
+     *
+     * @param plugin plugin to enable
+     *
+     */
+
+    fun enablePlugin(plugin: Plugin) {
+        plugin.enable()
+        plugins[plugin] = true
+    }
 
     /**
      *
@@ -207,9 +250,8 @@ object PluginLoader {
 
     /**
      *
-     * Load plugin from JarFile, then the system can get the implementations
-     * of the plugin loaded. When is created an instance of Plugin, the method
-     * initialize is called.
+     * Load plugin from JarFile, but the plugin is not initialized,
+     * it needs to call enable method
      *
      * @param jarFile the JarFile
      *
@@ -226,9 +268,8 @@ object PluginLoader {
         val className = pluginMetadata.entryPoint
         val plugin = createInstance<Plugin>(className, pluginMetadata)
 
-        Logger.getGlobal().log(Level.INFO, "Loading `${pluginMetadata.name}` plugin developed by ${pluginMetadata.author}");
-        plugin.initialize()
-        plugins.add(plugin)
+        Logger.getGlobal().log(Level.INFO, "Loaded `${pluginMetadata.name}` plugin developed by ${pluginMetadata.author}");
+        plugins[plugin] = false
 
         jarFile.close()
         return plugin

@@ -15,7 +15,7 @@ class PluginService {
      *
      */
 
-    fun listPlugins(): List<Plugin> {
+    fun listPlugins(): Map<Plugin, Boolean> {
         return PluginLoader.listPlugins()
     }
 
@@ -31,13 +31,13 @@ class PluginService {
      *
      */
 
-    fun getPlugin(pluginName: String): Plugin {
+    fun getPlugin(pluginName: String): Pair<Plugin, Boolean> {
         return PluginLoader.getPlugin(pluginName) ?: throw PluginNotFoundException()
     }
 
     /**
      *
-     * Disable all plugins given the plugins name
+     * Disable all plugins given the names
      *
      * @param pluginName the array of plugins names
      *
@@ -49,7 +49,7 @@ class PluginService {
 
         pluginName.forEach {
 
-            val plugin = getPlugin(it)
+            val plugin = getPlugin(it).first
 
             PluginLoader.disablePlugin(plugin)
         }
@@ -58,22 +58,45 @@ class PluginService {
 
     /**
      *
-     * Enable plugins from the file names
+     * Enable all plugins given the names
      *
-     * @param filenames the array of file names
+     * @param pluginName the array of plugins names
      *
-     * @return the list of plugins
-     *
-     * @throws PluginLoadException if an error occurred when load the plugins
+     * @throws PluginNotFoundException if the plugin was not found
      *
      */
 
-    fun enablePlugins(vararg filenames: String): List<Plugin> {
-        return try {
-            PluginLoader.loadPlugins(*filenames)
-        }catch (e: Exception) {
-            throw PluginLoadException()
+    fun enablePlugin(vararg pluginName: String) {
+
+        pluginName.forEach {
+
+            val plugin = getPlugin(it).first
+
+            PluginLoader.enablePlugin(plugin)
         }
+
+    }
+
+    /**
+     *
+     * Uploads a plugin JAR file from a byte array and loads it into the system.
+     *
+     * @param fileName the name of the plugin file (must end with .jar)
+     * @param content the byte array content of the plugin
+     *
+     * @return the loaded plugin
+     *
+     * @throws PluginLoadException if loading fails
+     *
+     */
+    fun uploadPlugin(fileName: String, content: ByteArray): Plugin {
+
+        try {
+            return PluginLoader.uploadPlugin(fileName, content)
+        } catch (e: Exception) {
+            throw PluginLoadException("Failed to upload plugin: ${e.message}")
+        }
+
     }
 
 }

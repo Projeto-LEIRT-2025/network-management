@@ -23,6 +23,16 @@ abstract class Plugin(val metadata: PluginMetadata) {
      *
      */
 
-    abstract fun initialize()
+    abstract fun enable()
+
+    /**
+     *
+     * This function is called when the plugin is disabled.
+     * The developer should unregister all the implementations of
+     * RouterConfiguration and RouterMonitoring using the respective managers
+     *
+     */
+
+    abstract fun disable()
 
 }

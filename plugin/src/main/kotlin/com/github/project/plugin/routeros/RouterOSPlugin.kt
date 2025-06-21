@@ -8,12 +8,18 @@ import kotlin.math.log
 
 class RouterOSPlugin(metadata: PluginMetadata) : Plugin(metadata) {
 
-    override fun initialize() {
+    override fun enable() {
 
         routerConfigurationManager.register("router-os", RouterConfigurationImpl::class.java)
         routerMonitoringManager.register("router-os", RouterMonitoringImpl::class.java)
 
         Logger.getGlobal().log(Level.INFO, "RouterOS plugin initialized")
+    }
+
+    override fun disable() {
+
+
+
     }
 
 }

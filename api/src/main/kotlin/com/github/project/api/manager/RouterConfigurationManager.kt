@@ -39,4 +39,16 @@ class RouterConfigurationManager {
         return routerConfigurations[model]
     }
 
+    /**
+     *
+     * Unregister RouterConfiguration to a specific model of device
+     *
+     * @param model model of the device
+     *
+     */
+
+    fun unregister(model: String) {
+        routerConfigurations.remove(model)
+    }
+
 }

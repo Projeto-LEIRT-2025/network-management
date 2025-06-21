@@ -19,14 +19,21 @@ class MetricsTask(
     @Scheduled(fixedRate = 30 * 1000L)
     fun reportStats() {
 
-        val routers = routerService.getAll()
+        try {
 
-        routers.forEach { router ->
-            metricsService.collectInterfaceStats(router.id)
-            metricsService.collectDeviceStats(router.id)
+            val routers = routerService.getAll()
+
+            routers.forEach { router ->
+                metricsService.collectInterfaceStats(router.id)
+                metricsService.collectDeviceStats(router.id)
+            }
+
+            logger.info("Collected stats from ${routers.size} routers.")
+
+        } catch (e: Exception) {
+            logger.error("Error while collecting stats")
         }
 
-        logger.info("Collected stats from ${routers.size} routers.")
     }
 
 }

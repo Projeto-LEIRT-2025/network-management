@@ -4,8 +4,7 @@ data class PluginDto(
 
     val name: String,
     val description: String,
-    val author: String
+    val author: String,
+    val enabled: Boolean
 
 )
-
-data class LoadPluginsDto(val filenames: List<String>)
