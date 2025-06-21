@@ -4,6 +4,7 @@ import com.github.project.api.Plugin
 import com.github.project.webapplication.dto.ApiResponseDto
 import com.github.project.webapplication.dto.PluginDto
 import com.github.project.networkservice.services.PluginService
+import com.github.project.webapplication.dto.toDto
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -87,11 +88,18 @@ class PluginController(
             )
     }
 
-    private fun Plugin.toDto(enabled: Boolean) = PluginDto(
-        name = this.metadata.name,
-        description = this.metadata.description,
-        author = this.metadata.author,
-        enabled = enabled
-    )
+    @DeleteMapping("/{name}")
+    fun deletePlugin(@PathVariable name: String): ResponseEntity<ApiResponseDto<Unit>> {
+
+        pluginService.deletePlugin(name)
+
+        return ResponseEntity
+            .ok(
+                ApiResponseDto(
+                    message = "Plugin deleted successfully",
+                    data = Unit
+                )
+            )
+    }
 
 }

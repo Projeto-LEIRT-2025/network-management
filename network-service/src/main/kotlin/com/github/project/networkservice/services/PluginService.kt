@@ -2,6 +2,7 @@ package com.github.project.networkservice.services
 
 import com.github.project.api.Plugin
 import com.github.project.api.PluginLoader
+import com.github.project.networkservice.exceptions.PluginAlreadyExistsException
 import com.github.project.networkservice.exceptions.PluginLoadException
 import com.github.project.networkservice.exceptions.PluginNotFoundException
 import org.springframework.stereotype.Service
@@ -90,12 +91,24 @@ class PluginService {
      *
      */
     fun uploadPlugin(fileName: String, content: ByteArray): Plugin {
+        return PluginLoader.uploadPlugin(fileName, content) ?: throw PluginAlreadyExistsException()
+    }
 
-        try {
-            return PluginLoader.uploadPlugin(fileName, content)
-        } catch (e: Exception) {
-            throw PluginLoadException("Failed to upload plugin: ${e.message}")
-        }
+    /**
+     * Deletes a plugin by its name.
+     *
+     * @param name The name of the plugin to be deleted.
+     * @throws PluginLoadException If the plugin could not be deleted successfully.
+     */
+    fun deletePlugin(name: String) {
+
+        val pair = getPlugin(name)
+
+        if (pair.second)
+            disablePlugin(name)
+
+        if (!PluginLoader.deletePlugin(pair.first))
+            throw PluginLoadException("Failed to delete plugin: ${pair.first.metadata.name}")
 
     }
 

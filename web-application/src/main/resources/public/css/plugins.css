@@ -1,0 +1,67 @@
+.plugins table {
+
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--foreground);
+    border-radius: 10px;
+    overflow: hidden;
+
+}
+
+.plugins thead {
+
+    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--primary);
+
+}
+
+.plugins th, .plugins td {
+
+    padding: 10px 20px;
+    text-align: center;
+
+}
+
+.plugins th, .plugins tr:not(:last-child) {
+
+    border-bottom: 1px solid var(--border);
+
+}
+
+#upload {
+
+    background-color: var(--button);
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3);
+
+}
+
+.enable-button {
+
+    background-color: var(--green);
+    font-size: 12px;
+
+}
+
+.disable-button {
+
+    background-color: var(--orange);
+    font-size: 12px;
+
+}
+
+.delete-button {
+
+    background-color: var(--red);
+    font-size: 12px;
+
+}
+
+.plugins .buttons {
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+
+}

@@ -29,7 +29,7 @@ class ErrorController {
                 )
             )
 
-    @ExceptionHandler(RouterConfigurationException::class, RouterIpAddressAlreadyExistsException::class)
+    @ExceptionHandler(RouterConfigurationException::class, RouterIpAddressAlreadyExistsException::class, PluginAlreadyExistsException::class)
     fun handleBadRequest(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =
         ResponseEntity
             .status(HttpStatus.BAD_REQUEST)

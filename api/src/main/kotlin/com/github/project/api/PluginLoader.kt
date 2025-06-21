@@ -5,6 +5,7 @@ import com.github.project.api.router.RouterMonitoring
 import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.net.URLClassLoader
+import java.util.concurrent.ConcurrentHashMap
 import java.util.jar.JarFile
 import java.util.logging.Level
 import java.util.logging.Logger
@@ -14,6 +15,7 @@ class PluginMetadata {
     lateinit var description: String
     lateinit var author: String
     lateinit var entryPoint: String
+    lateinit var filename: String
 }
 
 /**
@@ -26,7 +28,7 @@ object PluginLoader {
 
     val pluginsDirectoryName = System.getenv("PLUGINS_DIRECTORY")
     private val pluginsDirectory = File(pluginsDirectoryName)
-    private val plugins = mutableMapOf<Plugin, Boolean>()
+    private val plugins = ConcurrentHashMap<Plugin, Boolean>()
     private var classLoader: ClassLoader = this.javaClass.classLoader
 
     init {
@@ -107,15 +109,33 @@ object PluginLoader {
         return createInstance(theClass.name, hostname, port.toString())
     }
 
-    fun uploadPlugin(fileName: String, content: ByteArray): Plugin {
+    fun uploadPlugin(fileName: String, content: ByteArray): Plugin? {
 
         val file = File(pluginsDirectory, fileName)
 
+        if (file.exists())
+            return null
+
         file.writeBytes(content)
+
+        val plugin = loadPlugin(file)
+
+        if (plugin == null) {
+            file.delete()
+            return null
+        }
 
         Logger.getGlobal().log(Level.INFO, "Plugin uploaded: ${file.absolutePath}")
 
-        return loadPlugin(file)
+        return plugin
+    }
+
+    fun deletePlugin(plugin: Plugin): Boolean {
+
+        plugins.remove(plugin)
+        val file = File(plugin.metadata.filename)
+
+        return file.delete()
     }
 
     /**
@@ -172,22 +192,6 @@ object PluginLoader {
 
     /**
      *
-     * Load all plugins from the filenames
-     *
-     * @param filesNames the array of filenames
-     *
-     * @return list of loaded plugins
-     *
-     */
-
-    fun loadPlugins(vararg filesNames: String): List<Plugin> {
-        return filesNames
-            .map { File(it) }
-            .map { loadPlugin(it) }
-    }
-
-    /**
-     *
      * Load all plugins from a directory
      *
      * @param directoryName the directory name
@@ -207,7 +211,8 @@ object PluginLoader {
 
         return directory.listFiles()!!
             .filter { file -> file.extension == "jar" }
-            .map { file -> loadPlugin(file) }
+            .mapNotNull { file -> loadPlugin(file) }
+
     }
 
     /**
@@ -221,7 +226,7 @@ object PluginLoader {
      *
      */
 
-    private fun loadPlugin(file: File): Plugin {
+    private fun loadPlugin(file: File): Plugin? {
 
         if (file.isDirectory)
             throw IllegalArgumentException("$file is a directory")
@@ -259,12 +264,17 @@ object PluginLoader {
      *
      */
 
-    private fun loadPluginFromJarFile(jarFile: JarFile): Plugin {
+    private fun loadPluginFromJarFile(jarFile: JarFile): Plugin? {
 
         val entry = jarFile.getJarEntry("plugin.yaml") ?: throw IllegalStateException("Plugin ${jarFile.name} has an invalid plugin.yaml")
         val inputStream = jarFile.getInputStream(entry)
         val yaml = Yaml()
         val pluginMetadata = yaml.loadAs(inputStream, PluginMetadata::class.java)
+
+        if (this.plugins.any { it.key.metadata.name == pluginMetadata.name })
+            return null
+
+        pluginMetadata.filename = jarFile.name
         val className = pluginMetadata.entryPoint
         val plugin = createInstance<Plugin>(className, pluginMetadata)
 

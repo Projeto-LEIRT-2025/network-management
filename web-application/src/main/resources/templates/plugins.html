@@ -20,21 +20,70 @@
     <main>
 
         <div>
-            <button class="upload" id="open-modal">Upload file</button>
+            <input type="file" id="fileInput" style="display: none;" />
+            <button id="upload">Upload file</button>
         </div>
 
         <div class="plugins">
+            <table>
 
+                <thead>
 
+                    <tr>
+                        <th>Name</th>
+                        <th>Author</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
 
+                <tbody>
+
+                    <tr th:each="plugin : ${plugins}">
+
+                        <td th:text="${plugin.name}">Plugin Name</td>
+                        <td th:text="${plugin.author}">Author</td>
+                        <td th:text="${plugin.description}">Description</td>
+
+                        <td>
+
+                            <div class="buttons">
+
+                                <button th:if="${plugin.enabled}"
+                                        th:attr="data-name=${plugin.name}"
+                                        class="disable-button">
+                                    Disable
+                                </button>
+
+                                <button th:if="${!plugin.enabled}"
+                                        th:attr="data-name=${plugin.name}"
+                                        class="enable-button">
+                                    Enable
+                                </button>
+
+                                <button th:attr="data-name=${plugin.name}"
+                                        class="delete-button">
+                                    Delete
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
         </div>
+
 
     </main>
 
     <script th:src="@{/config.js}"></script>
     <script th:src="@{/scripts/notification.js}"></script>
     <script th:src="@{/scripts/modal.js}"></script>
-    <script th:src="@{/scripts/routers.js}"></script>
+    <script th:src="@{/scripts/plugins.js}"></script>
 
 </body>
 </html>
