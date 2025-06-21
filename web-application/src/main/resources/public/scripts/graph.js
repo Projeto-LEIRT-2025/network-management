@@ -45,7 +45,7 @@ async function loadGraph(credentials) {
     }
 
     if (!response.ok) {
-        showNotification("An error occurred while retrieving the network");
+        showNotification("An error occurred while retrieving the network", "error");
         return;
     }
 
