@@ -38,139 +38,156 @@ function init() {
 
 }
 
-function deletePlugin(button, name) {
+async function deletePlugin(button, name) {
 
-    fetch(`${config.server}${config.plugins_base_path}/${name}`, {
-        method: 'DELETE'
-    })
-        .then(response => {
+    try {
 
-            if (response.ok) {
-                showNotification("Plugin deleted successfully.", 'success');
+        const response= await fetch(`${config.server}${config.plugins_base_path}/${name}`, {
+            method: 'DELETE'
+        })
 
-                const row = button.closest('tr');
+        const json = await response.json()
 
-                if (row)
-                    row.remove();
+        if (!response.ok) {
+            showNotification(json.message, "error")
+            return
+        }
 
-            }else {
-                showNotification("Plugin failed, please try again.", 'error');
-            }
+        showNotification("Plugin deleted successfully.", 'success');
 
-        }).catch(() => showNotification("Plugin failed, please try again.", 'error'))
+        const row = button.closest('tr');
 
-}
+        if (row)
+            row.remove();
 
-function enablePlugin(button, name) {
-
-    fetch(`${config.server}${config.plugins_base_path}/${name}/enable`, {
-        method: 'POST'
-    })
-        .then(response => {
-
-            if (response.ok) {
-                showNotification("Plugin enabled successfully.", 'success');
-
-                const newButton = document.createElement('button')
-                newButton.className = 'disable-button'
-                newButton.setAttribute('data-name', name)
-                newButton.textContent = 'Disable'
-
-                newButton.addEventListener('click', () => disablePlugin(newButton, name))
-
-                button.parentNode.replaceChild(newButton, button)
-
-            }else {
-                showNotification("Plugin failed, please try again.", 'error');
-            }
-
-        }).catch(() => showNotification("Plugin failed, please try again.", 'error'))
+    } catch (e) {
+        showNotification("An error occurred", "error")
+    }
 
 }
 
-function disablePlugin(button, name) {
+async function enablePlugin(button, name) {
 
-    fetch(`${config.server}${config.plugins_base_path}/${name}/disable`, {
-        method: 'POST'
-    })
-        .then(response => {
+    try {
 
-            if (response.ok) {
-                showNotification("Plugin disabled successfully.", 'success');
+        const response = await fetch(`${config.server}${config.plugins_base_path}/${name}/enable`, {
+            method: 'POST'
+        })
 
-                const newButton = document.createElement('button')
-                newButton.className = 'enable-button'
-                newButton.setAttribute('data-name', name)
-                newButton.textContent = 'Enable'
+        const json = await response.json()
 
-                newButton.addEventListener('click', () => enablePlugin(newButton, name))
+        if (!response.ok) {
+            showNotification(json.message, "error")
+            return
+        }
 
-                button.parentNode.replaceChild(newButton, button)
+        showNotification("Plugin enabled successfully.", 'success');
 
-            }else {
-                showNotification("Plugin failed, please try again.", 'error');
-            }
+        const newButton = document.createElement('button')
+        newButton.className = 'disable-button'
+        newButton.setAttribute('data-name', name)
+        newButton.textContent = 'Disable'
 
-        }).catch(() => showNotification("Plugin failed, please try again.", 'error'))
+        newButton.addEventListener('click', () => disablePlugin(newButton, name))
+
+        button.parentNode.replaceChild(newButton, button)
+
+    } catch (e) {
+        showNotification("An error occurred", "error")
+    }
 
 }
 
-function uploadFile(file) {
+async function disablePlugin(button, name) {
+
+    try {
+
+        const response = await fetch(`${config.server}${config.plugins_base_path}/${name}/disable`, {
+            method: 'POST'
+        })
+
+        const json = await response.json()
+
+        if (!response.ok) {
+            showNotification(json.message, "error")
+            return
+        }
+
+        showNotification("Plugin disabled successfully.", 'success');
+
+        const newButton = document.createElement('button')
+        newButton.className = 'enable-button'
+        newButton.setAttribute('data-name', name)
+        newButton.textContent = 'Enable'
+
+        newButton.addEventListener('click', () => enablePlugin(newButton, name))
+
+        button.parentNode.replaceChild(newButton, button)
+
+    } catch (e) {
+        showNotification("An error occurred", "error")
+    }
+
+
+}
+
+async function uploadFile(file) {
 
     const formData = new FormData();
     formData.append('file', file);
 
-    fetch(`${config.server}${config.plugins_base_path}/upload`, {
-        method: 'POST',
-        body: formData,
-    })
-        .then(response => {
+    try {
 
-            if (!response.ok) {
-                showNotification('Error uploading file', 'error');
-                throw new Error('Upload failed');
-            }
-
-            return response.json();
+        const response = await fetch(`${config.server}${config.plugins_base_path}/upload`, {
+            method: 'POST',
+            body: formData,
         })
-        .then(json => {
 
-            const plugin = json.data;
-            const tbody = document.querySelector('.plugins tbody');
-            const tr = document.createElement('tr');
+        const json = await response.json()
 
-            tr.innerHTML = `
+        if (!response.ok) {
+            showNotification(json.message, "error")
+            return
+        }
+
+        const plugin = json.data;
+        const tbody = document.querySelector('.plugins tbody');
+        const tr = document.createElement('tr');
+
+        tr.innerHTML = `
             <td>${plugin.name}</td>
             <td>${plugin.author}</td>
             <td>${plugin.description}</td>
             <td>
                 <div class="buttons">
                     ${plugin.enabled ?
-                `<button data-name="${plugin.name}" class="disable-button">Disable</button>` :
-                `<button data-name="${plugin.name}" class="enable-button">Enable</button>`
-            }
+            `<button data-name="${plugin.name}" class="disable-button">Disable</button>` :
+            `<button data-name="${plugin.name}" class="enable-button">Enable</button>`
+        }
                     <button data-name="${plugin.name}" class="delete-button">Delete</button>
                 </div>
             </td>
         `;
 
-            tbody.appendChild(tr);
+        tbody.appendChild(tr);
 
-            const enableButton = tr.querySelector('.enable-button');
-            if (enableButton) {
-                enableButton.addEventListener('click', () => enablePlugin(enableButton, plugin.name));
-            }
+        const enableButton = tr.querySelector('.enable-button');
+        if (enableButton) {
+            enableButton.addEventListener('click', () => enablePlugin(enableButton, plugin.name));
+        }
 
-            const disableButton = tr.querySelector('.disable-button');
-            if (disableButton) {
-                disableButton.addEventListener('click', () => disablePlugin(disableButton, plugin.name));
-            }
+        const disableButton = tr.querySelector('.disable-button');
+        if (disableButton) {
+            disableButton.addEventListener('click', () => disablePlugin(disableButton, plugin.name));
+        }
 
-            const deleteButton = tr.querySelector('.delete-button');
-            deleteButton.addEventListener('click', () => deletePlugin(deleteButton, plugin.name));
+        const deleteButton = tr.querySelector('.delete-button');
+        deleteButton.addEventListener('click', () => deletePlugin(deleteButton, plugin.name));
 
-            showNotification('Plugin uploaded successfully', 'success');
-        })
-        .catch(() => showNotification('Error uploading file', 'error'));
+        showNotification('Plugin uploaded successfully', 'success');
+
+    } catch(e) {
+        showNotification("An error occurred", "error")
+    }
 
 }

@@ -8,72 +8,81 @@ async function init() {
 
 async function loadGraph(credentials) {
 
-    const response = await fetch(`${config.server}${config.routers_base_path}${config.configuration_base_path}${config.routers_network_path}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials)
-    });
+    try {
 
-    if (response.status === 401) {
+        const response = await fetch(`${config.server}${config.routers_base_path}${config.configuration_base_path}${config.routers_network_path}`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(credentials)
+        });
 
-        const json = await response.json();
-        const routersId = json.data;
-        const theCredentials = {};
+        if (response.status === 401) {
 
-        for (const routerId of routersId) {
-            await new Promise(resolve => {
-                openModal(
-                    `Router credentials for ${routerId}`,
-                    [
-                        { name: "username", label: "Username" },
-                        { name: "password", label: "Password", type: "password" }
-                    ],
-                    async data => {
-                        closeModal();
-                        theCredentials[routerId] = {
-                            username: data.get("username"),
-                            password: data.get("password")
-                        };
-                        resolve();
-                    }
-                );
-            });
+            const json = await response.json();
+            const routersId = json.data;
+            const theCredentials = {};
+
+            for (const routerId of routersId) {
+                await new Promise(resolve => {
+                    openModal(
+                        `Router credentials for ${routerId}`,
+                        [
+                            { name: "username", label: "Username" },
+                            { name: "password", label: "Password", type: "password" }
+                        ],
+                        async data => {
+                            closeModal();
+                            theCredentials[routerId] = {
+                                username: data.get("username"),
+                                password: data.get("password")
+                            };
+                            resolve();
+                        }
+                    );
+                });
+            }
+
+            await loadGraph(theCredentials);
+            return;
         }
 
-        await loadGraph(theCredentials);
-        return;
+        const json = await response.json();
+
+        if (!response.ok) {
+            showNotification(json.message, "error")
+            return
+        }
+
+        const { nodes, edges: links } = json.data;
+
+        const graphElement = document.getElementById("graph");
+        graphElement.style.justifyContent = "start";
+        graphElement.innerHTML = "";
+
+        if (nodes.length === 0) {
+            graphElement.style.alignItems = "center";
+            graphElement.style.justifyContent = "center";
+            graphElement.innerHTML = "<h2 style='opacity: 0.8'>There is no router in the network</h2>";
+            return;
+        }
+
+        renderControls(graphElement);
+        const svgElement = createSvg();
+        document.querySelector(".graph-content").appendChild(svgElement);
+
+        const width = +svgElement.getAttribute("width");
+        const height = +svgElement.getAttribute("height");
+        const svg = d3.select(svgElement);
+        const zoomGroup = svg.append("g");
+
+        configureZoom(svg, zoomGroup);
+        renderGraph({ svg, zoomGroup, nodes, links, width, height });
+
+    } catch (e) {
+        showNotification("An error occurred", "error")
     }
 
-    if (!response.ok) {
-        showNotification("An error occurred while retrieving the network", "error");
-        return;
-    }
-
-    const { nodes, edges: links } = (await response.json()).data;
-
-    const graphElement = document.getElementById("graph");
-    graphElement.style.justifyContent = "start";
-    graphElement.innerHTML = "";
-
-    if (nodes.length === 0) {
-        graphElement.style.alignItems = "center";
-        graphElement.style.justifyContent = "center";
-        graphElement.innerHTML = "<h2 style='opacity: 0.8'>There is no router in the network</h2>";
-        return;
-    }
-
-    renderControls(graphElement);
-    const svgElement = createSvg();
-    document.querySelector(".graph-content").appendChild(svgElement);
-
-    const width = +svgElement.getAttribute("width");
-    const height = +svgElement.getAttribute("height");
-    const svg = d3.select(svgElement);
-    const zoomGroup = svg.append("g");
-
-    configureZoom(svg, zoomGroup);
-    renderGraph({ svg, zoomGroup, nodes, links, width, height });
 }
 
 function renderControls(container) {
@@ -292,25 +301,33 @@ function menuEvent(group) {
 
                     showNotification("Please, wait...", 'success')
                     closeMenu()
-                    const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`, {
-                        method: "POST",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({})
-                    });
 
-                    if (response.ok) {
+                    try {
+
+                        const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`, {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({})
+                        });
+
+                        const json = await response.json();
+
+                        if (!response.ok) {
+                            showNotification(json.message, "error")
+                            return
+                        }
 
                         showNotification("Interface enabled", 'success')
-
                         group.select("circle").attr("fill", "var(--green)");
                         group.select("text").attr("fill", "var(--green)");
-                    }else {
-                        const json = await response.json();
-                        showNotification(json.message, 'error')
+
+                    } catch (e) {
+                        showNotification("An error occurred", "error")
                     }
+
                 }
             },
             {
@@ -319,24 +336,31 @@ function menuEvent(group) {
 
                     showNotification("Please, wait...", 'success')
                     closeMenu()
-                    const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration.configuration_interfaces_disable_path}`, {
-                        method: "POST",
-                        credentials: "include",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({})
-                    });
 
-                    if (response.ok) {
+                    try {
+
+                        const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration.configuration_interfaces_disable_path}`, {
+                            method: "POST",
+                            credentials: "include",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({})
+                        });
+
+                        const json = await response.json();
+
+                        if (!response.ok) {
+                            showNotification(json.message, "error")
+                            return
+                        }
 
                         showNotification("Interface disabled", 'success')
-
                         group.select("circle").attr("fill", "var(--red)");
                         group.select("text").attr("fill", "var(--red)");
-                    }else {
-                        const json = await response.json();
-                        showNotification(json.message, 'error')
+
+                    } catch (e) {
+                        showNotification("An error occurred", "error")
                     }
 
                 }
@@ -364,29 +388,37 @@ function menuEvent(group) {
                             closeModal()
                             showNotification("Please, wait...", 'success');
 
-                            const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`, {
-                                method: "POST",
-                                credentials: "include",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify(
-                                    {
-                                        credentials: {},
-                                        interface_name: interfaceName,
-                                        ip_address: ipAddress,
-                                        mask: mask
-                                    }
-                                )
-                            });
+                            try {
 
-                            if (response.ok) {
+                                const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`, {
+                                    method: "POST",
+                                    credentials: "include",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify(
+                                        {
+                                            credentials: {},
+                                            interface_name: interfaceName,
+                                            ip_address: ipAddress,
+                                            mask: mask
+                                        }
+                                    )
+                                });
+
+                                const json = await response.json();
+
+                                if (!response.ok) {
+                                    showNotification(json.message, "error")
+                                    return
+                                }
+
                                 showNotification("IP address set", 'success');
                                 group.select("circle").attr("fill", "var(--green)");
                                 group.select("text").attr("fill", "var(--green)");
-                            } else {
-                                const json = await response.json();
-                                showNotification(json.message, 'error');
+
+                            } catch (e) {
+                                showNotification("An error occurred", "error")
                             }
 
                         }

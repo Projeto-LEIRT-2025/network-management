@@ -37,99 +37,106 @@ function init() {
                     return;
                 }
 
-                const response = await fetch(`${config.server}${config.routers_base_path}`, {
-                    method: "POST",
-                    credentials: "include",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(
-                        {
-                            ip_address: ipAddress,
-                            model: model,
-                            vendor: vendor
-                        }
-                    )
-                })
+                try {
 
-                const json = await response.json()
+                    const response = await fetch(`${config.server}${config.routers_base_path}`, {
+                        method: "POST",
+                        credentials: "include",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(
+                            {
+                                ip_address: ipAddress,
+                                model: model,
+                                vendor: vendor
+                            }
+                        )
+                    })
 
-                if (!response.ok) {
-                    showNotification(json.message, "error");
-                    return;
+                    const json = await response.json()
+
+                    if (!response.ok) {
+                        showNotification("An error occurred", "error")
+                        return;
+                    }
+
+                    showNotification(json.message, "success");
+
+                    const router = json.data
+
+                    const routerDiv = document.createElement("div");
+                    routerDiv.classList.add("router");
+                    routerDiv.setAttribute("key", router.id)
+
+                    const ipAddressLabel = document.createElement("label");
+                    ipAddressLabel.classList.add("ip_address")
+
+                    const ipAddressSpan = document.createElement("span");
+                    ipAddressSpan.textContent = "IP Address";
+
+                    const ipAddressInput = document.createElement("input");
+                    ipAddressInput.type = "text";
+                    ipAddressInput.value = router.ip_address;
+
+                    ipAddressLabel.appendChild(ipAddressSpan);
+                    ipAddressLabel.appendChild(ipAddressInput);
+                    routerDiv.append(ipAddressLabel);
+
+                    const modelLabel = document.createElement("label");
+                    modelLabel.classList.add("model")
+
+                    const modelSpan = document.createElement("span");
+                    modelSpan.textContent = "Model";
+
+                    const modelInput = document.createElement("input");
+                    modelInput.type = "text";
+                    modelInput.value = router.model;
+
+                    modelLabel.appendChild(modelSpan);
+                    modelLabel.appendChild(modelInput);
+                    routerDiv.append(modelLabel);
+
+                    const vendorLabel = document.createElement("label");
+                    vendorLabel.classList.add("vendor")
+
+                    const vendorSpan = document.createElement("span");
+                    vendorSpan.textContent = "Vendor";
+
+                    const vendorInput = document.createElement("input");
+                    vendorInput.type = "text";
+                    vendorInput.value = router.vendor;
+
+                    vendorLabel.appendChild(vendorSpan);
+                    vendorLabel.appendChild(vendorInput);
+                    routerDiv.append(vendorLabel);
+
+                    const buttons = document.createElement("div");
+                    buttons.classList.add("buttons");
+
+                    const updateBtn = document.createElement("button")
+                    updateBtn.classList.add("update")
+                    updateBtn.textContent = "Update";
+                    updateBtn.onclick = event => updateHandler(event, routerDiv);
+                    buttons.appendChild(updateBtn);
+
+                    const deleteBtn = document.createElement("button")
+                    deleteBtn.classList.add("delete")
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.onclick = event => deleteHandler(event, routerDiv);
+                    buttons.appendChild(deleteBtn);
+
+                    routerDiv.appendChild(buttons);
+
+                    const routersDiv = document.querySelector(".routers");
+                    routersDiv.append(routerDiv);
+
+                    closeModal()
+
+                } catch (e) {
+                    showNotification("An error occurred", "error")
                 }
 
-                showNotification(json.message, "success");
-
-                const router = json.data
-
-                const routerDiv = document.createElement("div");
-                routerDiv.classList.add("router");
-                routerDiv.setAttribute("key", router.id)
-
-                const ipAddressLabel = document.createElement("label");
-                ipAddressLabel.classList.add("ip_address")
-
-                const ipAddressSpan = document.createElement("span");
-                ipAddressSpan.textContent = "IP Address";
-
-                const ipAddressInput = document.createElement("input");
-                ipAddressInput.type = "text";
-                ipAddressInput.value = router.ip_address;
-
-                ipAddressLabel.appendChild(ipAddressSpan);
-                ipAddressLabel.appendChild(ipAddressInput);
-                routerDiv.append(ipAddressLabel);
-
-                const modelLabel = document.createElement("label");
-                modelLabel.classList.add("model")
-
-                const modelSpan = document.createElement("span");
-                modelSpan.textContent = "Model";
-
-                const modelInput = document.createElement("input");
-                modelInput.type = "text";
-                modelInput.value = router.model;
-
-                modelLabel.appendChild(modelSpan);
-                modelLabel.appendChild(modelInput);
-                routerDiv.append(modelLabel);
-
-                const vendorLabel = document.createElement("label");
-                vendorLabel.classList.add("vendor")
-
-                const vendorSpan = document.createElement("span");
-                vendorSpan.textContent = "Vendor";
-
-                const vendorInput = document.createElement("input");
-                vendorInput.type = "text";
-                vendorInput.value = router.vendor;
-
-                vendorLabel.appendChild(vendorSpan);
-                vendorLabel.appendChild(vendorInput);
-                routerDiv.append(vendorLabel);
-
-                const buttons = document.createElement("div");
-                buttons.classList.add("buttons");
-
-                const updateBtn = document.createElement("button")
-                updateBtn.classList.add("update")
-                updateBtn.textContent = "Update";
-                updateBtn.onclick = event => updateHandler(event, routerDiv);
-                buttons.appendChild(updateBtn);
-
-                const deleteBtn = document.createElement("button")
-                deleteBtn.classList.add("delete")
-                deleteBtn.textContent = "Delete";
-                deleteBtn.onclick = event => deleteHandler(event, routerDiv);
-                buttons.appendChild(deleteBtn);
-
-                routerDiv.appendChild(buttons);
-
-                const routersDiv = document.querySelector(".routers");
-                routersDiv.append(routerDiv);
-
-                closeModal()
             }
 
         );
@@ -144,47 +151,59 @@ async function updateHandler(event, router) {
     const model = router.querySelector(".model input").value;
     const vendor = router.querySelector(".vendor input").value;
 
-    const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(
-            {
-                ip_address: ipAddress,
-                model: model,
-                vendor: vendor
-            }
-        )
-    })
+    try {
 
-    const json = await response.json();
+        const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
+            method: "PUT",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+                {
+                    ip_address: ipAddress,
+                    model: model,
+                    vendor: vendor
+                }
+            )
+        })
 
-    if (!response.ok) {
-        showNotification(json.message, "error");
-        return null;
+        const json = await response.json()
+
+        if (!response.ok) {
+            showNotification(json.message, "error")
+            return
+        }
+
+        showNotification(json.message, "success");
+    } catch (e) {
+        showNotification("An error occurred", "error")
     }
 
-    showNotification(json.message, "success");
 }
 
 async function deleteHandler(event, router) {
 
     const id = router.getAttribute('key');
 
-    const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
-        method: "DELETE",
-        credentials: "include"
-    });
+    try {
 
-    const json = await response.json();
+        const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
+            method: "DELETE",
+            credentials: "include"
+        });
 
-    if (!response.ok) {
-        showNotification(json.message, "error");
-        return null;
+        const json = await response.json();
+
+        if (!response.ok) {
+            showNotification(json.message, "error")
+            return
+        }
+
+        router.remove();
+        showNotification(json.message, "success");
+    } catch (e) {
+        showNotification("An error occurred", "error")
     }
 
-    router.remove();
-    showNotification(json.message, "success");
 }
