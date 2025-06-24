@@ -1,0 +1,38 @@
+package com.github.project.webapplication.controllers
+
+import com.github.project.webapplication.dto.LoginDto
+import com.github.project.webapplication.dto.UserDto
+import com.github.project.webapplication.services.JwtService
+import jakarta.servlet.http.HttpSession
+import jakarta.validation.Valid
+import org.springframework.http.ResponseEntity
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/v1/auth")
+class AuthenticationController(
+
+    private val authenticationManager: AuthenticationManager,
+    private val jwtService: JwtService
+
+) {
+
+    @PostMapping("/login")
+    fun login(@RequestBody @Valid dto: LoginDto, session: HttpSession): ResponseEntity<UserDto> {
+
+        val usernameAndPassword = UsernamePasswordAuthenticationToken(dto.username, dto.password)
+        authenticationManager.authenticate(usernameAndPassword)
+        val token = jwtService.generateToken(dto.username)
+
+        session.setAttribute("token", token)
+
+        return ResponseEntity
+            .ok(UserDto(username = dto.username, token = token))
+    }
+
+}

@@ -39,6 +39,7 @@ function init() {
 
                 const response = await fetch(`${config.server}${config.routers_base_path}`, {
                     method: "POST",
+                    credentials: "include",
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -145,6 +146,7 @@ async function updateHandler(event, router) {
 
     const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
         method: "PUT",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json"
         },
@@ -172,7 +174,8 @@ async function deleteHandler(event, router) {
     const id = router.getAttribute('key');
 
     const response = await fetch(`${config.server}${config.routers_base_path}/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        credentials: "include"
     });
 
     const json = await response.json();

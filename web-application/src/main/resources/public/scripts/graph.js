@@ -10,6 +10,7 @@ async function loadGraph(credentials) {
 
     const response = await fetch(`${config.server}${config.routers_base_path}${config.configuration_base_path}${config.routers_network_path}`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials)
     });
@@ -293,6 +294,7 @@ function menuEvent(group) {
                     closeMenu()
                     const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`, {
                         method: "POST",
+                        credentials: "include",
                         headers: {
                             "Content-Type": "application/json"
                         },
@@ -319,6 +321,7 @@ function menuEvent(group) {
                     closeMenu()
                     const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration.configuration_interfaces_disable_path}`, {
                         method: "POST",
+                        credentials: "include",
                         headers: {
                             "Content-Type": "application/json"
                         },
@@ -363,6 +366,7 @@ function menuEvent(group) {
 
                             const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`, {
                                 method: "POST",
+                                credentials: "include",
                                 headers: {
                                     "Content-Type": "application/json"
                                 },

@@ -19,11 +19,11 @@ dependencies {
 
     compileOnly(libs.serialization)
     compileOnly(libs.reflection)
-    compileOnly(libs.spring.data.jpa)
+    compileOnly(libs.spring.boot.data.jpa)
     compileOnly(libs.postgresql)
 
     testImplementation(libs.spring.boot.test)
-    testImplementation(libs.spring.data.jpa)
+    testImplementation(libs.spring.boot.data.jpa)
     testImplementation(project(":api"))
     testImplementation(project(":network-service"))
     testImplementation(kotlin("test"))

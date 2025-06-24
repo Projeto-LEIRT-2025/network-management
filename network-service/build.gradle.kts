@@ -18,13 +18,13 @@ dependencies {
     compileOnly(project(":api"))
     compileOnly(libs.serialization)
     compileOnly(libs.reflection)
-    compileOnly(libs.spring.data.jpa)
+    compileOnly(libs.spring.boot.data.jpa)
     compileOnly(libs.spring.boot.validation)
     compileOnly(libs.postgresql)
     compileOnly(libs.coroutines)
 
     testImplementation(libs.spring.boot.test)
-    testImplementation(libs.spring.data.jpa)
+    testImplementation(libs.spring.boot.data.jpa)
     testImplementation(project(":api"))
     testImplementation(kotlin("test"))
 }

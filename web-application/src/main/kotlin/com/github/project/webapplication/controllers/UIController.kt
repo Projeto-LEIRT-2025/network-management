@@ -41,6 +41,9 @@ class UIController(
         return "plugins"
     }
 
+    @GetMapping("/auth/login")
+    fun login() = "login"
+
     @GetMapping(value = ["/config.js"], produces = ["application/javascript"])
     fun configVariables(model: Model): String {
         model.addAttribute("config", appProperties)

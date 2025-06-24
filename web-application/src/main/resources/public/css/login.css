@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+
+    --background: oklch(21% 0.034 264.665);
+    --foreground: oklch(27.8% 0.033 256.848);
+    --primary: oklch(98.7% 0.022 95.277);
+    --border: oklch(50% 0.134 242.749);
+    --button: oklch(50% 0.134 242.749);
+    --node: oklch(50% 0.134 242.749);
+    --red: oklch(63.7% 0.237 25.331);
+    --green: oklch(52.7% 0.154 150.069);
+    --orange: oklch(70.5% 0.213 47.604);
+
+}
+
+body, html {
+
+    height: 100%;
+
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings: "wdth" 100;
+    font-size: 16px;
+
+}
+
+body {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--background);
+    color: var(--primary);
+
+}
+
+main {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--foreground);
+    padding: 20px 60px;
+    border-radius: 10px;
+
+}
+
+main div {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+
+main div h1 {
+
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 5px;
+
+}
+
+main div p {
+
+    margin-top: 0;
+    opacity: 0.8;
+
+}
+
+main .form {
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+
+}
+
+main .form label {
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+}
+
+main .form button {
+
+    margin-top: 20px;
+    transition: 0.5s;
+    padding: 10px 20px;
+    color: var(--primary);
+    background-color: var(--button);
+    font-size: 16px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+    border-radius: 10px;
+
+}
+
+main .form button:hover {
+
+    opacity: 0.75;
+
+}
+
+input {
+
+    border: 1px solid var(--background);
+    background-color: var(--background);
+    color: var(--primary);
+    outline: none;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 16px;
+    transition: 0.5s;
+
+}
+
+input:focus {
+
+    border: 1px solid var(--border);
+
+}
+
+#notification {
+
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    cursor: default;
+    font-size: 18px;
+
+}
+
+.show {
+
+    animation: showAnimation 1s ease forwards;
+
+}
+
+.hide {
+
+    animation: hideAnimation 1s ease forwards;
+
+}
+
+@keyframes showAnimation {
+
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+}
+
+@keyframes hideAnimation {
+
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+
+}
+
+.success {
+
+    background-color: var(--green);
+
+}
+
+.error {
+
+    background-color: var(--red);
+
+}
