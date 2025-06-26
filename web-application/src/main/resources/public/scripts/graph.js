@@ -299,34 +299,17 @@ function menuEvent(group) {
                 name: "Enable Interface",
                 onClick: async () => {
 
-                    showNotification("Please, wait...", 'success')
-                    closeMenu()
-
-                    try {
-
-                        const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`, {
-                            method: "POST",
-                            credentials: "include",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({})
-                        });
-
-                        const json = await response.json();
-
-                        if (!response.ok) {
-                            showNotification(json.message, "error")
-                            return
-                        }
-
-                        showNotification("Interface enabled", 'success')
-                        group.select("circle").attr("fill", "var(--green)");
-                        group.select("text").attr("fill", "var(--green)");
-
-                    } catch (e) {
-                        showNotification("An error occurred", "error")
-                    }
+                    await optionOnClick(
+                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`,
+                        "POST",
+                        {},
+                        (message) => {
+                            showNotification(message, 'success');
+                            group.select("circle").attr("fill", "var(--green)");
+                            group.select("text").attr("fill", "var(--green)");
+                        },
+                        (message) => showNotification(message, "error")
+                    )
 
                 }
             },
@@ -334,40 +317,24 @@ function menuEvent(group) {
                 name: "Disable Interface",
                 onClick: async () => {
 
-                    showNotification("Please, wait...", 'success')
-                    closeMenu()
-
-                    try {
-
-                        const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration.configuration_interfaces_disable_path}`, {
-                            method: "POST",
-                            credentials: "include",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({})
-                        });
-
-                        const json = await response.json();
-
-                        if (!response.ok) {
-                            showNotification(json.message, "error")
-                            return
-                        }
-
-                        showNotification("Interface disabled", 'success')
-                        group.select("circle").attr("fill", "var(--red)");
-                        group.select("text").attr("fill", "var(--red)");
-
-                    } catch (e) {
-                        showNotification("An error occurred", "error")
-                    }
+                    await optionOnClick(
+                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_disable_path}`,
+                        "POST",
+                        {},
+                        (message) => {
+                            showNotification(message, 'success');
+                            group.select("circle").attr("fill", "var(--red)");
+                            group.select("text").attr("fill", "var(--red)");
+                        },
+                        (message) => showNotification(message, "error")
+                    )
 
                 }
             },
             {
                 name: "Set IP Address",
                 onClick: async () => {
+
                     closeMenu();
                     openModal(
                         "Set  IP Address",
@@ -385,41 +352,18 @@ function menuEvent(group) {
                                 return;
                             }
 
-                            closeModal()
-                            showNotification("Please, wait...", 'success');
-
-                            try {
-
-                                const response = await fetch(`${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`, {
-                                    method: "POST",
-                                    credentials: "include",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    body: JSON.stringify(
-                                        {
-                                            credentials: {},
-                                            interface_name: interfaceName,
-                                            ip_address: ipAddress,
-                                            mask: mask
-                                        }
-                                    )
-                                });
-
-                                const json = await response.json();
-
-                                if (!response.ok) {
-                                    showNotification(json.message, "error")
-                                    return
-                                }
-
-                                showNotification("IP address set", 'success');
-                                group.select("circle").attr("fill", "var(--green)");
-                                group.select("text").attr("fill", "var(--green)");
-
-                            } catch (e) {
-                                showNotification("An error occurred", "error")
-                            }
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    interface_name: interfaceName,
+                                    ip_address: ipAddress,
+                                    mask: mask
+                                },
+                                (message) => showNotification(message, 'success'),
+                                (message) => showNotification(message, "error")
+                            )
 
                         }
                     )
@@ -429,5 +373,36 @@ function menuEvent(group) {
         ])
 
     })
+
+}
+
+async function optionOnClick(url, method, body, onSuccess, onError) {
+
+    closeMenu();
+    closeModal()
+    showNotification("Please, wait...", 'success');
+
+    try {
+
+        const response = await fetch(url, {
+            method: method,
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        });
+
+        const json = await response.json();
+
+        if (!response.ok) {
+            onError(json.message)
+            return
+        }
+
+        onSuccess(json.message)
+    } catch (e) {
+        onError("An error occurred")
+    }
 
 }
