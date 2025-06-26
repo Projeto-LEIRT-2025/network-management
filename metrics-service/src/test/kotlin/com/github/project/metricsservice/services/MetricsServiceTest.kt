@@ -1,6 +1,7 @@
 package com.github.project.metricsservice.services
 
 import com.github.project.api.router.response.NetworkInterface
+import com.github.project.metricsservice.models.DeviceStats
 import com.github.project.metricsservice.models.InterfaceStats
 import com.github.project.metricsservice.repositories.DeviceStatsRepository
 import com.github.project.metricsservice.repositories.InterfaceStatsRepository
@@ -54,6 +55,37 @@ class MetricsServiceTest {
         ).thenReturn(expected)
 
         val actual = metricsService.getInterfaceStatsBetween(routerId, start, end)
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `get device stats between a period should succeed`() {
+
+        val routerId = 1L
+        val start = Instant.now()
+        val end = start.plusSeconds(3600)
+        val expected = listOf(
+            DeviceStats(
+                id = 1,
+                routerId = routerId,
+                uptime = "hora:23, minutos:55, segundos:10",
+                timestamp = start.plusSeconds(1800),
+                cpuUsage = 56.55,
+                totalMemory = 100,
+                memoryUsage = 50
+            )
+        )
+
+        `when`(
+            deviceStatsRepository.findByRouterIdAndTimestampBetween(
+                routerId = 1,
+                fromTimestamp = start,
+                toTimestamp = end
+            )
+        ).thenReturn(expected)
+
+        val actual = metricsService.getDeviceStatsBetween(routerId, start, end)
 
         assertEquals(expected, actual)
     }
