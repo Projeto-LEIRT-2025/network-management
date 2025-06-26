@@ -69,7 +69,7 @@ class MetricsServiceTest {
             DeviceStats(
                 id = 1,
                 routerId = routerId,
-                uptime = "hora:23, minutos:55, segundos:10",
+                uptime = "23:55:10",
                 timestamp = start.plusSeconds(1800),
                 cpuUsage = 56.55,
                 totalMemory = 100,
