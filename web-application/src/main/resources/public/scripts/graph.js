@@ -129,9 +129,17 @@ function configureZoom(svg, zoomGroup) {
         .on("zoom", e => {
             zoomGroup.attr("transform", e.transform);
             document.getElementById("zoom-value").textContent = e.transform.k.toFixed(2);
+        })
+        .on("start", () => {
+            svg.style("cursor", "grabbing");
+        })
+        .on("end", () => {
+            svg.style("cursor", "grab");
         });
 
     svg.call(zoom);
+
+    svg.style("cursor", "grab");
 
     document.getElementById("zoom-in").addEventListener("click", () => zoomBy(svg, zoom, 0.1, maxZoom));
     document.getElementById("zoom-out").addEventListener("click", () => zoomBy(svg, zoom, -0.1, minZoom));

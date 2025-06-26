@@ -5,6 +5,10 @@ const config = {
     metrics_base_path: /*[[${config.metricsBasePath}]]*/ "",
     plugins_base_path: /*[[${config.pluginsBasePath}]]*/ "",
 
+    plugins_enable_path: /*[[${config.pluginsEnablePath}]]*/ "",
+    plugins_disable_path: /*[[${config.pluginsDisablePath}]]*/ "",
+    plugins_upload_path: /*[[${config.pluginsUploadPath}]]*/ "",
+
     configuration_address_path: /*[[${config.configurationAddressPath}]]*/ "",
     configuration_interfaces_path: /*[[${config.configurationInterfacesPath}]]*/ "",
     configuration_interfaces_enable_path: /*[[${config.configurationInterfacesEnablePath}]]*/ "",

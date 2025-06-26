@@ -46,7 +46,7 @@ class PluginController(
             )
     }
 
-    @PostMapping("/{name}/disable")
+    @PostMapping("/{name}\${PLUGINS_DISABLE_PATH}")
     fun disablePlugin(@PathVariable name: String): ResponseEntity<ApiResponseDto<Unit>> {
 
         pluginService.disablePlugin(name)
@@ -60,7 +60,7 @@ class PluginController(
             )
     }
 
-    @PostMapping("/{name}/enable")
+    @PostMapping("/{name}\${PLUGINS_ENABLE_PATH}")
     fun enablePlugin(@PathVariable name: String): ResponseEntity<ApiResponseDto<Unit>> {
 
         pluginService.enablePlugin(name)
@@ -74,7 +74,7 @@ class PluginController(
             )
     }
 
-    @PostMapping("/upload")
+    @PostMapping("\${PLUGINS_UPLOAD_PATH}")
     fun uploadPlugin(@RequestParam("file") file: MultipartFile): ResponseEntity<ApiResponseDto<PluginDto>> {
 
         val plugin = pluginService.uploadPlugin(file.originalFilename ?: UUID.randomUUID().toString(), file.bytes)

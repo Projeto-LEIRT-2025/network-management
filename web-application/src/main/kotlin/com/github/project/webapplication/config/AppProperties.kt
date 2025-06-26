@@ -21,6 +21,15 @@ class AppProperties(
     @Value("\${PLUGINS_BASE_PATH}")
     val pluginsBasePath: String,
 
+    @Value("\${PLUGINS_ENABLE_PATH}")
+    val pluginsEnablePath: String,
+
+    @Value("\${PLUGINS_DISABLE_PATH}")
+    val pluginsDisablePath: String,
+
+    @Value("\${PLUGINS_UPLOAD_PATH}")
+    val pluginsUploadPath: String,
+
     @Value("\${CONFIGURATION_ADDRESS_PATH}")
     val configurationAddressPath: String,
 

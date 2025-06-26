@@ -70,7 +70,7 @@ async function enablePlugin(button, name) {
 
     try {
 
-        const response = await fetch(`${config.server}${config.plugins_base_path}/${name}/enable`, {
+        const response = await fetch(`${config.server}${config.plugins_base_path}/${name}${config.plugins_enable_path}`, {
             method: 'POST'
         })
 
@@ -102,7 +102,7 @@ async function disablePlugin(button, name) {
 
     try {
 
-        const response = await fetch(`${config.server}${config.plugins_base_path}/${name}/disable`, {
+        const response = await fetch(`${config.server}${config.plugins_base_path}/${name}${config.plugins_disable_path}`, {
             method: 'POST'
         })
 
@@ -138,7 +138,7 @@ async function uploadFile(file) {
 
     try {
 
-        const response = await fetch(`${config.server}${config.plugins_base_path}/upload`, {
+        const response = await fetch(`${config.server}${config.plugins_base_path}${config.plugins_upload_path}`, {
             method: 'POST',
             body: formData,
         })
