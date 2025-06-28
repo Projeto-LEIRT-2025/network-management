@@ -18,7 +18,7 @@ interface RouterConfiguration {
 
     fun setIpAddress(interfaceName: String, ipAddress: String, mask: Int): Response<Unit>
 
-    fun removeIpAddress(vararg number: Int): Response<Unit>
+    fun removeIpAddress(interfaceName: String): Response<Unit>
 
     //DHCP
 

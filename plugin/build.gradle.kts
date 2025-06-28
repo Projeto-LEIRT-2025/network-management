@@ -15,7 +15,7 @@ dependencies {
     implementation(libs.commons.net)
     implementation(libs.snmp4j)
 
-    implementation(project(":api"))
+    compileOnly(project(":api"))
 
     testImplementation(kotlin("test"))
 }

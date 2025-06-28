@@ -15,6 +15,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Service
+import java.util.Collections
+import java.util.concurrent.ConcurrentHashMap
 
 @Service
 class RouterConfigurationService(
@@ -74,10 +76,10 @@ class RouterConfigurationService(
 
     }
 
-    fun removeIpAddress(routerId: Long, username: String, password: String, vararg identifiers: Int) {
+    fun removeIpAddress(routerId: Long, username: String, password: String, interfaceName: String) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.removeIpAddress(*identifiers)
+        val response = routerConfiguration.removeIpAddress(interfaceName)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)
@@ -263,25 +265,30 @@ class RouterConfigurationService(
     }
 
     @Suppress("UNCHECKED_CAST")
-    suspend fun getNetworkGraph(allCredentials: Map<Long, CredentialsDto>, parallel: Int = 10): Graph = coroutineScope {
+    suspend fun getNetworkGraph(
+        allCredentials: Map<Long, CredentialsDto>,
+        parallel: Int = 10
+    ): Graph = coroutineScope {
+
+        println("called")
 
         val graph = Graph()
         val routers = routerService.getAll()
-        val routerConfigurations = mutableMapOf<Router, RouterConfiguration>()
-        val missingCredentials = mutableListOf<Long>()
+        val routerConfigurations = ConcurrentHashMap<Router, RouterConfiguration>()
+        val missingCredentials = Collections.synchronizedList(mutableListOf<Long>())
 
         routers.chunked(parallel).forEach { batch ->
 
             val jobs = batch.mapNotNull { router ->
 
                 val credentials = allCredentials[router.id]
+
                 if (credentials == null) {
                     missingCredentials.add(router.id)
                     return@mapNotNull null
                 }
 
                 async {
-
                     try {
                         val config = router.toRouterConfiguration(
                             username = credentials.username,
@@ -292,17 +299,14 @@ class RouterConfigurationService(
                         missingCredentials.add(router.id)
                         null
                     }
-
                 }
-
             }
 
-            val results = jobs.awaitAll().filterNotNull()
-
-            for ((router, config) in results) {
-                routerConfigurations[router] = config
-            }
-
+            jobs.awaitAll()
+                .filterNotNull()
+                .forEach { (router, config) ->
+                    routerConfigurations[router] = config
+                }
         }
 
         if (missingCredentials.isNotEmpty()) {

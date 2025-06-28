@@ -130,12 +130,8 @@ function configureZoom(svg, zoomGroup) {
             zoomGroup.attr("transform", e.transform);
             document.getElementById("zoom-value").textContent = e.transform.k.toFixed(2);
         })
-        .on("start", () => {
-            svg.style("cursor", "grabbing");
-        })
-        .on("end", () => {
-            svg.style("cursor", "grab");
-        });
+        .on("start", () => svg.style("cursor", "grabbing"))
+        .on("end", () => svg.style("cursor", "grab"));
 
     svg.call(zoom);
 
@@ -177,6 +173,7 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         .join("circle")
         .attr("r", radius)
         .attr("fill", "var(--node)");
+    nodeEvent(node)
 
     const label = zoomGroup.append("g")
         .attr("class", "labels")
@@ -288,6 +285,205 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
 
 }
 
+function nodeEvent(node) {
+
+    node.on("contextmenu", (event, d) => {
+
+        event.preventDefault();
+
+        const offsetX = 0;
+        const offsetY = 10;
+        const x = event.clientX + offsetX;
+        const y = event.clientY + offsetY;
+        const routerId = d.id;
+
+        openMenu(x, y, [
+            {
+                name: "Enable Interface",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Enable interface",
+                        [
+                            { name: "interface", label: "Interface name" }
+                        ],
+                        async data => {
+
+                            const interfaceName = data.get("interface");
+
+                            if (interfaceName.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`,
+                                "POST",
+                                {},
+                                (message) => showNotification(message, 'success'),
+                                (message) => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Disable Interface",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Disable interface",
+                        [
+                            { name: "interface", label: "Interface name" }
+                        ],
+                        async data => {
+
+                            const interfaceName = data.get("interface");
+
+                            if (interfaceName.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_disable_path}`,
+                                "POST",
+                                {},
+                                (message) => showNotification(message, 'success'),
+                                (message) => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Remove IP Address",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Remove IP Address",
+                        [
+                            { name: "interface", label: "Interface name" }
+                        ],
+                        async data => {
+
+                            const interfaceName = data.get("interface");
+
+                            if (interfaceName.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`,
+                                "DELETE",
+                                {
+                                    credentials: {},
+                                    interface_name: interfaceName
+                                },
+                                (message) => showNotification(message, 'success'),
+                                (message) => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Set IP Address",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Set IP Address",
+                        [
+                            { name: "interface", label: "Interface name" },
+                            { name: "ip_address", label: "IP Address" },
+                            { name: "mask", label: "Mask" }
+                        ],
+                        async data => {
+
+                            const interfaceName = data.get("interface");
+                            const ipAddress = data.get("ip_address");
+                            const mask = data.get("mask");
+
+                            if (interfaceName.trim() === "" || ipAddress.trim() === "" || mask.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    interface_name: interfaceName,
+                                    ip_address: ipAddress,
+                                    mask: mask
+                                },
+                                (message) => showNotification(message, 'success'),
+                                (message) => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Create Address Pool",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create Address Pool",
+                        [
+                            { name: "pool_name", label: "Pool name"},
+                            { name: "range_start", label: "Range start" },
+                            { name: "range_end", label: "Range end" }
+                        ],
+                        async data => {
+
+                            const poolName = data.get("pool_name");
+                            const rangeStart = data.get("range_start");
+                            const rangeEnd = data.get("range_end");
+
+                            if (poolName.trim() === "" || rangeStart.trim() === "" || rangeEnd.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_pool_path}/${poolName}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    range_start: rangeStart,
+                                    range_end: rangeEnd
+                                },
+                                (message) => showNotification(message, 'success'),
+                                (message) => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            }
+        ])
+
+    })
+
+}
+
 function menuEvent(group) {
 
     group.on("contextmenu", (event, d) => {
@@ -334,6 +530,23 @@ function menuEvent(group) {
                             group.select("circle").attr("fill", "var(--red)");
                             group.select("text").attr("fill", "var(--red)");
                         },
+                        (message) => showNotification(message, "error")
+                    )
+
+                }
+            },
+            {
+                name: "Remove IP Address",
+                onClick: async () => {
+
+                    await optionOnClick(
+                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_address_path}`,
+                        "DELETE",
+                        {
+                            credentials: {},
+                            interface_name: interfaceName
+                        },
+                        (message) => showNotification(message, 'success'),
                         (message) => showNotification(message, "error")
                     )
 

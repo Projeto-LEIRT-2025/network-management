@@ -51,7 +51,7 @@ class RouterConfigurationController(
     @DeleteMapping("\${CONFIGURATION_ADDRESS_PATH}")
     fun removeIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: RemoveIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.removeIpAddress(id, dto.credentials.username, dto.credentials.password, *dto.identifiers.toIntArray())
+        routerConfigurationService.removeIpAddress(id, dto.credentials.username, dto.credentials.password, dto.interfaceName)
 
         return ResponseEntity
             .ok(
