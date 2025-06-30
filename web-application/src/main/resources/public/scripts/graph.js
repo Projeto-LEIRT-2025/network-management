@@ -477,7 +477,39 @@ function nodeEvent(node) {
                     )
 
                 }
-            }
+            },
+            {
+                name: "Enable SNMP",
+                onClick: async () => {
+
+                    closeMenu();
+
+                    await optionOnClick(
+                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${configuration_snmp_enable_path}`,
+                        "POST",
+                        {},
+                        (message) => showNotification(message, 'success'),
+                        (message) => showNotification(message, "error")
+                    )
+
+                }
+            },
+            {
+                name: "Disable SNMP",
+                onClick: async () => {
+
+                    closeMenu();
+
+                    await optionOnClick(
+                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${configuration_snmp_disable_path}`,
+                        "POST",
+                        {},
+                        (message) => showNotification(message, 'success'),
+                        (message) => showNotification(message, "error")
+                    )
+
+            },
+
         ])
 
     })
