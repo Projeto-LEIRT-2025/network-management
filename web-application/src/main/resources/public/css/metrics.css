@@ -1,0 +1,10 @@
+main {
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 80px;
+    width: 95%;
+    align-items: center;
+
+}
