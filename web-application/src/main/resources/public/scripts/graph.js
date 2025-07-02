@@ -533,7 +533,41 @@ function nodeEvent(node) {
                     )
 
             },
+            {
+                name: "Change SNMP version",
+                onClick: async () => {
 
+                    closeMenu();
+                    openModal(
+                        "Change SNMP version",
+                        [
+                            { name: "version_snmp", label: "SNMP Version"}
+                        ],
+                        async data => {
+
+                            const versionSNMP = data.get("versionSNMP");
+
+                            if (versionSNMP.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${configuration_snmp_version_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    version_snmp: versionSNMP
+                                },
+                                (message) => showNotification(message, 'success'),
+                                (message) => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            }
         ])
 
     })
