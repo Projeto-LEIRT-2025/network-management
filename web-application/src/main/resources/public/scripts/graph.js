@@ -299,6 +299,30 @@ function nodeEvent(node) {
 
         openMenu(x, y, [
             {
+                name: "Device Metrics",
+                onClick: async () => {
+
+                    closeMenu()
+                    const end = new Date()
+                    const start = new Date(end.getTime() - 15 * 60 * 1000)
+
+                    window.open(`${config.server}/routers/${routerId}/metrics?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`, '_blank')
+
+                }
+            },
+            {
+                name: "Interfaces Metrics",
+                onClick: async () => {
+
+                    closeMenu()
+                    const end = new Date()
+                    const start = new Date(end.getTime() - 15 * 60 * 1000)
+
+                    window.open(`${config.server}/routers/${routerId}/interfaces/metrics?start=${encodeURIComponent(start.toISOString())}&end=${encodeURIComponent(end.toISOString())}`, '_blank')
+
+                }
+            },
+            {
                 name: "Enable Interface",
                 onClick: async () => {
 

@@ -51,7 +51,7 @@ class UIController(
     fun login() = "login"
 
     @GetMapping("/routers/{id}/metrics")
-    fun metrics(
+    fun deviceMetrics(
         @PathVariable id: Long,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Instant,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Instant,
@@ -63,6 +63,21 @@ class UIController(
         model.addAttribute("deviceStats", deviceStats)
 
         return "routerMetrics"
+    }
+
+    @GetMapping("/routers/{id}/interfaces/metrics")
+    fun interfacesMetrics(
+        @PathVariable id: Long,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) start: Instant,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) end: Instant,
+        model: Model
+    ): String {
+
+        val interfacesStats = metricsService.getInterfaceStatsBetween(id, start, end)
+
+        model.addAttribute("interfacesStats", interfacesStats)
+
+        return "interfacesMetrics"
     }
 
     @GetMapping(value = ["/config.js"], produces = ["application/javascript"])

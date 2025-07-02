@@ -1,6 +1,6 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 
-window.addEventListener("load", init);
+window.addEventListener("load", init)
 
 function init() {
 
@@ -56,52 +56,57 @@ function updateIntervalFromNow(intervalMs) {
 
 function initCharts() {
 
-    const rawData = window.deviceStats;
-
-    function parseUptime(uptimeStr) {
-        const parts = uptimeStr.split(':');
-        if (parts.length !== 3) return 0;
-        const h = +parts[0];
-        const m = +parts[1];
-        const s = parseFloat(parts[2]);
-        return h * 3600 + m * 60 + s;
-    }
-
-    const data = rawData.map(d => ({
-        date: new Date(d.timestamp),
-        cpuUsage: d.cpuUsage * 100,
-        freeMemory: d.freeMemory,
-        memoryUsage: d.memoryUsage,
-        totalMemory: d.totalMemory,
-        uptimeSeconds: parseUptime(d.uptime)
-    }));
+    const rawData = window.interfacesStats;
 
     const metrics = [
-        { key: "cpuUsage", label: "CPU Usage (%)" },
-        { key: "freeMemory", label: "Free Memory (MiB)" },
-        { key: "memoryUsage", label: "Memory Usage (MiB)" },
-        { key: "totalMemory", label: "Total Memory (MiB)" },
-        { key: "uptimeSeconds", label: "Uptime (seconds)" }
+        { key: "bytesIn", label: "Bytes In" },
+        { key: "bytesOut", label: "Bytes Out" },
+        { key: "packetsIn", label: "Packets In" },
+        { key: "packetsOut", label: "Packets Out" },
+        { key: "discardedPacketsIn", label: "Discarded Packets In" },
+        { key: "discardedPacketsOut", label: "Discarded Packets Out" },
+        { key: "errorPacketsIn", label: "Error Packets In" },
+        { key: "errorPacketsOut", label: "Error Packets Out" }
     ];
 
     const metricsElement = document.getElementById("metrics");
 
+    const groupedByInterface = d3.group(rawData, d => d.interfaceName);
+
     metrics.forEach(({ key, label }) => {
-        const metricData = data.map(d => ({ date: d.date, value: d[key] }));
-        buildChart(metricData, label);
+
+        const linesData = [];
+
+        for (const [interfaceName, records] of groupedByInterface) {
+
+            const points = records.map(d => ({
+                date: new Date(d.timestamp),
+                value: d[key]
+            }));
+
+            linesData.push({ interfaceName, values: points });
+        }
+
+        buildMultiLineChart(linesData, label);
     });
 
-    function buildChart(data, label) {
-
+    function buildMultiLineChart(linesData, label) {
         const width = 928;
         const height = 500;
         const marginTop = 20;
         const marginRight = 30;
         const marginBottom = 30;
-        const marginLeft = 40;
+        const marginLeft = 50;
 
-        const x = d3.scaleUtc(d3.extent(data, d => d.date), [marginLeft, width - marginRight]);
-        const y = d3.scaleLinear([0, d3.max(data, d => d.value)], [height - marginBottom, marginTop]);
+        const allDates = linesData.flatMap(d => d.values.map(v => v.date));
+        const allValues = linesData.flatMap(d => d.values.map(v => v.value));
+
+        const x = d3.scaleUtc(d3.extent(allDates), [marginLeft, width - marginRight]);
+        const y = d3.scaleLinear([0, d3.max(allValues)], [height - marginBottom, marginTop]);
+
+        const color = d3.scaleOrdinal()
+            .domain(linesData.map(d => d.interfaceName))
+            .range(d3.schemeCategory10);
 
         const line = d3.line()
             .x(d => x(d.date))
@@ -150,11 +155,30 @@ function initCharts() {
                 .attr("text-anchor", "start")
                 .text(label));
 
-        svg.append("path")
+        svg.selectAll(".line")
+            .data(linesData)
+            .join("path")
             .attr("fill", "none")
-            .attr("stroke", "var(--line)")
+            .attr("stroke", d => color(d.interfaceName))
             .attr("stroke-width", 1.5)
-            .attr("d", line(data));
+            .attr("d", d => line(d.values));
+
+        const legend = svg.append("g")
+            .attr("transform", `translate(${width - marginRight - 120},${marginTop})`)
+            .attr("font-size", 12);
+
+        linesData.forEach((d, i) => {
+            const g = legend.append("g").attr("transform", `translate(0, ${i * 20})`);
+            g.append("rect")
+                .attr("width", 12)
+                .attr("height", 12)
+                .attr("fill", color(d.interfaceName));
+            g.append("text")
+                .attr("x", 16)
+                .attr("y", 10)
+                .attr("fill", "var(--primary)")
+                .text(d.interfaceName);
+        });
 
         metricsElement.appendChild(svg.node());
     }

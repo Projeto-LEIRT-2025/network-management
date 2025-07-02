@@ -1,10 +1,26 @@
 main {
 
+    width: 95%;
+    gap: 120px;
+
+}
+
+main .buttons {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 40px;
+
+}
+
+main .metrics {
+
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 80px;
-    width: 95%;
+    width: 100%;
     align-items: center;
+    gap: 80px;
 
 }
