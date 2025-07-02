@@ -270,8 +270,6 @@ class RouterConfigurationService(
         parallel: Int = 10
     ): Graph = coroutineScope {
 
-        println("called")
-
         val graph = Graph()
         val routers = routerService.getAll()
         val routerConfigurations = ConcurrentHashMap<Router, RouterConfiguration>()

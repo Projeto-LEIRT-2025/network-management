@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/metrics.css}">
+    <title>Network Management - Metrics</title>
+</head>
+<body>
+
+    <header th:replace="~{fragments :: header}"></header>
+
+    <main>
+
+        <div class="buttons">
+            <button id="update">Update</button>
+            <button id="last-hour">Last Hour</button>
+            <button id="last-3-hours">Last 3 Hours</button>
+        </div>
+
+        <div id="metrics"></div>
+
+    </main>
+
+    <script th:inline="javascript">
+        window.interfacesStats = [[${interfacesStats}]];
+    </script>
+    <script type="module" th:src="@{/scripts/interfacesMetrics.js}"></script>
+
+</body>
+</html>

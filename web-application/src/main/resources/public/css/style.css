@@ -4,10 +4,11 @@
 
     --background: oklch(21% 0.034 264.665);
     --foreground: oklch(27.8% 0.033 256.848);
-    --primary: oklch(98.7% 0.022 95.277);
+    --primary: white;
     --border: oklch(50% 0.134 242.749);
     --button: oklch(50% 0.134 242.749);
     --node: oklch(50% 0.134 242.749);
+    --line: oklch(50% 0.134 242.749);
     --red: oklch(63.7% 0.237 25.331);
     --green: oklch(52.7% 0.154 150.069);
     --orange: oklch(70.5% 0.213 47.604);
