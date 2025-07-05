@@ -57,12 +57,7 @@ class RouterCredentialsFilter(
                 )
 
                 body.forEach { (id, credentials) -> cache[id] = credentials }
-
-                cache.filter {
-                    cache.keys.any {
-                        !body.containsKey(it)
-                    }
-                }.forEach { body[it.key] = it.value }
+                cache.forEach { body[it.key] = it.value }
 
                 val newBodyBytes = objectMapper.writeValueAsBytes(body)
 

@@ -124,8 +124,8 @@ class RouterConfigurationImpl(
     override fun removeIpAddress(interfaceName: String) =
         executeCommand("/ip address remove [find interface=$interfaceName]")
 
-    override fun getIpAddresses(): Response<List<InterfaceIpAddress>> =
-        executeCommand("/ip/address/print detail") { parseInterfaces(it) }
+    override fun getInterfacesMac(): Response<List<InterfaceMac>> =
+        executeCommand("/interface/print detail without-paging") { parseInterfacesMac(it) }
 
     override fun enableSNMP() =
         executeCommand("/snmp set enabled=yes")
@@ -208,28 +208,21 @@ class RouterConfigurationImpl(
         )
     }
 
-    private fun parseInterfaces(raw: String): Response<List<InterfaceIpAddress>> {
+    private fun parseInterfacesMac(raw: String): Response<List<InterfaceMac>> {
+        val interfaces = raw.lines()
+            .mapNotNull { line ->
 
-        val params = raw
-            .split("\n")
-            .map { n -> n.split(" ").map { it.trim() }.filter { it.contains("=") } }
+                val nameRegex = Regex("""name="([^"]+)"""")
+                val macRegex = Regex("""mac-address=([\dA-F:]{17})""", RegexOption.IGNORE_CASE)
+                val name = nameRegex.find(line)?.groupValues?.get(1)
+                val mac = macRegex.find(line)?.groupValues?.get(1)
 
-        val paramMap = params.map {
-            it.associate { s ->
-                val (key, value) = s.split("=")
-                key to value.trim()
+                if (name != null && mac != null && mac != "00:00:00:00:00:00") {
+                    InterfaceMac(name, mac)
+                } else {
+                    null
+                }
             }
-        }
-
-        val interfaces = paramMap.map { m ->
-            val interfaceName = m["interface"] ?: ""
-            val ipAddress = m["address"]?.split("/")?.get(0) ?: ""
-
-            InterfaceIpAddress(
-                name = interfaceName,
-                address = ipAddress
-            )
-        }
 
         return Response(
             raw = raw,

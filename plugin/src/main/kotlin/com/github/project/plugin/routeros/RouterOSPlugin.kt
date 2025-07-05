@@ -18,7 +18,8 @@ class RouterOSPlugin(metadata: PluginMetadata) : Plugin(metadata) {
 
     override fun disable() {
 
-
+        routerConfigurationManager.unregister("router-os")
+        routerMonitoringManager.unregister("router-os")
 
     }
 

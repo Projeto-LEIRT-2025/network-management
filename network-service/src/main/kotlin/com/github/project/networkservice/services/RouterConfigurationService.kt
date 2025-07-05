@@ -2,7 +2,7 @@ package com.github.project.networkservice.services
 
 import com.github.project.api.PluginLoader
 import com.github.project.api.router.RouterConfiguration
-import com.github.project.api.router.response.InterfaceIpAddress
+import com.github.project.api.router.response.InterfaceMac
 import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.exceptions.ManyRouterLoginException
 import com.github.project.networkservice.exceptions.PluginNotFoundException
@@ -11,6 +11,7 @@ import com.github.project.networkservice.exceptions.RouterLoginException
 import com.github.project.networkservice.models.Graph
 import com.github.project.networkservice.models.Node
 import com.github.project.networkservice.models.Router
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -256,14 +257,6 @@ class RouterConfigurationService(
 
     }
 
-    fun getIpAddresses(routerId: Long, username: String, password: String): List<InterfaceIpAddress> {
-
-        val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.getIpAddresses()
-
-        return response.data
-    }
-
     @Suppress("UNCHECKED_CAST")
     suspend fun getNetworkGraph(
         allCredentials: Map<Long, CredentialsDto>,
@@ -277,16 +270,15 @@ class RouterConfigurationService(
 
         routers.chunked(parallel).forEach { batch ->
 
-            val jobs = batch.mapNotNull { router ->
+            val configurationJobs = batch.mapNotNull { router ->
 
                 val credentials = allCredentials[router.id]
-
                 if (credentials == null) {
                     missingCredentials.add(router.id)
                     return@mapNotNull null
                 }
 
-                async {
+                async(Dispatchers.IO) {
                     try {
                         val config = router.toRouterConfiguration(
                             username = credentials.username,
@@ -300,30 +292,26 @@ class RouterConfigurationService(
                 }
             }
 
-            jobs.awaitAll()
-                .filterNotNull()
-                .forEach { (router, config) ->
-                    routerConfigurations[router] = config
-                }
+            val batchConfigurationResults = configurationJobs.awaitAll().filterNotNull()
+
+            batchConfigurationResults.forEach { (router, config) ->
+                routerConfigurations[router] = config
+            }
         }
 
         if (missingCredentials.isNotEmpty()) {
             throw ManyRouterLoginException(missingCredentials)
         }
 
-        val routerInterfaces = routerConfigurations.mapValues { it.value.getIpAddresses().data }
+        val routerInterfaces = routerConfigurations.mapValues { it.value.getInterfacesMac() }
         val routerNeighbors = routerConfigurations.mapValues { it.value.getNeighbors().data }
 
         for ((router, neighbors) in routerNeighbors) {
-
             val source = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
 
             for (neighbor in neighbors) {
-
                 val routerNeighbor = routerInterfaces.entries.firstOrNull { (_, interfaces) ->
-                    interfaces.any {
-                        it.name == neighbor.interfaceName && it.address == neighbor.ipAddress
-                    }
+                    interfaces.data.any { it.mac.equals(neighbor.mac, ignoreCase = true) }
                 }?.key ?: continue
 
                 val target = Node(routerNeighbor.id.toString(), "${routerNeighbor.model}@${routerNeighbor.ipAddress}")
@@ -336,6 +324,7 @@ class RouterConfigurationService(
 
         return@coroutineScope graph
     }
+
 
     private fun getRouterConfigurationByRouterId(id: Long, username: String, password: String): RouterConfiguration {
 

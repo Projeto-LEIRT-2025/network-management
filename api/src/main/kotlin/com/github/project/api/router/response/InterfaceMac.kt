@@ -1,8 +1,8 @@
 package com.github.project.api.router.response
 
-data class InterfaceIpAddress(
+data class InterfaceMac(
 
     val name: String,
-    val address: String
+    val mac: String
 
 )
