@@ -109,6 +109,17 @@ object PluginLoader {
         return createInstance(theClass.name, hostname, port.toString())
     }
 
+    /**
+     *
+     * Upload a plugin to the system given its filename and content in bytes
+     *
+     * @param fileName the name of the file
+     * @param content the content of the file in bytes
+     *
+     * @return the plugin or null if already exists a file with the given name
+     *
+     */
+
     fun uploadPlugin(fileName: String, content: ByteArray): Plugin? {
 
         val file = File(pluginsDirectory, fileName)
@@ -129,6 +140,16 @@ object PluginLoader {
 
         return plugin
     }
+
+    /**
+     *
+     * Delete a plugin from the system
+     *
+     * @param plugin the plugin to delete
+     *
+     * @return true if the plugin was successfully deleted or false if not
+     *
+     */
 
     fun deletePlugin(plugin: Plugin): Boolean {
 

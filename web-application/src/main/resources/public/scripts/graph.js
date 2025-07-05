@@ -147,7 +147,7 @@ function zoomBy(svg, zoom, delta, limit) {
     svg.transition().duration(300).call(zoom.transform, d3.zoomIdentity.translate(t.x, t.y).scale(newScale));
 }
 
-function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
+function renderGraph({ zoomGroup, nodes, links, width, height }) {
 
     const radius = 20
 
@@ -193,7 +193,7 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         .join("g");
 
     const sourceGroup = interfaceLabel.append("g");
-    menuEvent(sourceGroup)
+    menuEvent(sourceGroup, "source")
 
     sourceGroup.append("circle")
         .attr("r", 4)
@@ -217,7 +217,7 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         .text(d => d.source_interface.name);
 
     const targetGroup = interfaceLabel.append("g");
-    menuEvent(targetGroup)
+    menuEvent(targetGroup, "target")
 
     targetGroup.append("circle")
         .attr("r", 4)
@@ -239,8 +239,6 @@ function renderGraph({ svg, zoomGroup, nodes, links, width, height }) {
         .attr("x", 6)
         .attr("y", 4)
         .text(d => d.target_interface.name);
-
-
 
     simulation.on("tick", () => {
         link
@@ -345,8 +343,8 @@ function nodeEvent(node) {
                                 `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_enable_path}`,
                                 "POST",
                                 {},
-                                (message) => showNotification(message, 'success'),
-                                (message) => showNotification(message, "error")
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
                             )
 
                         }
@@ -377,8 +375,8 @@ function nodeEvent(node) {
                                 `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_interfaces_path}/${interfaceName}${config.configuration_interfaces_disable_path}`,
                                 "POST",
                                 {},
-                                (message) => showNotification(message, 'success'),
-                                (message) => showNotification(message, "error")
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
                             )
 
                         }
@@ -412,8 +410,8 @@ function nodeEvent(node) {
                                     credentials: {},
                                     interface_name: interfaceName
                                 },
-                                (message) => showNotification(message, 'success'),
-                                (message) => showNotification(message, "error")
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
                             )
 
                         }
@@ -453,8 +451,8 @@ function nodeEvent(node) {
                                     ip_address: ipAddress,
                                     mask: mask
                                 },
-                                (message) => showNotification(message, 'success'),
-                                (message) => showNotification(message, "error")
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
                             )
 
                         }
@@ -493,8 +491,48 @@ function nodeEvent(node) {
                                     range_start: rangeStart,
                                     range_end: rangeEnd
                                 },
-                                (message) => showNotification(message, 'success'),
-                                (message) => showNotification(message, "error")
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Create DHCP Server",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create DHCP Server",
+                        [
+                            { name: "name", label: "Server name" },
+                            { name: "pool_name", label: "Pool name" },
+                            { name: "interface_name", label: "Interface name" }
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+                            const poolName = data.get("pool_name");
+                            const interfaceName = data.get("interface_name");
+
+                            if (name.trim() === "" || poolName.trim() === "" || interfaceName.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_server_path}/${name}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    pool_name: poolName,
+                                    interface_name: interfaceName
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
                             )
 
                         }
@@ -509,11 +547,11 @@ function nodeEvent(node) {
                     closeMenu();
 
                     await optionOnClick(
-                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${configuration_snmp_enable_path}`,
+                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_snmp_enable_path}`,
                         "POST",
                         {},
-                        (message) => showNotification(message, 'success'),
-                        (message) => showNotification(message, "error")
+                        message => showNotification(message, 'success'),
+                        message => showNotification(message, "error")
                     )
 
                 }
@@ -525,12 +563,13 @@ function nodeEvent(node) {
                     closeMenu();
 
                     await optionOnClick(
-                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${configuration_snmp_disable_path}`,
+                        `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_snmp_disable_path}`,
                         "POST",
                         {},
-                        (message) => showNotification(message, 'success'),
-                        (message) => showNotification(message, "error")
+                        message => showNotification(message, 'success'),
+                        message => showNotification(message, "error")
                     )
+                }
 
             },
             {
@@ -541,32 +580,33 @@ function nodeEvent(node) {
                     openModal(
                         "Change SNMP version",
                         [
-                            { name: "version_snmp", label: "SNMP Version"}
+                            { name: "version", label: "SNMP Version"}
                         ],
                         async data => {
 
-                            const versionSNMP = data.get("versionSNMP");
+                            const version = data.get("version");
 
-                            if (versionSNMP.trim() === "") {
+                            if (version.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
 
                             await optionOnClick(
-                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${configuration_snmp_version_path}`,
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_snmp_version_path}`,
                                 "POST",
                                 {
                                     credentials: {},
-                                    version_snmp: versionSNMP
+                                    version: version
                                 },
-                                (message) => showNotification(message, 'success'),
-                                (message) => showNotification(message, "error")
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
                             )
 
                         }
                     )
 
                 }
+
             }
         ])
 
@@ -574,7 +614,7 @@ function nodeEvent(node) {
 
 }
 
-function menuEvent(group) {
+function menuEvent(group, side) {
 
     group.on("contextmenu", (event, d) => {
 
@@ -584,8 +624,8 @@ function menuEvent(group) {
         const offsetY = 10;
         const x = event.clientX + offsetX;
         const y = event.clientY + offsetY;
-        const routerId = d.source.id;
-        const interfaceName = d.target_interface.name;
+        const routerId = side === "source" ? d.source.id : d.target.id;
+        const interfaceName = side === "source" ? d.source_interface.name : d.target_interface.name;
         const group = d3.select(event.currentTarget.parentNode);
 
         openMenu(x, y, [
@@ -674,6 +714,45 @@ function menuEvent(group) {
                                 },
                                 (message) => showNotification(message, 'success'),
                                 (message) => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+
+            },
+            {
+                name: "Create DHCP Server",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create DHCP Server",
+                        [
+                            { name: "name", label: "Server name" },
+                            { name: "pool_name", label: "Pool name" }
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+                            const poolName = data.get("pool_name");
+
+                            if (name.trim() === "" || poolName.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_server_path}/${name}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    pool_name: poolName,
+                                    interface_name: interfaceName
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
                             )
 
                         }
