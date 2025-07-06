@@ -541,6 +541,49 @@ function nodeEvent(node) {
                 }
             },
             {
+                name: "Create DHCP Server Relay",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create DHCP Server Relay",
+                        [
+                            { name: "name", label: "Server name" },
+                            { name: "pool_name", label: "Pool name" },
+                            { name: "interface_name", label: "Interface name" },
+                            { name: "relay_address", label: "Relay address"}
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+                            const poolName = data.get("pool_name");
+                            const interfaceName = data.get("interface_name");
+                            const relayAddress = data.get("relay_address");
+
+                            if (name.trim() === "" || poolName.trim() === "" || interfaceName.trim() === "" || relayAddress.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_server_relay_path}/${name}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    pool_name: poolName,
+                                    interface_name: interfaceName,
+                                    relay_address: relayAddress
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
                 name: "Enable SNMP",
                 onClick: async () => {
 
@@ -750,6 +793,47 @@ function menuEvent(group, side) {
                                     credentials: {},
                                     pool_name: poolName,
                                     interface_name: interfaceName
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Create DHCP Server Relay",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create DHCP Server Relay",
+                        [
+                            { name: "name", label: "Server name" },
+                            { name: "pool_name", label: "Pool name" },
+                            { name: "relay_address", label: "Relay address"}
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+                            const poolName = data.get("pool_name");
+                            const relayAddress = data.get("relay_address");
+
+                            if (name.trim() === "" || poolName.trim() === "" || relayAddress.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_server_relay_path}/${name}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    pool_name: poolName,
+                                    interface_name: interfaceName,
+                                    relay_address: relayAddress
                                 },
                                 message => showNotification(message, 'success'),
                                 message => showNotification(message, "error")
