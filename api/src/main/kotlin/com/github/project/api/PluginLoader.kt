@@ -276,7 +276,7 @@ object PluginLoader {
 
     /**
      *
-     * Load plugin from JarFile, but the plugin is not initialized,
+     * Load plugin from JarFile, but the plugin is not enabled,
      * it needs to call enable method
      *
      * @param jarFile the JarFile

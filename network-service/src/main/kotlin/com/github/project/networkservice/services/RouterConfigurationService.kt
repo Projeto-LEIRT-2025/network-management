@@ -280,11 +280,10 @@ class RouterConfigurationService(
 
                 async(Dispatchers.IO) {
                     try {
-                        val config = router.toRouterConfiguration(
+                        router to router.toRouterConfiguration(
                             username = credentials.username,
                             password = credentials.password
                         )
-                        router to config
                     } catch (_: RouterLoginException) {
                         missingCredentials.add(router.id)
                         null
@@ -324,7 +323,6 @@ class RouterConfigurationService(
 
         return@coroutineScope graph
     }
-
 
     private fun getRouterConfigurationByRouterId(id: Long, username: String, password: String): RouterConfiguration {
 

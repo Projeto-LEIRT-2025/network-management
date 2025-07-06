@@ -1,6 +1,6 @@
 package com.github.project.webapplication.dto
 
-import com.github.project.networkservice.validators.IpAddress
+import com.github.project.webapplication.validators.IpAddress
 import jakarta.validation.constraints.NotBlank
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

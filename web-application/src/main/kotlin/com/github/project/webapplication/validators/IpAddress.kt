@@ -1,4 +1,4 @@
-package com.github.project.networkservice.validators
+package com.github.project.webapplication.validators
 
 import jakarta.validation.Constraint
 import jakarta.validation.ConstraintValidator
