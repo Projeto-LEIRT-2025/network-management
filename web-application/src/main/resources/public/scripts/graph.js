@@ -650,6 +650,92 @@ function nodeEvent(node) {
 
                 }
 
+            },
+            {
+                name: "Add Static Route",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Add Static Route",
+                        [
+                            { name: "ip_address", label: "IP Address" },
+                            { name: "mask", label: "Mask" },
+                            { name: "gateway", label: "Gateway" }
+                        ],
+                        async data => {
+
+                            const ipAddress = data.get("ip_address");
+                            const mask = data.get("mask");
+                            const gateway = data.get("gateway");
+
+                            if (ipAddress.trim() === "" || mask.trim() === "" || gateway.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_route_static_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    ip_address: ipAddress,
+                                    mask: mask,
+                                    gateway: gateway
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+
+            },
+            {
+                name: "Remove Static Route",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Remove Static Route",
+                        [
+                            { name: "identifiers", label: "Identifiers" }
+                        ],
+                        async data => {
+
+                            const identifiers = data.get("identifiers").split(",");
+                            const numberError = false;
+
+                             for (const identifier of identifiers) {
+
+                                if (!Number.isInteger(identifier)) {
+                                    numberError = true;
+                                }
+
+                             }
+                            if (numberError) {
+                                showNotification("The field is not a identifier", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_route_static_path}`,
+                                "DELETE",
+                                {
+                                    credentials: {},
+                                    identifiers: identifiers
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+
             }
         ])
 
