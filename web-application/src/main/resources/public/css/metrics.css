@@ -14,11 +14,12 @@ main .buttons {
 
 }
 
-main .metrics {
+main #metrics {
 
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
     width: 100%;
     align-items: center;
     gap: 80px;

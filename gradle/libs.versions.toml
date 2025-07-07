@@ -10,11 +10,13 @@ serialization = "1.8.0"
 postgresql = "42.7.5"
 coroutines = "1.9.0"
 jjwt = "0.12.6"
+springdoc = "2.8.9"
 
 [libraries]
 commons-net = { module = "commons-net:commons-net", version.ref = "commons-net" }
 snmp4j = { module = "org.snmp4j:snmp4j", version.ref = "snmp4j" }
 snakeyaml = { module = "org.yaml:snakeyaml", version.ref = "snakeyaml" }
+springdoc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 spring-boot = { module = "org.springframework.boot:spring-boot-starter" }
 spring-boot-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-security = { module = "org.springframework.boot:spring-boot-starter-security" }

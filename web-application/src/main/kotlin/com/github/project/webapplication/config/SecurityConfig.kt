@@ -31,7 +31,7 @@ class SecurityConfig(
             .csrf { it.ignoringRequestMatchers("/api/**") }
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .requestMatchers("/auth/**", "/css/**", "/scripts/**").permitAll()
+                    .requestMatchers("/auth/**", "/css/**", "/scripts/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                     .anyRequest().authenticated()
             }

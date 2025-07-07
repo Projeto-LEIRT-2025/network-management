@@ -16,6 +16,11 @@ spring:
     hibernate:
       ddl-auto: update
 
+springdoc:
+  swagger-ui:
+    try-it-out-enabled: true
+  packages-to-scan: com.github.project.webapplication.controllers
+
 jwt:
   expiration: ${JWT_EXPIRATION}
   issuer: ${JWT_ISSUER}

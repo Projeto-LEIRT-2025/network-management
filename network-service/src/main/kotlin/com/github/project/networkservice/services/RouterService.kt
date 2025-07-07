@@ -33,7 +33,7 @@ class RouterService(
 
     fun create(vendor: String, model: String, ipAddress: String): Router {
 
-        if(routerRepository.existsByIpAddress(ipAddress))
+        if (routerRepository.existsByIpAddress(ipAddress))
             throw RouterIpAddressAlreadyExistsException()
 
         return routerRepository.save(
@@ -102,6 +102,9 @@ class RouterService(
      */
 
     fun update(id: Long, ipAddress: String?, model: String?, vendor: String?): Router {
+
+        if (ipAddress != null && routerRepository.existsByIpAddress(ipAddress))
+            throw RouterIpAddressAlreadyExistsException()
 
         val router = getById(id)
 

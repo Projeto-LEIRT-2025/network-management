@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.spring.boot.thymeleaf)
     implementation(libs.postgresql)
     implementation(libs.coroutines)
+    implementation(libs.springdoc)
 
     testImplementation(libs.spring.boot.test)
     testImplementation(kotlin("test"))
