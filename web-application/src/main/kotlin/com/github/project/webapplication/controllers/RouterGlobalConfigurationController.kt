@@ -5,6 +5,11 @@ import com.github.project.networkservice.dto.CredentialsDto
 import com.github.project.networkservice.services.RouterConfigurationService
 import com.github.project.networkservice.services.RouterMonitoringService
 import com.github.project.webapplication.dto.*
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import kotlinx.coroutines.runBlocking
 import org.springframework.http.ResponseEntity
@@ -13,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("\${ROUTERS_BASE_PATH}\${CONFIGURATION_BASE_PATH}")
 class RouterGlobalConfigurationController(
@@ -22,6 +28,35 @@ class RouterGlobalConfigurationController(
 
 ) {
 
+    @Operation(summary = "Get Network Topology")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Network Topology retrieved successfully"
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${ROUTERS_NETWORK_PATH}")
     fun getNetwork(
         @RequestBody @Valid dto: Map<Long, CredentialsDto>
