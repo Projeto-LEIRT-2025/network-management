@@ -736,7 +736,179 @@ function nodeEvent(node) {
 
                 }
 
+            },
+            {
+                name: "Create OSPF Process",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create OSPF Process",
+                        [
+                            { name: "process_id", label: "Process ID" },
+                            { name: "router_id", label: "Router ID" }
+                        ],
+                        async data => {
+
+                            const processId = data.get("process_id");
+                            const routerId = data.get("router_id");
+
+                            if (processId.trim() === "" || routerId.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_ospf_process_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    process_id: processId,
+                                    router_id: routerId
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+            },
+            {
+                name: "Create OSPF Area",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create OSPF Area",
+                        [
+                            { name: "area_id", label: "Area ID" },
+                            { name: "process_id", label: "Process ID" }
+                        ],
+                        async data => {
+
+                            const areaId = data.get("area_id");
+                            const processId = data.get("process_id");
+
+                            if (processId.trim() === "" || areaId.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_ospf_area_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    area_id: areaId,
+                                    process_id: processId
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+
+            },
+            {
+                name: "Add OSPF Interface",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Add OSPF Interface",
+                        [
+                            { name: "interface_name", label: "Interface" },
+                            { name: "area_name", label: "Area Name" },
+                            { name: "network_type", label: "Network Type" },
+                            { name: "cost", label: "Cost" }
+                        ],
+                        async data => {
+
+                            const interfaceName = data.get("interface_name");
+                            const areaName = data.get("area_name");
+                            const networkType = data.get("network_type");
+                            const cost = data.get("cost");
+
+                            if (!Number.isInteger(cost)) {
+                                showNotification("The cost has to be a number", "error");
+                            }
+
+                            if (processId.trim() === "" || routerId.trim() === "" || networkType.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_ospf_interface_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    interface_name: interfaceName,
+                                    area_name: areaName,
+                                    network_type: networkType,
+                                    cost: cost
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+
+            },
+            {
+                name: "Add OSPF Network",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Add OSPF Network",
+                        [
+                            { name: "network", label: "Network" },
+                            { name: "mask", label: "Mask (CIDR)" },
+                            { name: "area_name", label: "Area Name" }
+                        ],
+                        async data => {
+
+                            const network = data.get("network");
+                            const mask = data.get("mask");
+                            const areaName = data.get("area_name");
+
+                            if (!Number.isInteger(mask)) {
+                                showNotification("The mask has to be a number between 0 and 32", "error");
+                            }
+
+                            if (network.trim() === "" || areaName.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_ospf_network_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    network : interfaceName,
+                                    mask: mask,
+                                    area_name: areaName
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+
             }
+
         ])
 
     })
