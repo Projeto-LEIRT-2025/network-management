@@ -17,6 +17,11 @@ import com.github.project.webapplication.dto.RemoveIpAddressDto
 import com.github.project.webapplication.dto.RemoveStaticRouteDto
 import com.github.project.webapplication.dto.SetIpAddressDto
 import com.github.project.webapplication.dto.StaticRouteDto
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
+@SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("\${ROUTERS_BASE_PATH}/{id}\${CONFIGURATION_BASE_PATH}")
 class RouterConfigurationController(
@@ -34,10 +40,53 @@ class RouterConfigurationController(
 
 ) {
 
+    @Operation(summary = "Set IP Address in the router interface")
+    @ApiResponse(responseCode = "200", description = "Successfully set ip address")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_ADDRESS_PATH}")
-    fun setIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: SetIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun setIpAddress(
+        @PathVariable id: Long, @RequestBody @Valid dto: SetIpAddressDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.setIpAddress(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.ipAddress, dto.mask)
+        routerConfigurationService.setIpAddress(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            interfaceName = dto.interfaceName,
+            ipAddress = dto.ipAddress,
+            mask = dto.mask
+        )
 
         return ResponseEntity
             .ok(
@@ -48,10 +97,51 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Remove IP Address from the router interface")
+    @ApiResponse(responseCode = "200", description = "Successfully remove ip address")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @DeleteMapping("\${CONFIGURATION_ADDRESS_PATH}")
-    fun removeIpAddress(@PathVariable id: Long, @RequestBody @Valid dto: RemoveIpAddressDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun removeIpAddress(
+        @PathVariable id: Long, @RequestBody @Valid dto: RemoveIpAddressDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.removeIpAddress(id, dto.credentials.username, dto.credentials.password, dto.interfaceName)
+        routerConfigurationService.removeIpAddress(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            interfaceName = dto.interfaceName
+        )
 
         return ResponseEntity
             .ok(
@@ -62,10 +152,51 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Enable router interface")
+    @ApiResponse(responseCode = "200", description = "Interface enabled successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_INTERFACES_PATH}/{name}\${CONFIGURATION_INTERFACES_ENABLE_PATH}")
-    fun enableInterface(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun enableInterface(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.enableInterface(id, dto.username, dto.password, name)
+        routerConfigurationService.enableInterface(
+            routerId = id,
+            username = dto.username,
+            password = dto.password,
+            interfaceName = name
+        )
 
         return ResponseEntity
             .ok(
@@ -76,10 +207,51 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Disable router interface")
+    @ApiResponse(responseCode = "200", description = "Interface disabled successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_INTERFACES_PATH}/{name}\${CONFIGURATION_INTERFACES_DISABLE_PATH}")
-    fun disableInterface(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun disableInterface(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.disableInterface(id, dto.username, dto.password, name)
+        routerConfigurationService.disableInterface(
+            routerId = id,
+            username = dto.username,
+            password = dto.password,
+            interfaceName = name
+        )
 
         return ResponseEntity
             .ok(
@@ -90,8 +262,44 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Enable router SNMP")
+    @ApiResponse(responseCode = "200", description = "SNMP enabled successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_SNMP_ENABLE_PATH}")
-    fun enableSNMP(@PathVariable id: Long, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun enableSNMP(
+        @PathVariable id: Long, @RequestBody @Valid dto: CredentialsDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.enableSNMP(id, dto.username, dto.password)
 
@@ -104,8 +312,44 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Disable router SNMP")
+    @ApiResponse(responseCode = "200", description = "SNMP disabled successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_SNMP_DISABLE_PATH}")
-    fun disableSNMP(@PathVariable id: Long, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun disableSNMP(
+        @PathVariable id: Long, @RequestBody @Valid dto: CredentialsDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.disableSNMP(id, dto.username, dto.password)
 
@@ -118,10 +362,51 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Change router SNMP version")
+    @ApiResponse(responseCode = "200", description = "SNMP version changed successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_SNMP_VERSION_PATH}")
-    fun changeSNMPVersion(@PathVariable id: Long, @RequestBody @Valid dto: ChangeSNMPVersionDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun changeSNMPVersion(
+        @PathVariable id: Long, @RequestBody @Valid dto: ChangeSNMPVersionDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.changeSNMPVersion(id, dto.credentials.username, dto.credentials.password, dto.version)
+        routerConfigurationService.changeSNMPVersion(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            version = dto.version
+        )
 
         return ResponseEntity
             .ok(
@@ -132,10 +417,52 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Create OSPF process")
+    @ApiResponse(responseCode = "200", description = "OSPF processed created successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_OSPF_PROCESS_PATH}")
-    fun createOSPFProcess(@PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFProcessDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun createOSPFProcess(
+        @PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFProcessDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createOSPFProcess(id, dto.credentials.username, dto.credentials.password, dto.processId, dto.routerId)
+        routerConfigurationService.createOSPFProcess(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            processId = dto.processId,
+            theRouterId = dto.routerId
+        )
 
         return ResponseEntity
             .ok(
@@ -146,10 +473,52 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Create OSPF area")
+    @ApiResponse(responseCode = "200", description = "OSPF area created successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_OSPF_AREA_PATH}")
-    fun createOSPFArea(@PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFAreaDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun createOSPFArea(
+        @PathVariable id: Long, @RequestBody @Valid dto: CreateOSPFAreaDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createOSPFArea(id, dto.credentials.username, dto.credentials.password, dto.areaId, dto.processId)
+        routerConfigurationService.createOSPFArea(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            areaId = dto.areaId,
+            processId = dto.processId
+        )
 
         return ResponseEntity
             .ok(
@@ -160,10 +529,53 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Add OSPF network")
+    @ApiResponse(responseCode = "200", description = "OSPF network added successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_OSPF_NETWORK_PATH}")
-    fun addOSPFNetwork(@PathVariable id: Long, @RequestBody @Valid dto: AddOSPFNetworkDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun addOSPFNetwork(
+        @PathVariable id: Long, @RequestBody @Valid dto: AddOSPFNetworkDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.addOSPFNetwork(id, dto.credentials.username, dto.credentials.password, dto.network, dto.mask, dto.areaName)
+        routerConfigurationService.addOSPFNetwork(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            network = dto.network,
+            mask = dto.mask,
+            areaName = dto.areaName
+        )
 
         return ResponseEntity
             .ok(
@@ -174,10 +586,54 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Add OSPF interface")
+    @ApiResponse(responseCode = "200", description = "OSPF interface added successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_OSPF_INTERFACE_PATH}")
-    fun addOSPFInterface(@PathVariable id: Long, @RequestBody @Valid dto: AddOSPFInterfaceDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun addOSPFInterface(
+        @PathVariable id: Long, @RequestBody @Valid dto: AddOSPFInterfaceDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.addOSPFInterface(id, dto.credentials.username, dto.credentials.password, dto.interfaceName, dto.areaName, dto.networkType, dto.cost)
+        routerConfigurationService.addOSPFInterface(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            interfaceName = dto.interfaceName,
+            areaName = dto.areaName,
+            networkType = dto.networkType,
+            cost = dto.cost
+        )
 
         return ResponseEntity
             .ok(
@@ -188,10 +644,53 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Add static route")
+    @ApiResponse(responseCode = "200", description = "Static route added successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_ROUTE_STATIC_PATH}")
-    fun addStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: StaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun addStaticRoute(
+        @PathVariable id: Long, @RequestBody @Valid dto: StaticRouteDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.addStaticRoute(id, dto.credentials.username, dto.credentials.password, dto.gateway, dto.ipAddress, dto.mask)
+        routerConfigurationService.addStaticRoute(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            gateway = dto.gateway,
+            ipAddress = dto.ipAddress,
+            mask = dto.mask
+        )
 
         return ResponseEntity
             .ok(
@@ -202,10 +701,51 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Remove static route")
+    @ApiResponse(responseCode = "200", description = "Static route removed successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @DeleteMapping("\${CONFIGURATION_ROUTE_STATIC_PATH}")
-    fun removeStaticRoute(@PathVariable id: Long, @RequestBody @Valid dto: RemoveStaticRouteDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun removeStaticRoute(
+        @PathVariable id: Long, @RequestBody @Valid dto: RemoveStaticRouteDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.removeStaticRoute(id, dto.credentials.username, dto.credentials.password, *dto.identifiers.toIntArray())
+        routerConfigurationService.removeStaticRoute(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            identifiers = dto.identifiers.toIntArray()
+        )
 
         return ResponseEntity
             .ok(
@@ -216,10 +756,53 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Create address pool")
+    @ApiResponse(responseCode = "200", description = "Address pool created successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_ADDRESS_POOL_PATH}/{name}")
-    fun createAddressPool(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateAddressPoolDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun createAddressPool(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateAddressPoolDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createAddressPool(id, dto.credentials.username, dto.credentials.password, name, dto.rangeStart, dto.rangeEnd)
+        routerConfigurationService.createAddressPool(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            name = name,
+            rangeStart = dto.rangeStart,
+            rangeEnd = dto.rangeEnd
+        )
 
         return ResponseEntity
             .ok(
@@ -230,10 +813,53 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Create DHCP Server")
+    @ApiResponse(responseCode = "200", description = "DHCP Server created successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_DHCP_SERVER_PATH}/{name}")
-    fun createDHCPServer(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun createDHCPServer(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createDHCPServer(id, dto.credentials.username, dto.credentials.password, name, dto.poolName, dto.interfaceName)
+        routerConfigurationService.createDHCPServer(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            name = name,
+            poolName = dto.poolName,
+            interfaceName = dto.interfaceName
+        )
 
         return ResponseEntity
             .ok(
@@ -244,10 +870,54 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Create DHCP Server Relay")
+    @ApiResponse(responseCode = "200", description = "DHCP server relay created successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_DHCP_SERVER_RELAY_PATH}/{name}")
-    fun createDHCPServerRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun createDHCPServerRelay(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPServerRelayDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createDHCPServerRelay(id, dto.credentials.username, dto.credentials.password, name, dto.poolName, dto.interfaceName, dto.relayAddress)
+        routerConfigurationService.createDHCPServerRelay(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            name = name,
+            poolName = dto.poolName,
+            interfaceName = dto.interfaceName,
+            relayAddress = dto.relayAddress
+        )
 
         return ResponseEntity
             .ok(
@@ -258,10 +928,53 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Create DHCP Server network")
+    @ApiResponse(responseCode = "200", description = "DHCP Server network created successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_DHCP_SERVER_NETWORK_PATH}")
-    fun createDHCPServerNetwork(@PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerNetworkDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun createDHCPServerNetwork(
+        @PathVariable id: Long, @RequestBody @Valid dto: CreateDHCPServerNetworkDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createDHCPServerNetwork(id, dto.credentials.username, dto.credentials.password, dto.network, dto.mask, dto.gateway)
+        routerConfigurationService.createDHCPServerNetwork(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            network = dto.network,
+            mask = dto.mask,
+            gateway = dto.gateway
+        )
 
         return ResponseEntity
             .ok(
@@ -272,10 +985,53 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Create DHCP Relay")
+    @ApiResponse(responseCode = "200", description = "DHCP Relay created successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}")
-    fun createDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPRelayDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun createDHCPRelay(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CreateDHCPRelayDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
-        routerConfigurationService.createDHCPRelay(id, dto.credentials.username, dto.credentials.password, name, dto.interfaceName, dto.serverAddress)
+        routerConfigurationService.createDHCPRelay(
+            routerId = id,
+            username = dto.credentials.username,
+            password = dto.credentials.password,
+            name = name,
+            interfaceName = dto.interfaceName,
+            serverAddress = dto.serverAddress
+        )
 
         return ResponseEntity
             .ok(
@@ -286,8 +1042,44 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Enable DHCP Relay")
+    @ApiResponse(responseCode = "200", description = "DHCP relay enabled successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}\${CONFIGURATION_DHCP_RELAY_ENABLE_PATH}")
-    fun enableDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun enableDHCPRelay(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.enableDHCPRelay(id, dto.username, dto.password, name)
 
@@ -300,8 +1092,44 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Disable DHCP Relay")
+    @ApiResponse(responseCode = "200", description = "DHCP relay disabled successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @PostMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}\${CONFIGURATION_DHCP_RELAY_DISABLE_PATH}")
-    fun disableDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun disableDHCPRelay(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.disableDHCPRelay(id, dto.username, dto.password, name)
 
@@ -314,8 +1142,44 @@ class RouterConfigurationController(
             )
     }
 
+    @Operation(summary = "Remove DHCP Relay")
+    @ApiResponse(responseCode = "200", description = "DHCP Relay removed successfully")
+    @ApiResponse(
+        responseCode = "400",
+        description = "Something went wrong with router configuration",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Router credentials are incorrect",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Router not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Plugin not found",
+        content = [Content(
+            mediaType = "application/json",
+            schema = Schema(implementation = ApiResponseDto::class)
+        )]
+    )
     @DeleteMapping("\${CONFIGURATION_DHCP_RELAY_PATH}/{name}")
-    fun removeDHCPRelay(@PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto): ResponseEntity<ApiResponseDto<Unit>> {
+    fun removeDHCPRelay(
+        @PathVariable id: Long, @PathVariable name: String, @RequestBody @Valid dto: CredentialsDto
+    ): ResponseEntity<ApiResponseDto<Unit>> {
 
         routerConfigurationService.removeDHCPRelay(id, dto.username, dto.password, name)
 

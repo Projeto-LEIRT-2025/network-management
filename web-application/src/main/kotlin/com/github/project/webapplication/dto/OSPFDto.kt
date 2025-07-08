@@ -9,14 +9,17 @@ import jakarta.validation.constraints.NotNull
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Serializable
 data class CreateOSPFAreaDto(
 
     @field:NotNull
     val credentials: CredentialsDto,
 
+    @SerialName("area_id")
     @field:NotBlank
     val areaId: String,
 
+    @SerialName("process_id")
     @field:NotBlank
     val processId: String
 
@@ -75,6 +78,7 @@ data class AddOSPFNetworkDto(
     @field:NotNull
     val mask: Int,
 
+    @SerialName("area_name")
     @field:NotBlank
     val areaName: String
 

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration
 class OpenAPIConfig {
 
     @Bean
-    fun customOpenAPI() = OpenAPI()
+    fun customOpenAPI(): OpenAPI = OpenAPI()
         .info(
             Info()
                 .title("Network Management API")

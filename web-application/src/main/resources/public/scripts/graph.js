@@ -541,6 +541,47 @@ function nodeEvent(node) {
                 }
             },
             {
+                name: "Create DHCP Server Network",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create DHCP Server Network",
+                        [
+                            { name: "network", label: "Network" },
+                            { name: "mask", label: "Mask" },
+                            { name: "gateway", label: "Gateway" }
+                        ],
+                        async data => {
+
+                            const network = data.get("network");
+                            const mask = data.get("mask");
+                            const gateway = data.get("gateway");
+
+                            if (network.trim() === "" || mask.trim() === "" || gateway.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_server_network_path}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    network: network,
+                                    mask: mask,
+                                    gateway: gateway
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
                 name: "Create DHCP Server Relay",
                 onClick: async () => {
 
@@ -573,6 +614,142 @@ function nodeEvent(node) {
                                     pool_name: poolName,
                                     interface_name: interfaceName,
                                     relay_address: relayAddress
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Enable DHCP Relay",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Enable DHCP Relay",
+                        [
+                            { name: "name", label: "Name" }
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+
+                            if (name.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_relay_path}/${name}${config.configuration_dhcp_relay_enable_path}`,
+                                "POST",
+                                {},
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Disable DHCP Relay",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Disable DHCP Relay",
+                        [
+                            { name: "name", label: "Name" }
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+
+                            if (name.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_relay_path}/${name}${config.configuration_dhcp_relay_disable_path}`,
+                                "POST",
+                                {},
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Delete DHCP Relay",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Delete DHCP Relay",
+                        [
+                            { name: "name", label: "Name" }
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+
+                            if (name.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_relay_path}/${name}`,
+                                "DELETE",
+                                {},
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Create DHCP Relay",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create DHCP Relay",
+                        [
+                            { name: "name", label: "Name" },
+                            { name: "interface_name", label: "Interface name" },
+                            { name: "server_address", label: "Server address"}
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+                            const interfaceName = data.get("interface_name");
+                            const serverAddress = data.get("server_address");
+
+                            if (name.trim() === "" || interfaceName.trim() === "" || serverAddress.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_relay_path}/${name}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    interface_name: interfaceName,
+                                    server_address: serverAddress
                                 },
                                 message => showNotification(message, 'success'),
                                 message => showNotification(message, "error")
@@ -706,16 +883,9 @@ function nodeEvent(node) {
                         async data => {
 
                             const identifiers = data.get("identifiers").split(",");
-                            const numberError = false;
+                            const error = identifiers.some(id => !Number.isInteger(Number(id)));
 
-                             for (const identifier of identifiers) {
-
-                                if (!Number.isInteger(identifier)) {
-                                    numberError = true;
-                                }
-
-                             }
-                            if (numberError) {
+                            if (error) {
                                 showNotification("The field is not a identifier", "error");
                                 return;
                             }
@@ -745,15 +915,15 @@ function nodeEvent(node) {
                     openModal(
                         "Create OSPF Process",
                         [
-                            { name: "process_id", label: "Process ID" },
-                            { name: "router_id", label: "Router ID" }
+                            {name: "process_id", label: "Process ID"},
+                            {name: "router_id", label: "Router ID"}
                         ],
                         async data => {
 
                             const processId = data.get("process_id");
-                            const routerId = data.get("router_id");
+                            const theRouterId = data.get("router_id");
 
-                            if (processId.trim() === "" || routerId.trim() === "") {
+                            if (processId.trim() === "" || theRouterId.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
@@ -764,7 +934,7 @@ function nodeEvent(node) {
                                 {
                                     credentials: {},
                                     process_id: processId,
-                                    router_id: routerId
+                                    router_id: theRouterId
                                 },
                                 message => showNotification(message, 'success'),
                                 message => showNotification(message, "error")
@@ -772,6 +942,7 @@ function nodeEvent(node) {
 
                         }
                     )
+                }
 
             },
             {
@@ -833,11 +1004,12 @@ function nodeEvent(node) {
                             const networkType = data.get("network_type");
                             const cost = data.get("cost");
 
-                            if (!Number.isInteger(cost)) {
+                            if (!Number.isInteger(Number(cost))) {
                                 showNotification("The cost has to be a number", "error");
+                                return;
                             }
 
-                            if (processId.trim() === "" || routerId.trim() === "" || networkType.trim() === "") {
+                            if (interfaceName.trim() === "" || areaName.trim() === "" || networkType.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
@@ -871,7 +1043,7 @@ function nodeEvent(node) {
                         "Add OSPF Network",
                         [
                             { name: "network", label: "Network" },
-                            { name: "mask", label: "Mask (CIDR)" },
+                            { name: "mask", label: "Mask" },
                             { name: "area_name", label: "Area Name" }
                         ],
                         async data => {
@@ -880,8 +1052,9 @@ function nodeEvent(node) {
                             const mask = data.get("mask");
                             const areaName = data.get("area_name");
 
-                            if (!Number.isInteger(mask)) {
+                            if (!Number.isInteger(Number(mask))) {
                                 showNotification("The mask has to be a number between 0 and 32", "error");
+                                return
                             }
 
                             if (network.trim() === "" || areaName.trim() === "") {
@@ -894,7 +1067,7 @@ function nodeEvent(node) {
                                 "POST",
                                 {
                                     credentials: {},
-                                    network : interfaceName,
+                                    network : network,
                                     mask: mask,
                                     area_name: areaName
                                 },
@@ -1092,6 +1265,44 @@ function menuEvent(group, side) {
                                     pool_name: poolName,
                                     interface_name: interfaceName,
                                     relay_address: relayAddress
+                                },
+                                message => showNotification(message, 'success'),
+                                message => showNotification(message, "error")
+                            )
+
+                        }
+                    )
+
+                }
+            },
+            {
+                name: "Create DHCP Relay",
+                onClick: async () => {
+
+                    closeMenu();
+                    openModal(
+                        "Create DHCP Relay",
+                        [
+                            { name: "name", label: "Name" },
+                            { name: "server_address", label: "Server address"}
+                        ],
+                        async data => {
+
+                            const name = data.get("name");
+                            const serverAddress = data.get("server_address");
+
+                            if (name.trim() === "" || serverAddress.trim() === "") {
+                                showNotification("The fields cannot be empty", "error");
+                                return;
+                            }
+
+                            await optionOnClick(
+                                `${config.server}${config.routers_base_path}/${routerId}${config.configuration_base_path}${config.configuration_dhcp_relay_path}/${name}`,
+                                "POST",
+                                {
+                                    credentials: {},
+                                    interface_name: interfaceName,
+                                    server_address: serverAddress
                                 },
                                 message => showNotification(message, 'success'),
                                 message => showNotification(message, "error")

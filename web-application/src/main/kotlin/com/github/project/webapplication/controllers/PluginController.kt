@@ -137,9 +137,14 @@ class PluginController(
         )]
     )
     @PostMapping("\${PLUGINS_UPLOAD_PATH}")
-    fun uploadPlugin(@RequestParam("file") file: MultipartFile): ResponseEntity<ApiResponseDto<PluginDto>> {
+    fun uploadPlugin(
+        @RequestParam("file") file: MultipartFile
+    ): ResponseEntity<ApiResponseDto<PluginDto>> {
 
-        val plugin = pluginService.uploadPlugin(file.originalFilename ?: UUID.randomUUID().toString(), file.bytes)
+        val plugin = pluginService.uploadPlugin(
+            fileName = file.originalFilename ?: UUID.randomUUID().toString(),
+            content = file.bytes
+        )
 
         return ResponseEntity
             .ok(

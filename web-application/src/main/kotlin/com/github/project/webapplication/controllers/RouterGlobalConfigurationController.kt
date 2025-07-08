@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import kotlinx.coroutines.runBlocking
+import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -27,6 +28,8 @@ class RouterGlobalConfigurationController(
     private val routerMonitoringService: RouterMonitoringService
 
 ) {
+
+    private val logger = LoggerFactory.getLogger(RouterGlobalConfigurationController::class.java)
 
     @Operation(summary = "Get Network Topology")
     @ApiResponse(
@@ -63,29 +66,30 @@ class RouterGlobalConfigurationController(
     ): ResponseEntity<ApiResponseDto<GraphDto>> = runBlocking {
 
         val graph = routerConfigurationService.getNetworkGraph(dto)
+        val dto = GraphDto(
+            nodes = graph.nodes.map { NodeDto(it.id, it.label) },
+            edges = graph.edges.map {
+
+                val sourceInterface = routerMonitoringService.getNetworkInterfaces(it.source.id.toLong())
+                    .firstOrNull { networkInterface -> networkInterface.name == it.sourceInterface }
+
+                val targetInterface = routerMonitoringService.getNetworkInterfaces(it.target.id.toLong())
+                    .firstOrNull { networkInterface -> networkInterface.name == it.targetInterface }
+
+                EdgeDto(
+                    source = it.source.id,
+                    target = it.target.id,
+                    sourceInterface = sourceInterface?.toDto() ?: NetworkInterfaceDto(it.sourceInterface),
+                    targetInterface = targetInterface?.toDto() ?: NetworkInterfaceDto(it.targetInterface)
+                )
+            }
+        )
 
         ResponseEntity
             .ok(
                 ApiResponseDto(
                     message = "Graph retrieved successfully",
-                    data = GraphDto(
-                        nodes = graph.nodes.map { NodeDto(it.id, it.label) },
-                        edges = graph.edges.map {
-
-                            val sourceInterface = routerMonitoringService.getNetworkInterfaces(it.source.id.toLong())
-                                .firstOrNull { networkInterface -> networkInterface.name == it.sourceInterface }
-
-                            val targetInterface = routerMonitoringService.getNetworkInterfaces(it.target.id.toLong())
-                                .firstOrNull { networkInterface -> networkInterface.name == it.targetInterface }
-
-                            EdgeDto(
-                                source = it.source.id,
-                                target = it.target.id,
-                                sourceInterface = sourceInterface?.toDto() ?: NetworkInterfaceDto(it.sourceInterface),
-                                targetInterface = targetInterface?.toDto() ?: NetworkInterfaceDto(it.targetInterface)
-                            )
-                        }
-                    )
+                    data = dto
                 )
             )
     }

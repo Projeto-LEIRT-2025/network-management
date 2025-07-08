@@ -39,11 +39,11 @@ data class NetworkInterface(
 
     class Builder {
 
-        private var index: Int = 0
-        private var name: String = ""
-        private var actualMtu: Int = 0
-        private var macAddress: String = ""
-        private var operationalStatus: OperationalStatus = OperationalStatus.UNKNOWN
+        var index: Int = 0
+        var name: String = ""
+        var actualMtu: Int = 0
+        var macAddress: String = ""
+        var operationalStatus: OperationalStatus = OperationalStatus.UNKNOWN
 
         fun index(index: Int) = apply { this.index = index }
         fun name(name: String) = apply { this.name = name }

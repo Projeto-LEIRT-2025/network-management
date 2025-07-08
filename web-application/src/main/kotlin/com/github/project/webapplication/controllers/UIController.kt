@@ -73,7 +73,11 @@ class UIController(
         model: Model
     ): String {
 
-        val interfacesStats = metricsService.getInterfaceStatsBetween(id, start, end)
+        val interfacesStats = metricsService.getInterfaceStatsBetween(
+            routerId = id,
+            fromTimestamp = start,
+            toTimestamp = end
+        )
 
         model.addAttribute("interfacesStats", interfacesStats)
 

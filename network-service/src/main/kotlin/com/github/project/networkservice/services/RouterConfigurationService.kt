@@ -67,7 +67,9 @@ class RouterConfigurationService(
 
     }
 
-    fun setIpAddress(routerId: Long, username: String, password: String, interfaceName: String, ipAddress: String, mask: Int) {
+    fun setIpAddress(
+        routerId: Long, username: String, password: String, interfaceName: String, ipAddress: String, mask: Int
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.setIpAddress(interfaceName, ipAddress, mask)
@@ -117,7 +119,9 @@ class RouterConfigurationService(
 
     }
 
-    fun addStaticRoute(routerId: Long, username: String, password: String, gateway: String, ipAddress: String, mask: Int) {
+    fun addStaticRoute(
+        routerId: Long, username: String, password: String, gateway: String, ipAddress: String, mask: Int
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.addStaticRoute(gateway, ipAddress, mask)
@@ -137,7 +141,9 @@ class RouterConfigurationService(
 
     }
 
-    fun createOSPFProcess(routerId: Long, username: String, password: String, processId: String, theRouterId: String) {
+    fun createOSPFProcess(
+        routerId: Long, username: String, password: String, processId: String, theRouterId: String
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.createOSPFProcess(processId, theRouterId)
@@ -157,7 +163,9 @@ class RouterConfigurationService(
 
     }
 
-    fun addOSPFNetwork(routerId: Long, username: String, password: String, network: String, mask: Int, areaName: String) {
+    fun addOSPFNetwork(
+        routerId: Long, username: String, password: String, network: String, mask: Int, areaName: String
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.addOSPFNetworks(network, mask, areaName)
@@ -167,7 +175,10 @@ class RouterConfigurationService(
 
     }
 
-    fun addOSPFInterface(routerId: Long, username: String, password: String, interfaceName: String, areaName: String, networkType: String, cost: Int) {
+    fun addOSPFInterface(
+        routerId: Long, username: String, password: String, interfaceName: String, areaName: String,
+        networkType: String, cost: Int
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.addOSPFInterface(interfaceName, areaName, networkType, cost)
@@ -177,7 +188,9 @@ class RouterConfigurationService(
 
     }
 
-    fun createAddressPool(routerId: Long, username: String, password: String, name: String, rangeStart: String, rangeEnd: String) {
+    fun createAddressPool(
+        routerId: Long, username: String, password: String, name: String, rangeStart: String, rangeEnd: String
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.createAddressPool(name, rangeStart, rangeEnd)
@@ -187,7 +200,9 @@ class RouterConfigurationService(
 
     }
 
-    fun createDHCPServer(routerId: Long, username: String, password: String, name: String, poolName: String, interfaceName: String) {
+    fun createDHCPServer(
+        routerId: Long, username: String, password: String, name: String, poolName: String, interfaceName: String
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.createDHCPServer(name, poolName, interfaceName)
@@ -197,7 +212,10 @@ class RouterConfigurationService(
 
     }
 
-    fun createDHCPServerRelay(routerId: Long, username: String, password: String, name: String, poolName: String, interfaceName: String, relayAddress: String) {
+    fun createDHCPServerRelay(
+        routerId: Long, username: String, password: String, name: String, poolName: String,
+        interfaceName: String, relayAddress: String
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.createDHCPServerRelay(name, poolName, interfaceName, relayAddress)
@@ -207,7 +225,9 @@ class RouterConfigurationService(
 
     }
 
-    fun createDHCPServerNetwork(routerId: Long, username: String, password: String, network: String, mask: Int, gateway: String) {
+    fun createDHCPServerNetwork(
+        routerId: Long, username: String, password: String, network: String, mask: Int, gateway: String
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.createDHCPServerNetwork(network, mask, gateway)
@@ -217,7 +237,9 @@ class RouterConfigurationService(
 
     }
 
-    fun createDHCPRelay(routerId: Long, username: String, password: String, name: String, interfaceName: String, serverAddress: String) {
+    fun createDHCPRelay(
+        routerId: Long, username: String, password: String, name: String, interfaceName: String, serverAddress: String
+    ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
         val response = routerConfiguration.createDHCPRelay(name, interfaceName, serverAddress)
@@ -302,29 +324,40 @@ class RouterConfigurationService(
             throw ManyRouterLoginException(missingCredentials)
         }
 
-        val routerInterfaces = routerConfigurations.mapValues { it.value.getInterfacesMac() }
+        val routerInterfaces = routerConfigurations.mapValues { it.value.getInterfacesMac().data }
         val routerNeighbors = routerConfigurations.mapValues { it.value.getNeighbors().data }
 
         for ((router, neighbors) in routerNeighbors) {
             val source = Node(router.id.toString(), "${router.model}@${router.ipAddress}")
 
             for (neighbor in neighbors) {
+
                 val routerNeighbor = routerInterfaces.entries.firstOrNull { (_, interfaces) ->
-                    interfaces.data.any { it.mac.equals(neighbor.mac, ignoreCase = true) }
+                    interfaces.any { it.mac.equals(neighbor.mac, ignoreCase = true) }
                 }?.key ?: continue
 
-                val target = Node(routerNeighbor.id.toString(), "${routerNeighbor.model}@${routerNeighbor.ipAddress}")
+                val target = Node(
+                    id = routerNeighbor.id.toString(),
+                    label = "${routerNeighbor.model}@${routerNeighbor.ipAddress}"
+                )
 
                 graph.addNode(source)
                 graph.addNode(target)
-                graph.addEdge(source.id, target.id, neighbor.connectedInterface, neighbor.interfaceName)
+                graph.addEdge(
+                    sourceId = source.id,
+                    targetId = target.id,
+                    sourceInterface = neighbor.connectedInterface,
+                    targetInterface = neighbor.interfaceName
+                )
             }
         }
 
         return@coroutineScope graph
     }
 
-    private fun getRouterConfigurationByRouterId(id: Long, username: String, password: String): RouterConfiguration {
+    private fun getRouterConfigurationByRouterId(
+        id: Long, username: String, password: String
+    ): RouterConfiguration {
 
         val router = routerService.getById(id)
         
@@ -334,7 +367,9 @@ class RouterConfigurationService(
         )
     }
 
-    private fun Router.toRouterConfiguration(username: String, password: String, port: Int = 23): RouterConfiguration {
+    private fun Router.toRouterConfiguration(
+        username: String, password: String, port: Int = 23
+    ): RouterConfiguration {
 
         val routerConfiguration = pluginLoader.getRouterConfiguration(
             model = model.lowercase(),

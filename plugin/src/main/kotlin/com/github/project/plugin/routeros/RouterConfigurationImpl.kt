@@ -47,7 +47,8 @@ class RouterConfigurationImpl(
 
         while (true) {
 
-            val line = reader.readLine().replace("<", "").replace(">", "").trim()
+            val line = reader.readLine()
+                .replace("<", "").replace(">", "").trim()
 
             if (line.isBlank()) {
                 if (started)
@@ -125,7 +126,7 @@ class RouterConfigurationImpl(
         executeCommand("/ip address remove [find interface=$interfaceName]")
 
     override fun getInterfacesMac(): Response<List<InterfaceMac>> =
-        executeCommand("/interface/print detail without-paging") { parseInterfacesMac(it) }
+        executeCommand("/interface print detail without-paging") { parseInterfacesMac(it) }
 
     override fun enableSNMP() =
         executeCommand("/snmp set enabled=yes")
@@ -177,29 +178,27 @@ class RouterConfigurationImpl(
 
     private fun parseNeighbors(raw: String): Response<List<Neighbor>> {
 
-        val params = raw
-            .split("\n")
-            .map { n -> n.split(" ").map { it.trim() }.filter { it.contains("=") } }
+        val cleanedRaw = removeAnsiCodes(raw)
+        val neighbors = mutableListOf<Neighbor>()
+        val entryRegex = Regex("""(\w[\w-]*)=("[^"]*"|\S+)""")
 
-        val paramMap = params.map {
-            it.associate { s ->
-                val (key, value) = s.split("=")
-                key to value.trim()
-            }
-        }
+        for (line in cleanedRaw.lines()) {
+            val pairs = entryRegex.findAll(line)
+                .map { match ->
+                    val key = match.groupValues[1]
+                    val value = match.groupValues[2].trim('"')
+                    key to value
+                }
+                .toMap()
 
-        val neighbors = paramMap.map { m ->
-            val interfaceName = m["interface-name"]?.replace("\"", "") ?: ""
-            val ipAddress = m["address"] ?: ""
-            val mac = m["mac-address"] ?: ""
-            val connectedInterface = m["interface"] ?: ""
-
-            Neighbor(
-                connectedInterface = connectedInterface,
-                interfaceName = interfaceName,
-                ipAddress = ipAddress,
-                mac = mac
+            val neighbor = Neighbor(
+                connectedInterface = pairs["interface"] ?: "",
+                interfaceName = pairs["interface-name"] ?: "",
+                ipAddress = pairs["address"] ?: "",
+                mac = pairs["mac-address"] ?: ""
             )
+
+            neighbors.add(neighbor)
         }
 
         return Response(
@@ -208,10 +207,14 @@ class RouterConfigurationImpl(
         )
     }
 
-    private fun parseInterfacesMac(raw: String): Response<List<InterfaceMac>> {
-        val interfaces = raw.lines()
-            .mapNotNull { line ->
 
+    private fun parseInterfacesMac(raw: String): Response<List<InterfaceMac>> {
+
+        val cleanedRaw = removeAnsiCodes(raw)
+        val interfaces = cleanedRaw.lines()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .mapNotNull { line ->
                 val nameRegex = Regex("""name="([^"]+)"""")
                 val macRegex = Regex("""mac-address=([\dA-F:]{17})""", RegexOption.IGNORE_CASE)
                 val name = nameRegex.find(line)?.groupValues?.get(1)
@@ -228,6 +231,11 @@ class RouterConfigurationImpl(
             raw = raw,
             data = interfaces
         )
+    }
+
+    fun removeAnsiCodes(text: String): String {
+        val ansiRegex = Regex("""\x1B\[[0-9;]*[mK]""")
+        return ansiRegex.replace(text, "")
     }
 
     private fun BufferedReader.readChunk(): String {

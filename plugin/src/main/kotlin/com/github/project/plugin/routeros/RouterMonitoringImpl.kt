@@ -13,7 +13,6 @@ private const val TOTAL_MEMORY_OID = ".1.3.6.1.2.1.25.2.3.1.5.65536"
 private const val MEMORY_USED_OID = ".1.3.6.1.2.1.25.2.3.1.6.65536"
 private const val UPTIME_OID = ".1.3.6.1.2.1.1.3.0"
 private const val CPU_LOAD_OID = ".1.3.6.1.2.1.25.3.3.1.2"
-private const val INTERFACE_BASE_OID = ".1.3.6.1.2.1.2.2.1"
 private const val INTERFACE_NAME_OID = ".1.3.6.1.2.1.2.2.1.2"
 private const val ACTUAL_MTU_OID = ".1.3.6.1.2.1.2.2.1.4"
 private const val MAC_ADDRESS_OID = ".1.3.6.1.2.1.2.2.1.6"
@@ -286,6 +285,7 @@ class RouterMonitoringImpl(
         }
 
         return interfaces.values
+            .filter { it.name.isNotBlank() && it.macAddress.isNotBlank() }
             .map { it.build() }
     }
 

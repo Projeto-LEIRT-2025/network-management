@@ -40,7 +40,6 @@ class AuthenticationController(
             schema = Schema(implementation = ApiResponseDto::class)
         )]
     )
-
     @PostMapping("/login")
     fun login(@RequestBody @Valid dto: LoginDto, session: HttpSession): ResponseEntity<UserDto> {
 
