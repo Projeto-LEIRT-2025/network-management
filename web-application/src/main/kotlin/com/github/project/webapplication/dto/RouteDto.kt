@@ -25,7 +25,7 @@ data class StaticRouteDto(
     @field:NotNull
     @field:Min(0)
     @field:Max(32)
-    val mask: Int
+    val prefix: Int
 
 )
 

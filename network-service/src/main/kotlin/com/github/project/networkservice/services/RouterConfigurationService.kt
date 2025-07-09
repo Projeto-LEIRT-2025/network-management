@@ -68,11 +68,11 @@ class RouterConfigurationService(
     }
 
     fun setIpAddress(
-        routerId: Long, username: String, password: String, interfaceName: String, ipAddress: String, mask: Int
+        routerId: Long, username: String, password: String, interfaceName: String, ipAddress: String, prefix: Int
     ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.setIpAddress(interfaceName, ipAddress, mask)
+        val response = routerConfiguration.setIpAddress(interfaceName, ipAddress, prefix)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)
@@ -120,11 +120,11 @@ class RouterConfigurationService(
     }
 
     fun addStaticRoute(
-        routerId: Long, username: String, password: String, gateway: String, ipAddress: String, mask: Int
+        routerId: Long, username: String, password: String, gateway: String, ipAddress: String, prefix: Int
     ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.addStaticRoute(gateway, ipAddress, mask)
+        val response = routerConfiguration.addStaticRoute(gateway, ipAddress, prefix)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)
@@ -164,11 +164,11 @@ class RouterConfigurationService(
     }
 
     fun addOSPFNetwork(
-        routerId: Long, username: String, password: String, network: String, mask: Int, areaName: String
+        routerId: Long, username: String, password: String, network: String, prefix: Int, areaName: String
     ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.addOSPFNetworks(network, mask, areaName)
+        val response = routerConfiguration.addOSPFNetworks(network, prefix, areaName)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)
@@ -226,11 +226,11 @@ class RouterConfigurationService(
     }
 
     fun createDHCPServerNetwork(
-        routerId: Long, username: String, password: String, network: String, mask: Int, gateway: String
+        routerId: Long, username: String, password: String, network: String, prefix: Int, gateway: String
     ) {
 
         val routerConfiguration = getRouterConfigurationByRouterId(routerId, username, password)
-        val response = routerConfiguration.createDHCPServerNetwork(network, mask, gateway)
+        val response = routerConfiguration.createDHCPServerNetwork(network, prefix, gateway)
 
         if (response.raw.isNotBlank())
             throw RouterConfigurationException(response.raw)

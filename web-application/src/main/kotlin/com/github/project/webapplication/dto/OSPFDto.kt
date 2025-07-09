@@ -76,7 +76,7 @@ data class AddOSPFNetworkDto(
     @field:Min(0)
     @field:Max(32)
     @field:NotNull
-    val mask: Int,
+    val prefix: Int,
 
     @SerialName("area_name")
     @field:NotBlank

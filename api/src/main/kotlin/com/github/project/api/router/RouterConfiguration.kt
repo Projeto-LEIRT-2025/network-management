@@ -16,7 +16,7 @@ interface RouterConfiguration {
 
     fun getInterfacesMac(): Response<List<InterfaceMac>>
 
-    fun setIpAddress(interfaceName: String, ipAddress: String, mask: Int): Response<Unit>
+    fun setIpAddress(interfaceName: String, ipAddress: String, prefix: Int): Response<Unit>
 
     fun removeIpAddress(interfaceName: String): Response<Unit>
 
@@ -28,7 +28,7 @@ interface RouterConfiguration {
 
     fun createDHCPServerRelay(name: String, pool: String, interfaceName: String, relayAddress: String): Response<Unit>
 
-    fun createDHCPServerNetwork(network: String, mask: Int, gateway: String): Response<Unit>
+    fun createDHCPServerNetwork(network: String, prefix: Int, gateway: String): Response<Unit>
 
     fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String): Response<Unit>
 
@@ -40,7 +40,7 @@ interface RouterConfiguration {
 
     //ROUTES
 
-    fun addStaticRoute(gateway: String, ipAddress: String, mask: Int): Response<Unit>
+    fun addStaticRoute(gateway: String, ipAddress: String, prefix: Int): Response<Unit>
 
     fun removeStaticRoute(vararg number: Int): Response<Unit>
 
@@ -58,7 +58,7 @@ interface RouterConfiguration {
 
     fun createOSPFArea(areaId: String, processId: String): Response<Unit>
     
-    fun addOSPFNetworks(network: String, mask: Int, areaName: String): Response<Unit>
+    fun addOSPFNetworks(network: String, prefix: Int, areaName: String): Response<Unit>
 
     fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int): Response<Unit>
 

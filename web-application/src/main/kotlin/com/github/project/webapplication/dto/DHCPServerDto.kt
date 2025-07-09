@@ -20,7 +20,7 @@ data class CreateDHCPServerNetworkDto(
     @field:NotNull
     @field:Min(0)
     @field:Max(32)
-    val mask: Int,
+    val prefix: Int,
 
     @field:NotBlank
     val gateway: String

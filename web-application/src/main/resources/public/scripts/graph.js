@@ -429,15 +429,15 @@ function nodeEvent(node) {
                         [
                             { name: "interface", label: "Interface name" },
                             { name: "ip_address", label: "IP Address" },
-                            { name: "mask", label: "Mask" }
+                            { name: "prefix", label: "Prefix" }
                         ],
                         async data => {
 
                             const interfaceName = data.get("interface");
                             const ipAddress = data.get("ip_address");
-                            const mask = data.get("mask");
+                            const prefix = data.get("prefix");
 
-                            if (interfaceName.trim() === "" || ipAddress.trim() === "" || mask.trim() === "") {
+                            if (interfaceName.trim() === "" || ipAddress.trim() === "" || prefix.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
@@ -449,7 +449,7 @@ function nodeEvent(node) {
                                     credentials: {},
                                     interface_name: interfaceName,
                                     ip_address: ipAddress,
-                                    mask: mask
+                                    prefix: prefix
                                 },
                                 message => showNotification(message, 'success'),
                                 message => showNotification(message, "error")
@@ -549,16 +549,16 @@ function nodeEvent(node) {
                         "Create DHCP Server Network",
                         [
                             { name: "network", label: "Network" },
-                            { name: "mask", label: "Mask" },
+                            { name: "prefix", label: "Prefix" },
                             { name: "gateway", label: "Gateway" }
                         ],
                         async data => {
 
                             const network = data.get("network");
-                            const mask = data.get("mask");
+                            const prefix = data.get("prefix");
                             const gateway = data.get("gateway");
 
-                            if (network.trim() === "" || mask.trim() === "" || gateway.trim() === "") {
+                            if (network.trim() === "" || prefix.trim() === "" || gateway.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
@@ -569,7 +569,7 @@ function nodeEvent(node) {
                                 {
                                     credentials: {},
                                     network: network,
-                                    mask: mask,
+                                    prefix: prefix,
                                     gateway: gateway
                                 },
                                 message => showNotification(message, 'success'),
@@ -837,16 +837,16 @@ function nodeEvent(node) {
                         "Add Static Route",
                         [
                             { name: "ip_address", label: "IP Address" },
-                            { name: "mask", label: "Mask" },
+                            { name: "prefix", label: "Prefix" },
                             { name: "gateway", label: "Gateway" }
                         ],
                         async data => {
 
                             const ipAddress = data.get("ip_address");
-                            const mask = data.get("mask");
+                            const prefix = data.get("prefix");
                             const gateway = data.get("gateway");
 
-                            if (ipAddress.trim() === "" || mask.trim() === "" || gateway.trim() === "") {
+                            if (ipAddress.trim() === "" || prefix.trim() === "" || gateway.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
@@ -857,7 +857,7 @@ function nodeEvent(node) {
                                 {
                                     credentials: {},
                                     ip_address: ipAddress,
-                                    mask: mask,
+                                    prefix: prefix,
                                     gateway: gateway
                                 },
                                 message => showNotification(message, 'success'),
@@ -1043,17 +1043,17 @@ function nodeEvent(node) {
                         "Add OSPF Network",
                         [
                             { name: "network", label: "Network" },
-                            { name: "mask", label: "Mask" },
+                            { name: "prefix", label: "Prefix" },
                             { name: "area_name", label: "Area Name" }
                         ],
                         async data => {
 
                             const network = data.get("network");
-                            const mask = data.get("mask");
+                            const prefix = data.get("prefix");
                             const areaName = data.get("area_name");
 
-                            if (!Number.isInteger(Number(mask))) {
-                                showNotification("The mask has to be a number between 0 and 32", "error");
+                            if (!Number.isInteger(Number(prefix))) {
+                                showNotification("The prefix has to be a number between 0 and 32", "error");
                                 return
                             }
 
@@ -1068,7 +1068,7 @@ function nodeEvent(node) {
                                 {
                                     credentials: {},
                                     network : network,
-                                    mask: mask,
+                                    prefix: prefix,
                                     area_name: areaName
                                 },
                                 message => showNotification(message, 'success'),
@@ -1165,14 +1165,14 @@ function menuEvent(group, side) {
                         "Set  IP Address",
                         [
                             { name: "ip_address", label: "IP Address" },
-                            { name: "mask", label: "Mask" }
+                            { name: "prefix", label: "Prefix" }
                         ],
                         async data => {
 
                             const ipAddress = data.get("ip_address");
-                            const mask = data.get("mask");
+                            const prefix = data.get("prefix");
 
-                            if (ipAddress.trim() === "" || mask.trim() === "") {
+                            if (ipAddress.trim() === "" || prefix.trim() === "") {
                                 showNotification("The fields cannot be empty", "error");
                                 return;
                             }
@@ -1184,7 +1184,7 @@ function menuEvent(group, side) {
                                     credentials: {},
                                     interface_name: interfaceName,
                                     ip_address: ipAddress,
-                                    mask: mask
+                                    prefix: prefix
                                 },
                                 (message) => showNotification(message, 'success'),
                                 (message) => showNotification(message, "error")

@@ -107,8 +107,8 @@ class RouterConfigurationImpl(
     private fun executeCommand(command: String) =
         executeCommand(command) { Response(raw = it, data = Unit) }
 
-    override fun addStaticRoute(gateway: String, ipAddress: String, mask: Int) =
-        executeCommand("/ip route add dst-address=$ipAddress/$mask gateway=$gateway")
+    override fun addStaticRoute(gateway: String, ipAddress: String, prefix: Int) =
+        executeCommand("/ip route add dst-address=$ipAddress/$prefix gateway=$gateway")
 
     override fun removeStaticRoute(vararg number: Int) =
         executeCommand("/ip route remove numbers=${number.joinToString(",")}")
@@ -119,8 +119,8 @@ class RouterConfigurationImpl(
     override fun disableInterface(interfaceName: String) =
         executeCommand("/interface disable $interfaceName")
 
-    override fun setIpAddress(interfaceName: String, ipAddress: String, mask: Int) =
-        executeCommand("/ip address add address=$ipAddress/$mask interface=$interfaceName")
+    override fun setIpAddress(interfaceName: String, ipAddress: String, prefix: Int) =
+        executeCommand("/ip address add address=$ipAddress/$prefix interface=$interfaceName")
 
     override fun removeIpAddress(interfaceName: String) =
         executeCommand("/ip address remove [find interface=$interfaceName]")
@@ -143,8 +143,8 @@ class RouterConfigurationImpl(
     override fun createOSPFArea(areaId: String, processId: String) =
         executeCommand("/routing ospf area add area-id=$areaId instance=$processId")
 
-    override fun addOSPFNetworks(network: String, mask: Int, areaName: String) =
-        executeCommand("/routing ospf interface-template add network=$network/$mask area=$areaName")
+    override fun addOSPFNetworks(network: String, prefix: Int, areaName: String) =
+        executeCommand("/routing ospf interface-template add network=$network/$prefix area=$areaName")
 
     override fun addOSPFInterface(interfaceName: String, areaName: String, networkType: String, cost: Int) =
         executeCommand("/routing ospf interface-template add interfaces=$interfaceName area=$areaName type=$networkType cost=$cost")
@@ -158,8 +158,8 @@ class RouterConfigurationImpl(
     override fun createDHCPServerRelay(name: String, pool: String, interfaceName: String, relayAddress: String): Response<Unit> =
         executeCommand("/ip dhcp-server add address-pool=$pool interface=$interfaceName name=$name relay=$relayAddress disabled=no")
 
-    override fun createDHCPServerNetwork(network: String, mask: Int, gateway: String): Response<Unit> =
-        executeCommand("/ip dhcp-server network add address=$network/$mask gateway=$gateway")
+    override fun createDHCPServerNetwork(network: String, prefix: Int, gateway: String): Response<Unit> =
+        executeCommand("/ip dhcp-server network add address=$network/$prefix gateway=$gateway")
 
     override fun createDHCPRelay(name: String, interfaceName: String, serverAddress: String) =
         executeCommand("/ip dhcp-relay add name=$name interface=$interfaceName dhcp-server=$serverAddress")

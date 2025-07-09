@@ -85,7 +85,7 @@ class RouterConfigurationController(
             password = dto.credentials.password,
             interfaceName = dto.interfaceName,
             ipAddress = dto.ipAddress,
-            mask = dto.mask
+            prefix = dto.prefix
         )
 
         return ResponseEntity
@@ -573,7 +573,7 @@ class RouterConfigurationController(
             username = dto.credentials.username,
             password = dto.credentials.password,
             network = dto.network,
-            mask = dto.mask,
+            prefix = dto.prefix,
             areaName = dto.areaName
         )
 
@@ -689,7 +689,7 @@ class RouterConfigurationController(
             password = dto.credentials.password,
             gateway = dto.gateway,
             ipAddress = dto.ipAddress,
-            mask = dto.mask
+            prefix = dto.prefix
         )
 
         return ResponseEntity
@@ -972,7 +972,7 @@ class RouterConfigurationController(
             username = dto.credentials.username,
             password = dto.credentials.password,
             network = dto.network,
-            mask = dto.mask,
+            prefix = dto.prefix,
             gateway = dto.gateway
         )
 

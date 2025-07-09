@@ -32,7 +32,7 @@ data class SetIpAddressDto(
 
     @field:Min(0)
     @field:Max(32)
-    val mask: Int,
+    val prefix: Int,
 
     @SerialName("interface_name")
     val interfaceName: String
