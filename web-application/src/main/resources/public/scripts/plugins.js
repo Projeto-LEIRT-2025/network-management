@@ -49,7 +49,7 @@ async function deletePlugin(button, name) {
         const json = await response.json()
 
         if (!response.ok) {
-            showNotification(json.message, "error")
+            showNotification(json.message || "An error occurred", "error")
             return
         }
 
@@ -77,7 +77,7 @@ async function enablePlugin(button, name) {
         const json = await response.json()
 
         if (!response.ok) {
-            showNotification(json.message, "error")
+            showNotification(json.message || "An error occurred", "error")
             return
         }
 
@@ -109,7 +109,7 @@ async function disablePlugin(button, name) {
         const json = await response.json()
 
         if (!response.ok) {
-            showNotification(json.message, "error")
+            showNotification(json.message || "An error occurred", "error")
             return
         }
 
@@ -146,7 +146,7 @@ async function uploadFile(file) {
         const json = await response.json()
 
         if (!response.ok) {
-            showNotification(json.message, "error")
+            showNotification(json.message || "An error occurred", "error")
             return
         }
 

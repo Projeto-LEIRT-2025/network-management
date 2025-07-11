@@ -1339,7 +1339,7 @@ async function optionOnClick(url, method, body, onSuccess, onError) {
         const json = await response.json();
 
         if (!response.ok) {
-            onError(json.message)
+            onError(json.message || "An error occurred")
             return
         }
 

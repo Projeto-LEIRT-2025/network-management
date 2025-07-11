@@ -31,7 +31,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .authorizeHttpRequests { authorize ->
                 authorize
-                    .requestMatchers("/auth/**", "/css/**", "/scripts/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
+                    .requestMatchers("/auth/**", "/css/**", "/scripts/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/error").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                     .anyRequest().authenticated()
             }

@@ -57,7 +57,7 @@ function init() {
                     const json = await response.json()
 
                     if (!response.ok) {
-                        showNotification("An error occurred", "error")
+                        showNotification(json.message || "An error occurred", "error")
                         return;
                     }
 
@@ -171,7 +171,7 @@ async function updateHandler(event, router) {
         const json = await response.json()
 
         if (!response.ok) {
-            showNotification(json.message, "error")
+            showNotification(json.message || "An error occurred", "error")
             return
         }
 
@@ -196,7 +196,7 @@ async function deleteHandler(event, router) {
         const json = await response.json();
 
         if (!response.ok) {
-            showNotification(json.message, "error")
+            showNotification(json.message || "An error occurred", "error")
             return
         }
 

@@ -18,17 +18,14 @@ class MetricsService(
 
 ) {
 
-    fun getInterfaceStatsBetween(routerId: Long, fromTimestamp: Instant, toTimestamp: Instant): List<InterfaceStats> {
-        return interfaceStatsRepository.findByRouterIdAndTimestampBetween(routerId, fromTimestamp, toTimestamp)
-    }
+    fun getInterfaceStatsBetween(routerId: Long, fromTimestamp: Instant, toTimestamp: Instant): List<InterfaceStats> =
+        interfaceStatsRepository.findByRouterIdAndTimestampBetween(routerId, fromTimestamp, toTimestamp)
 
-    fun getDeviceStatsBetween(routerId: Long, fromTimestamp: Instant, toTimestamp: Instant): List<DeviceStats> {
-        return deviceStatsRepository.findByRouterIdAndTimestampBetween(routerId, fromTimestamp, toTimestamp)
-    }
+    fun getDeviceStatsBetween(routerId: Long, fromTimestamp: Instant, toTimestamp: Instant): List<DeviceStats> =
+        deviceStatsRepository.findByRouterIdAndTimestampBetween(routerId, fromTimestamp, toTimestamp)
 
-    fun getNetworkInterfaces(routerId: Long): List<NetworkInterface> {
-        return routerMonitoringService.getNetworkInterfaces(routerId)
-    }
+    fun getNetworkInterfaces(routerId: Long): List<NetworkInterface> =
+        routerMonitoringService.getNetworkInterfaces(routerId)
 
     fun getNetworkInterfaceStatus(routerId: Long, interfaceName: String): NetworkInterface.OperationalStatus {
 

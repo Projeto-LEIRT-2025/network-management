@@ -35,16 +35,30 @@ class JwtAuthenticationFilter(
 
             if (jwtService.validateToken(token)) {
 
-                val username = jwtService.getUsername(token)
-                val user = userRepository.findByUsername(username) ?: throw UserNotFoundException()
-                val authentication = UsernamePasswordAuthenticationToken(user, null, user.authorities)
+                try {
+                    val username = jwtService.getUsername(token)
+                    val user = userRepository.findByUsername(username) ?: throw UserNotFoundException()
+                    val authentication = UsernamePasswordAuthenticationToken(user, null, user.authorities)
 
-                SecurityContextHolder.getContext().authentication = authentication
+                    SecurityContextHolder.getContext().authentication = authentication
+                } catch (e: UserNotFoundException) {}
+
             }
 
         }
 
         filterChain.doFilter(request, response)
+    }
+
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        val path = request.requestURI
+
+        return path == "/error" ||
+                path.startsWith("/auth") ||
+                path.startsWith("/css") ||
+                path.startsWith("/scripts") ||
+                path.startsWith("/swagger") ||
+                path.startsWith("/v3/api-docs")
     }
 
 }

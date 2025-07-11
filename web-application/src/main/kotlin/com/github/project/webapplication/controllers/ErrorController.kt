@@ -65,7 +65,7 @@ class ErrorController {
                 )
             )
 
-    @ExceptionHandler(PluginLoadException::class)
+    @ExceptionHandler(Exception::class)
     fun handleInternalServerError(e: Exception): ResponseEntity<ApiResponseDto<Unit>> =
         ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
